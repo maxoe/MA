@@ -9,8 +9,8 @@
 %% |  Information for PDF file   |
 %% -------------------------------
 \hypersetup{
- pdfauthor={?},
- pdftitle={?},
+ pdfauthor={Max Oesterle},
+ pdftitle={Efficient Long-Haul Truck Driver Routing},
  pdfsubject={?},
  pdfkeywords={?}
 }
@@ -20,17 +20,18 @@
 %% | Information about the thesis  |
 %% ---------------------------------
 
-\newcommand{\myname}{Name}
-\newcommand{\mytitle}{Title of thesis\\ Second title line}
+\newcommand{\myname}{Max Oesterle}
+\newcommand{\mytitle}{Efficient Long-Haul Truck Driver Routing}
 \newcommand{\myinstitute}{Institute of Theoretical Informatics}
 
-\newcommand{\reviewerone}{?}
+\newcommand{\reviewerone}{Dr. rer. nat. Torsten Ueckerdt}
 \newcommand{\reviewertwo}{?}
-\newcommand{\advisor}{?}
-\newcommand{\advisortwo}{?}
+\newcommand{\advisor}{Tim Zeitz}
+\newcommand{\advisortwo}{Alexander Kleff}
+\newcommand{\advisorthree}{Frank Schulz}
 
-\newcommand{\timestart}{24th April 2012}
-\newcommand{\timeend}{25th April 2012}
+\newcommand{\timestart}{15th January 2022}
+\newcommand{\timeend}{15th July 2022}
 
 
 %% ---------------------------------
@@ -76,9 +77,14 @@ titlepage,
 introduction,
 preliminaries,
 content,
+evaluation,
 conclusion,
 appendix
 }
+
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -124,15 +130,15 @@ Ich versichere wahrheitsgemäß, die Arbeit selbstständig verfasst, alle benutz
 
 \begin{addmargin}{0.5cm}
 
-\centerline{\textbf{Abstract}}
+	\centerline{\textbf{Abstract}}
 
-A short summary of what is going on here.
+	A short summary of what is going on here.
 
-\vskip 2cm
+	\vskip 2cm
 
-\centerline{\textbf{Deutsche Zusammenfassung}}
+	\centerline{\textbf{Deutsche Zusammenfassung}}
 
-Kurze Inhaltsangabe auf deutsch.
+	Kurze Inhaltsangabe auf deutsch.
 
 \end{addmargin}
 
@@ -154,6 +160,7 @@ Kurze Inhaltsangabe auf deutsch.
 \include{introduction}
 \include{preliminaries}
 \include{content}
+\include{evaluation}
 \include{conclusion}
 
 
