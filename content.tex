@@ -195,6 +195,23 @@ A variant of the potential accounts for the distance $d(p,v)$ with $p$ being the
 		\end{split}
 	\end{align}
 \end{proof}
+TODO this doesn't add up completly
+
+\begin{lemma}
+	The label potential of a label $l$ at a node $v$ is a lower bound for the distance including pauses from $v$ to $t$.
+\end{lemma}
+
+\begin{proof}
+	Let $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ be a path. With $\pi_t(l_{i-1},v_{i-1}) \ge \pi_t(l_i,v_i) + l(v_{i-1},v_i)$ for all edges on $p$, the total length $l(p)$ of the path must follow $\pi_t(l_k,t) + l(p) \ge \pi_t(l_0,s) \Leftrightarrow l(p) \ge \pi_t(l_0,s) - \pi_t(l_k,t)$. Since $\pi_t(l_k,t) = 0$, $l(p) \ge \pi_t(l_0,s)$ holds.
+\end{proof}
+
+\begin{theorem}
+	The search can be stopped when the first label at $t$ is removed from the queue.
+\end{theorem}
+
+\begin{proof}
+	When a label $l$ at $t$ is removed from the queue during a $s$-$t$ query, all remaining label $m$ of a node $v$ in the queue fulfill $d_0(t) + \pi_t(l,t) \le d_0(v) + \pi_t(m,v)$. Assume that $d_0(t)$ is not the shortest distance. Then, an $s$-$t$ path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ exists which uses at least one unsettled label $m \in L(v_i)$. Since $l$ was already removed from the queue, $d_0(t) = d_0(t) + \pi_t(l,t) \le  d_0(v) + \pi_t(m,v) \le l(p)$.
+\end{proof}
 
 % \begin{proof}
 % 	Given a Graph $G=(V,E)$ and any path $p = \langle v_0,v_1,...,v_k, \rangle$.
