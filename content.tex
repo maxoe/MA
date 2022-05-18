@@ -160,7 +160,7 @@ A variant of the potential accounts for the distance $d(p,v)$ with $p$ being the
 			& \phantom{{}=1} +  \floor*{ \frac{d_1(m) + d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t)                                                                                                                                               \\
 			& =  \floor*{ \frac{d_1(m) + d_{direct}(v,t)}{t_d} } * t_p - \floor*{ \frac{d_1(l) + d_{direct}(u,t)}{t_d} } * t_p                                                                                                                        \\
 			& \phantom{{}=1} + len(u,v) + d_{direct}(v,t) - d_{direct}(u,t)                                                                                                                                                                           \\
-			& =   \floor*{ \frac{d_1(m) + d_{direct}(v,t)}{t_d} } * t_p - \floor*{ \frac{d_1(l) + d_{direct}(u,t)}{t_d} } * t_p                                                                                                                       \\
+			& \ge   \floor*{ \frac{d_1(m) + d_{direct}(v,t)}{t_d} } * t_p - \floor*{ \frac{d_1(l) + d_{direct}(u,t)}{t_d} } * t_p                                                                                                                       \\
 			& =  \underbrace{ \floor*{ \frac{d_{direct}(q,v) + d_{direct}(v,t)}{t_d} } * t_p}_\text{min. pause time on q-v-t path}\\
 			& \phantom{{}=1} - \underbrace{\floor*{ \frac{d_{direct}(p,u) + d_{direct}(u,t)}{t_d} } * t_p}_\text{min. pause time on p-u-t path}
 		\end{split}
