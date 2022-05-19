@@ -33,7 +33,7 @@ Each node $v$ holds a set $L(v)$ of \emph{labels}. Each label at a node $v$ hold
 
 
 \begin{algorithm}[bt]
-	\caption{\textsc{CSP}}\label{alg:CSP}
+	\caption{\textsc{Dijkstra+DTC}}\label{alg:CSP}
 
 	% Some settings
 	\DontPrintSemicolon %dontprintsemicolon
@@ -111,135 +111,9 @@ Each node $v$ holds a set $L(v)$ of \emph{labels}. Each label at a node $v$ hold
 	}
 \end{algorithm}
 
-\subsection{Potential for Driving Time Constraints}
-Given a target node $t$, the CH potential $\pi_{t,ch}$ yields a perfect estimate for the distance $d_{direct}(v,t)$ from $v$ to $t$ without regard for driving time restrictions and pauses. A lower bound for the time $d(v,t)$ from $v$ to $t$ with breaks due to the driving time limit can be calculated by taking the minimum necessary amount of breaks on the shortest path into account:
-
-\[\pi{'}_t(v) = \floor*{ \frac{d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t)\]
-
-A node potential is called \emph{feasible} if it does not overestimate the distance of any edge in the graph, i.e.
-\begin{align}
-	\label{eq:node_potential_feasibility}
-	len(u,v) - pot(u) + pot(v) \ge 0 \quad \forall (u,v) \in E
-\end{align}
-Following example of a query using the graph in Fig. \ref{fig:graph_infeasible_potential} shows that $\pi{'}_t$ is not feasible. With a driving time limit of 6 and a pause time of 1, the potential here will yield a value $\pi_t(s) = 8$ since the potential includes the minimum required pause time for a path from s to t. Consequently, with $\pi_t(v) = 5$ and $len(s,v) = 2$, $len(s,v) - \pi_t(s) + \pi_t(v) = -1$.
-
-\begin{figure}[hbtp]
-	\centering
-	\input{figures/graph_infeasible_potential.tex}
-	\caption{A graph with the potential to break the potential.}
-	\label{fig:graph_infeasible_potential}
-\end{figure}
-
-A variant of the potential accounts for the distance $d(p,v)$ with $p$ being the last parking node that was used for a pause to calculate the minimum required pause time on the $v$-$t path$. Since the potential now uses information from a label $l$ with $l \in L(v)$, it no longer is a node potential but also depends on the chosen label at $v$.
-
-\begin{align*}
-	\pi_t(l,v) & = \floor*{ \frac{d_{direct}(p,v) + d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t) \\
-	           & = \floor*{ \frac{d_1(l) + d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t)
-\end{align*}
-
-\begin{definition}
-	\label{def:label_potential_feasibility}
-	A label potential $pot(l,v)$ with $l \in L(v)$ is feasible if for all $(u,v) \in E$, $l \in L(u)$, and $m \in L(v)$ where $l$ is a direct predecessor of $m$:
-
-	\begin{align}
-		len(u,v) - \pi_t(l,u) + \pi_t(m,v) \ge 0
-	\end{align}
-\end{definition}
-
-\begin{theorem}
-	The potential $\pi_t$ is a feasible label potential.
-\end{theorem}
-
-\begin{proof}
-	Given a Graph $G=(V,E)$ with a set of parking nodes $P \subseteq V$, any edge $(u,v) \in E$, label $l \in L(u)$, $m \in L(v)$ with $l$ is a direct predecessor of m. Let $s,t \in V$ be starting node and target node of a query in G and $p,q \in P \cup \{s\}$.
-
-	\begin{align}
-		\begin{split}\label{eq:label_feasibility_proof_1}
-			len(u,v) - \pi_t(l,u) + \pi_t  (m,v)                                                                                                                                                                                                       \\
-			& =  len(u,v) - \left(\floor*{ \frac{d_1(l) + d_{direct}(u,t)}{t_d} } * t_p + d_{direct}(u,t)\right)                                                                                                                                      \\
-			& \phantom{{}=1} +  \floor*{ \frac{d_1(m) + d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t)                                                                                                                                               \\
-			& =  \floor*{ \frac{d_1(m) + d_{direct}(v,t)}{t_d} } * t_p - \floor*{ \frac{d_1(l) + d_{direct}(u,t)}{t_d} } * t_p                                                                                                                        \\
-			& \phantom{{}=1} + len(u,v) + d_{direct}(v,t) - d_{direct}(u,t)                                                                                                                                                                           \\
-			& \ge   \floor*{ \frac{d_1(m) + d_{direct}(v,t)}{t_d} } * t_p - \floor*{ \frac{d_1(l) + d_{direct}(u,t)}{t_d} } * t_p                                                                                                                       \\
-			& =  \underbrace{ \floor*{ \frac{d_{direct}(q,v) + d_{direct}(v,t)}{t_d} } * t_p}_\text{min. pause time on q-v-t path}\\
-			& \phantom{{}=1} - \underbrace{\floor*{ \frac{d_{direct}(p,u) + d_{direct}(u,t)}{t_d} } * t_p}_\text{min. pause time on p-u-t path}
-		\end{split}
-	\end{align}
-
-	The nodes $p,q$ represent the last used parking node of the labels $l,m$ or the starting node if no parking node was used. The condition for feasibility of a label potential as in \ref{def:label_potential_feasibility} simplifies to
-
-	\begin{align*}
-		\textit{number of breaks on q-v-t path} - \textit{number of breaks on p-u-t path} \ge 0
-	\end{align*}
-
-	\emph{Case 1: $u \notin P \land v \notin P$}. Since both $u$ and $v$ are no parking nodes and $l$ is a direct predecessor of $m$, both label used the same parking node for their last pause or did not pause, therefore $q=p$ and
-
-	\begin{align}
-		\begin{split}\label{eq:label_feasibility_proof_2}
-			d_{direct}(p,u) + d_{direct}(u,t) & = d_{direct}(p,u) + len(u,v) + d_{direct}(v,t) \\
-			& = d_{direct}(q,u) + len(u,v) + d_{direct}(v,t) \\
-			& = d_{direct}(q,v) + d_{direct}(v,t)
-		\end{split}
-	\end{align}
-
-	With equations \ref{eq:label_feasibility_proof_1} and \ref{eq:label_feasibility_proof_2} follows $len(u,v) - \pi_t(l,u) + \pi_t(m,v) = 0$ and $\pi_t$ is a feasible label potential.
-
-	\emph{Case 2: $u \in P \land v \notin P$}. In this case, $u = q = p$ and $\pi_t$ is a feasible label potential as shown in case 1.
-
-	\emph{Case 3: $u \notin P \land v \in P$}. In this case, $q \neq p$ and $d_{direct}(q,v) = 0$.
-
-	\begin{align}
-		\begin{split}
-			\floor*{ \frac{d_{direct}(q,v) + d_{direct}(v,t)}{t_d} } * t_p - \floor*{ \frac{d_{direct}(p,u) + d_{direct}(u,t)}{t_d} } * t_p \\
-			= \floor*{ \frac{d_{direct}(v,t)}{t_d} } * t_p - \floor*{ \frac{d_{direct}(p,u) + d_{direct}(u,t)}{t_d} } * t_p
-		\end{split}
-	\end{align}
-\end{proof}
-TODO this doesn't add up completly
-
-\begin{lemma}
-	The label potential of a label $l$ at a node $v$ is a lower bound for the distance including pauses from $v$ to $t$.
-\end{lemma}
-
-\begin{proof}
-	Let $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ be a path. With $\pi_t(l_{i-1},v_{i-1}) \ge \pi_t(l_i,v_i) + l(v_{i-1},v_i)$ for all edges on $p$, the total length $l(p)$ of the path must follow $\pi_t(l_k,t) + l(p) \ge \pi_t(l_0,s) \Leftrightarrow l(p) \ge \pi_t(l_0,s) - \pi_t(l_k,t)$. Since $\pi_t(l_k,t) = 0$, $l(p) \ge \pi_t(l_0,s)$ holds.
-\end{proof}
-
-\begin{theorem}
-	The search can be stopped when the first label at $t$ is removed from the queue.
-\end{theorem}
-
-\begin{proof}
-	When a label $l$ at $t$ is removed from the queue during a $s$-$t$ query, all remaining label $m$ of a node $v$ in the queue fulfill $d_0(t) + \pi_t(l,t) \le d_0(v) + \pi_t(m,v)$. Assume that $d_0(t)$ is not the shortest distance. Then, an $s$-$t$ path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ exists which uses at least one unsettled label $m \in L(v_i)$. Since $l$ was already removed from the queue, $d_0(t) = d_0(t) + \pi_t(l,t) \le  d_0(v) + \pi_t(m,v) \le l(p)$.
-\end{proof}
-
-% \begin{proof}
-% 	Given a Graph $G=(V,E)$ and any path $p = \langle v_0,v_1,...,v_k, \rangle$.
-% \end{proof}
-% The conditions in which $\pi_t(v)$ is feasible can be derived directly from the requirement for a feasible potential, i.e. $len(u,v) - pot(u) + pot(v) \ge 0$:
-
-% \begin{align*}
-% 	len(u,v) - \pi_t(u) + \pi_t  (v)                                                                                                                                                                                         \\
-% 	 & =  len(u,v) - \left(\floor*{ \frac{d(p,u) + d_{direct}(u,t)}{t_d} } * t_p + d_{direct}(u,t)\right)                                                                                                                    \\
-% 	 & \phantom{{}=1} +  \floor*{ \frac{d(p,v) + d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t)                                                                                                                             \\
-% 	 & =  \floor*{ \frac{d(p,v) + d_{direct}(v,t)}{t_d} } * t_p - \floor*{ \frac{d(p,u) + d_{direct}(u,t)}{t_d} } * t_p                                                                                                      \\
-% 	 & \phantom{{}=1} + len(u,v) + d_{direct}(v,t) - d_{direct}(u,t)                                                                                                                                                         \\
-% 	 & =  \underbrace{ \floor*{ \frac{d(p,v) + d_{direct}(v,t)}{t_d} } * t_p}_\text{min. pause time on s-v-t path} - \underbrace{\floor*{ \frac{d(p,u) + d_{direct}(u,t)}{t_d} } * t_p}_\text{min. pause time on s-u-t path}
-% \end{align*}
-
-% The potential therefore is infeasible if the minimum required pause time on an $s$-$t$ path via $u$ is greater than the minimum required pause time on an $s$-$t$ path via $v$. An example graph where this case occurs is given in Fig. \ref{fig:graph_infeasible_potential_2}.
-% \begin{figure}[hbtp]
-% 	\centering
-% 	\input{figures/graph_infeasible_potential_2.tex}
-% 	\caption{A graph with the potential to break the potential.}
-% 	\label{fig:graph_infeasible_potential_2}
-% \end{figure}
-
-% With a driving time limit of 3 and a pause time of 1, an $s$-$t$ path via $u$ needs a pause time of 1 while an $s$-$t$ path via $v$ does not pause. Therefore, $len(u,v) - \pi_t(u) + \pi_t(v) = -1$ and the feasibility condition does not hold.
-
 \subsection{A* with Driving Time Constraints}
 \begin{algorithm}[hbtp]
-	\caption{\textsc{CSPA*}}\label{alg:CSPPot}
+	\caption{\textsc{A*+DTC}}\label{alg:CSPPot}
 
 	% Some settings
 	\DontPrintSemicolon %dontprintsemicolon
@@ -314,6 +188,135 @@ TODO this doesn't add up completly
 		}
 	}
 \end{algorithm}
+
+\subsection{Potential for Driving Time Constraints}
+Given a target node $t$, the CH potential $\pi_{t,ch}$ yields a perfect estimate for the distance $d_{direct}(v,t)$ from $v$ to $t$ without regard for driving time restrictions and pauses. A lower bound for the time $d(v,t)$ from $v$ to $t$ with breaks due to the driving time limit can be calculated by taking the minimum necessary amount of breaks on the shortest path into account:
+
+\[\pi{'}_t(v) = \floor*{ \frac{d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t)\]
+
+A node potential is called \emph{feasible} if it does not overestimate the distance of any edge in the graph, i.e.
+\begin{align}
+	\label{eq:node_potential_feasibility}
+	len(u,v) - pot(u) + pot(v) \ge 0 \quad \forall (u,v) \in E
+\end{align}
+Following example of a query using the graph in Fig. \ref{fig:graph_infeasible_potential} shows that $\pi{'}_t$ is not feasible. With a driving time limit of 6 and a pause time of 1, the potential here will yield a value $\pi_t(s) = 8$ since the potential includes the minimum required pause time for a path from s to t. Consequently, with $\pi_t(v) = 5$ and $len(s,v) = 2$, $len(s,v) - \pi_t(s) + \pi_t(v) = -1$.
+
+\begin{figure}[hbtp]
+	\centering
+	\input{figures/graph_infeasible_potential.tex}
+	\caption{A graph with the potential to break the potential.}
+	\label{fig:graph_infeasible_potential}
+\end{figure}
+
+A variant of the potential accounts for the distance $d(p,v)$ with $p$ being the last parking node that was used for a pause to calculate the minimum required pause time on the $v$-$t path$. Since the potential now uses information from a label $l$ with $l \in L(v)$, it no longer is a node potential but also depends on the chosen label at $v$.
+
+\begin{align*}
+	\pi_t(l,v) & = \floor*{ \frac{d_{direct}(p,v) + d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t) \\
+	           & = \floor*{ \frac{d_1(l) + d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t)
+\end{align*}
+
+Since the potential $\pi_t$ now uses label information it no longer is a node potential and the feasibility definition as defined in inequality \ref{eq:node_potential_feasibility} can no longer be applied. We still want to use potential and label information to calculate lower bound estimates for the length of paths.
+
+\begin{lemma}
+	Let $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ be a path with labels $l_i$ at nodes $v_i$. Then $d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) \le d_0(l_i) + \pi_t(l_i,v_i)$.
+\end{lemma}
+
+The lower bound estimate for the length of the entire path to which a label belongs can only increase when propagating labels to a next node.
+
+\begin{proof}
+	Given a Graph $G=(V,E)$ with a set of parking nodes $P \subseteq V$, let $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ be a path in G with labels $l_i$ at nodes $v_i$. Let $p,q \in P \cup \{s\}$ the last parking node which was used by label $l_{i-1}$ and $l_{i}$ or $s$, if no parking node was used.
+
+	\begin{align}
+		\begin{split}\label{eq:label_feasibility_proof_1}
+			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= d_0(l_{i-1})+\floor*{ \frac{d_1(l_{i-1}) + d_{direct}(v_{i-1},t)}{t_d} } * t_p + d_{direct}(v_{i-1},t)\\
+			&= d_0(l_{i-1})+ \floor*{ \frac{d_{direct}(p,v_{i-1}) + d_{direct}(v_{i-1},t)}{t_d} } * t_p + d_{direct}(v_{i-1},t)\\
+			&=d(s,p) + d_{direct}(p,v_{i-1})\\
+			& \phantom{{}=1} + \underbrace{\floor*{ \frac{d_{direct}(p,v_{i-1}) + d_{direct}(v_{i-1},t)}{t_d} } * t_p}_\text{minimum required pause time on p-t subpath} + d_{direct}(v_{i-1},t)
+		\end{split}
+	\end{align}
+
+	\emph{Case 1: $p=q$}
+
+	\begin{align}
+		\begin{split}\label{eq:label_feasibility_proof_2}
+			d_{direct}(p,v_{i-1}) + d_{direct}(v_{i-1},t) & = d_{direct}(p,v_{i-1}) + len(v_{i-1},v_i) + d_{direct}(v_i,t) \\
+			& = d_{direct}(q,v_{i-1}) + len(v_{i-1},v_i) + d_{direct}(v_i,t) \\
+			& = d_{direct}(q,v_i) + d_{direct}(v_i,t)
+		\end{split}
+	\end{align}
+
+	With equations \ref{eq:label_feasibility_proof_1} follows
+
+	\begin{align}
+		\begin{split}\label{eq:label_feasibility_proof_3}
+			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= d(s,p) + d_{direct}(p,v_{i-1}) + d_{direct}(v_{i-1},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{d_{direct}(p,v_{i-1}) + d_{direct}(v_{i-1},t)}{t_d} } * t_p\\
+			&= d(s,q) + d_{direct}(q,v_{i}) + d_{direct}(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{d_{direct}(q,v_{i1}) + d_{direct}(v_{i},t)}{t_d} } * t_p\\
+			&= d_0(l_{i}) + \pi_t(l_{i},v_{i})
+		\end{split}
+	\end{align}
+
+	\emph{Case 2: $p \neq q$}. In this case, $q = v_i$ and $d(p,v_i) = d(p,q) = d_{direct}(p,v_i) + t_p = $. With \ref{eq:label_feasibility_proof_1} follows
+
+	\begin{align}
+		\begin{split}\label{eq:label_feasibility_proof_4}
+			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= d(s,p) + d_{direct}(p,v_{i-1}) + d_{direct}(v_{i-1},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{d_{direct}(p,v_{i-1}) + d_{direct}(v_{i-1},t)}{t_d} } * t_p\\
+			&= d(s,p) + d_{direct}(p,v_{i}) + d_{direct}(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{d_{direct}(p,v_{i}) + d_{direct}(v_{i},t)}{t_d} } * t_p\\
+			&\le d(s,p) + d(p,q) - t_p + d_{direct}(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{d_{direct}(v_{i},t)}{t_d} } * t_p + t_p\\
+			&= d(s,q) + 0 + d_{direct}(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{0 + d_{direct}(v_{i},t)}{t_d} } * t_p\\
+			&= d(s,q) + d_{direct}(q,v_{i}) + d_{direct}(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{d_{direct}(q,v_{i}) + d_{direct}(v_{i},t)}{t_d} } * t_p\\
+			&= d_0(l_{i}) + \pi_t(l_{i1},v_{i})
+		\end{split}
+	\end{align}
+\end{proof}
+
+\begin{lemma}
+	The potential $\pi_t(l,v)$ of a label $l$ at a node $v$ is a lower bound for the distance including pauses from $v$ to $t$.
+\end{lemma}
+
+\begin{proof}
+	Let $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ be a path with labels $l_i$ at nodes $v_i$. With $d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) \ge d_0(l_{i}) + \pi_t(l_i,v_i)$ for all edges on $p$, the total length $len(p)$ of the path must follow $\pi_t(l_i,v_i) \le len(p) + \pi_t(l_k,t) \Leftrightarrow l(p) \ge \pi_t(l_i,v_i) - \pi_t(l_k,t)$. Since $\pi_t(l_k,t) = 0$, $l(p) \ge \pi_t(l_i,v_i)$ holds.
+\end{proof}
+
+\begin{theorem}
+	The search can be stopped when the first label at $t$ is removed from the queue.
+\end{theorem}
+
+\begin{proof}
+	When a label $l$ at $t$ is removed from the queue during a $s$-$t$ query, all remaining label $m$ of a node $v$ in the queue fulfill $d_0(t) + \pi_t(l,t) \le d_0(v) + \pi_t(m,v)$. Assume that $d_0(t)$ is not the shortest distance from $s$ to $t$. Then, a shorter path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ exists which uses at least one unsettled label $m \in L(v_i)$. Since $l$ was already removed from the queue, $d_0(t) = d_0(t) + \pi_t(l,t) \le  d_0(v) + \pi_t(m,v) \le l(p)$ which contradicts the assumption that $p$ yields a shorter $s$-$t$ distance than $d_0(t)$.
+\end{proof}
+
+% \begin{proof}
+% 	Given a Graph $G=(V,E)$ and any path $p = \langle v_0,v_1,...,v_k, \rangle$.
+% \end{proof}
+% The conditions in which $\pi_t(v)$ is feasible can be derived directly from the requirement for a feasible potential, i.e. $len(u,v) - pot(u) + pot(v) \ge 0$:
+
+% \begin{align*}
+% 	len(u,v) - \pi_t(u) + \pi_t  (v)                                                                                                                                                                                         \\
+% 	 & =  len(u,v) - \left(\floor*{ \frac{d(p,u) + d_{direct}(u,t)}{t_d} } * t_p + d_{direct}(u,t)\right)                                                                                                                    \\
+% 	 & \phantom{{}=1} +  \floor*{ \frac{d(p,v) + d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t)                                                                                                                             \\
+% 	 & =  \floor*{ \frac{d(p,v) + d_{direct}(v,t)}{t_d} } * t_p - \floor*{ \frac{d(p,u) + d_{direct}(u,t)}{t_d} } * t_p                                                                                                      \\
+% 	 & \phantom{{}=1} + len(u,v) + d_{direct}(v,t) - d_{direct}(u,t)                                                                                                                                                         \\
+% 	 & =  \underbrace{ \floor*{ \frac{d(p,v) + d_{direct}(v,t)}{t_d} } * t_p}_\text{min. pause time on s-v-t path} - \underbrace{\floor*{ \frac{d(p,u) + d_{direct}(u,t)}{t_d} } * t_p}_\text{min. pause time on s-u-t path}
+% \end{align*}
+
+% The potential therefore is infeasible if the minimum required pause time on an $s$-$t$ path via $u$ is greater than the minimum required pause time on an $s$-$t$ path via $v$. An example graph where this case occurs is given in Fig. \ref{fig:graph_infeasible_potential_2}.
+% \begin{figure}[hbtp]
+% 	\centering
+% 	\input{figures/graph_infeasible_potential_2.tex}
+% 	\caption{A graph with the potential to break the potential.}
+% 	\label{fig:graph_infeasible_potential_2}
+% \end{figure}
+
+% With a driving time limit of 3 and a pause time of 1, an $s$-$t$ path via $u$ needs a pause time of 1 while an $s$-$t$ path via $v$ does not pause. Therefore, $len(u,v) - \pi_t(u) + \pi_t(v) = -1$ and the feasibility condition does not hold.
+
+
 \subsection{Multiple Driving Time Constraints}
 \section{Core Contraction Hierarchy Variant}
 \begin{algorithm}[hbtp]
