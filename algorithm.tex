@@ -5,26 +5,9 @@
 \chapter{Algorithm}
 \label{ch:Algorithm}
 %% ==============
-
-The content chapters of your thesis should of course be renamed. How many chapters you need to write depends on your thesis and cannot be said in general.
-
-
-\section{Problem Description}
-The shortest path problem with driving time constraints consists of a Graph $G=(V,E)$, a set $P \subseteq V$ of parking nodes, a set $R$ of driving time constraints $r_i$ and start and target nodes $s$ and $t$. Each driving time constraint  is defined by a maximum allowed driving time $r_{i,d}$ and a pause time $r_{i,p}$. Thereby, the driving time constraints define a relation $r_i \le r_{i+1}$ with $r_i \le r_j \implies r_{i,d} \le r_{j,d} \land  r_{i,p} \le r_{j,p} \forall i,j$.
-
-Before exceeding a driving time of $r_{i,d}$, the driver must stop and pause for a time of at least $r_{i,p}$. Afterwards, the driver is allowed to drive for a maximum time of $r_{i,d}$ again without stopping. Stops can only take place at nodes $v \in P$.
-
-In many practical applications, the number of different driving time constraints is limited to only one or two constraints, i.e. $|R| = 1$ or  $|R| = 2$. Therefore, we will often only consider one of these special cases.
-
-\subsection{General Approach}
 We introduce a labeling algorithm which solves the shortest path problem with driving time constraints. todo
 
-\paragraph{Complexity}
-d
-
-
-\section{A* Variant}
-\subsection{Dijkstra's Algorithm with One Driving Time Constraint}
+\section{Dijkstra's Algorithm with One Driving Time Constraint}
 A driving time constraint is a rule which defines a maximum allowed  non-stop driving time $t_d$ and a pause time $t_p$. Before the driving time limit $t_d$ is exceeded, the driver must park at designated parking for a minimum time period of $t_p$ before continuing.
 
 The base algorithm with one driving time constraint extends a Dijkstra search with pruning rules to comply with the constraint. It uses distance labels which it propagates between the nodes. The search operates on a graph $G = (V,E,\omega)$ with the available parking nodes defined as a subset $P \subseteq V$. The search can decide to \emph{park} at a node $v$ if $v \in P$.
@@ -111,7 +94,7 @@ Each node $v$ holds a set $L(v)$ of \emph{labels}. Each label at a node $v$ hold
 	}
 \end{algorithm}
 
-\subsection{A* with Driving Time Constraints}
+\section{A* with Driving Time Constraints}
 \begin{algorithm}[hbtp]
 	\caption{\textsc{A*+DTC}}\label{alg:CSPPot}
 

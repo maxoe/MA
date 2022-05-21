@@ -5,7 +5,7 @@
 %% Adapted by: Timo Rohrberg, 2009
 %% timo.rohrberg@student.kit.edu
 %%
-%% Additions by: Thorsten Haberecht, IPD - Chair Prof. Böhm, 2010
+%% Additions by: Thorsten Haberecht, IPD - Chair Prof. Bï¿½hm, 2010
 %% thorsten.haberecht@kit.edu
 %%
 %% Minor changes by: Moritz Baum, ITI, 2012
@@ -67,6 +67,8 @@
 						
 \usepackage[fixlanguage]{babelbib}	% sets german style for literature entries
 \selectbiblanguage{ngerman}		% for \bibliographystyle{babalpha}
+
+\usepackage{tabularx,lipsum,environ}
 %% --- End of Packages ---
 
 
@@ -86,6 +88,22 @@
 \newcommand{\chapterheadfont}{}
 \newcommand{\blankpage}{
  \clearpage{\pagestyle{empty}\cleardoublepage}
+}
+
+\newcommand{\problemtitle}[1]{\gdef\@problemtitle{#1}}% Store problem title
+\newcommand{\probleminput}[1]{\gdef\@probleminput{#1}}% Store problem input
+\newcommand{\problemquestion}[1]{\gdef\@problemquestion{#1}}% Store problem question
+\NewEnviron{namedproblem}{
+  \problemtitle{}\probleminput{}\problemquestion{}% Default input is empty
+  \BODY% Parse input
+  \par\addvspace{.5\baselineskip}
+  \noindent
+  \begin{tabularx}{\textwidth}{@{\hspace{\parindent}} l X c}
+    \multicolumn{2}{@{\hspace{\parindent}}l}{\@problemtitle} \\% Title
+    \textbf{Input:} & \@probleminput \\% Input
+    \textbf{Problem:} & \@problemquestion% Problem
+  \end{tabularx}
+  \par\addvspace{.5\baselineskip}
 }
 %% --- End of New Commands ---
 
