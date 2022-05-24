@@ -5,23 +5,223 @@
 \chapter{Algorithm}
 \label{ch:Algorithm}
 %% ==============
-We introduce a labeling algorithm which solves the shortest path problem with driving time constraints. todo
+In this chapter, we introduce a labeling algorithm which solves the long-haul truck driver routing problem. We then describe extensions of the base algorithm to achieve better runtimes on road networks in practice. At first, we will restrict the problem to one driving time constraint for simplicity and drop that constraint later.
 
 \section{Dijkstra's Algorithm with One Driving Time Constraint}
-A driving time constraint is a rule which defines a maximum allowed  non-stop driving time $t_d$ and a pause time $t_p$. Before the driving time limit $t_d$ is exceeded, the driver must park at designated parking for a minimum time period of $t_p$ before continuing.
+Dijkstra's algorithm solves the shortest path problem by maintaining a queue $Q$ of nodes with ascending tentative distance from the starting node $s$, and iteratively settling the node with the smallest distance. When Dijkstra settles a node $u$, it tests if the distance to all neighbor nodes $v$ with $(u,v) \in E$ can be improved by choosing the current node as a predecessor. We say it \emph{relaxes} all edges $(u,v) \in E$. The search can be stopped if the target node $t$ was removed from the queue. TODO REFERENCE PROOF
 
-The base algorithm with one driving time constraint extends a Dijkstra search with pruning rules to comply with the constraint. It uses distance labels which it propagates between the nodes. The search operates on a graph $G = (V,E,\omega)$ with the available parking nodes defined as a subset $P \subseteq V$. The search can decide to \emph{park} at a node $v$ if $v \in P$.
+We will adapt Dijkstra's algorithm for solving the long-haul truck driver routing problem with one driving time constraint $r$. While Dijkstra's algorithm manages a queue of nodes and assigns each node one tentative distance, our algorithm manages a queue $Q$ of labels and a set $L(v)$ of labels for each node $v \in V$.
 
-Each node $v$ holds a set $L(v)$ of \emph{labels}. Each label at a node $v$ holds two distances $d_0$ and $d_1$ and a link to the previous label. The chain of linked labels represents a unique \emph{path} from $s$ to $v$. A path is characterized by the sequence of visited nodes $v_i$ and a subset of all $v_i \in P$ to describe the parking nodes on the path which were used for parking. The distance $d_0$ describes the distance on the path from the start node $s$ and $d_1$ since the last pause, i.e., the distance from the last node $v_i \in P$ which was used for parking.
+Labels represent a possible path, respectively a possible solution for a query from $s$ to the node they belong to. A label $l$ contains
 
+\begin{itemize}
+	\item $d_0(l)$, the total travel time from the starting node $s$
+	\item $d_1(l)$, the driving time since the last pause
+	\item $pred(l)$, its preceding label
+\end{itemize}
+
+\subsection{Settling a Label}
+In contrast to Dijkstra, the search \emph{settles} a label $l \in L(u)$ in each iteration instead of a node $u$. When settling a label, the search first removes $l$ from the queue. Similar to Dijkstra, it then relaxes all edges $(u,v) \in E$ with $l \in L(u)$ as shown in fig. \ref{alg:settle_next_label}.
+
+\begin{figure}[hbtp]
+	\setlength{\interspacetitleruled}{0pt}%
+	\setlength{\algotitleheightrule}{0pt}%
+	\begin{algorithm*}[H]
+		\SetFuncSty{textsc}
+		\DontPrintSemicolon
+		\SetKwData{Q}{Q}
+		\SetKwData{L}{L}
+
+		\SetKwFunction{settleNextLabel}{settleNextLabel}
+		\SetKwFunction{relaxEdge}{relaxEdge}
+		\SetKwFunction{queueDeleteMin}{deleteMin}
+
+		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+		\Pn{\settleNextLabel{}}{
+			$l \leftarrow$ \Q.\queueDeleteMin{} \;
+			\BlankLine
+
+			\ForAll{ $(u,v) \in E$ }
+			{
+				\relaxEdge{$(u,v),l$}
+			}
+		}
+	\end{algorithm*}
+	\setlength{\interspacetitleruled}{2pt}%
+	\setlength{\algotitleheightrule}{\algotitleheightruledefault}%
+
+	\caption{\label{alg:settle_next_label}Settling a label $l \in L(u)$ removes the label from the queue and relaxes all the outgoing edges of $u$.}
+\end{figure}
+
+Relaxing an edge consists of the three steps label \emph{propagation}, \emph{pruning} and \emph{dominance} checks.
+
+\paragraph{Label Propagation.}
+Labels can be propagated along edges. Let $l \in L(u)$ be a label at $u$ and $(u,v) = e \in E$, then $l$ can be propagated to $v$ resulting in a label $l^{'}$ with $d_0(l^{'}) = d_0(l) + \omega(e)$, $d_1(l^{'}) = d_1(l) + \omega(e)$, and $pred(l^{'}) = l$.
+
+\paragraph{Label Pruning.}
+After propagating a label, we discard the label if it violates the driving time constraint $r$. That is, if $d_1(l) \ge r_d$.
+
+
+\paragraph{Label Dominance}
+In general, it is no longer clear when a label presents a better solution than another label since it now contains two distance values. A label $l$ at a node $v$ might represent a path with a shorter travel time from $s$ to $v$ than another label $m$, but a shorter remaining driving time budget $r_d - d_1(l)$. The label $l$ yields a better solution for a query $s$-$v$, but this does not imply that it is part of a better solution for a query from $s$ to $t$. It might not even yield a path to $t$ at all while $m$ reaches the target due to the greater remaining driving time budget. In one case we can proof that a label $l \in L(v)$ cannot yield a better solution than a label $m \in L(v)$. We say $m$ \emph{dominates} $l$.
+
+\begin{definition}[Label Dominance]
+	A label $l \in L(v)$ dominates another label $m \in L(v)$ if $d_0(m) \ge d_0(l)$ and $d_1(m) \ge d_1(l)$.
+\end{definition}
+
+If a label $l \in L(v)$ is dominated by another label $m \in L(v)$, then $m$ represents a path from $s$ to $t$ with a shorter or equal total travel time and longer remaining driving time budget until the next pause. Therefore, in each solution which uses the label $l$, $l$ can trivially be replaced by the label $m$. The solution will still comply with the driving time constraint $r$ and yield a shorter or equal total travel time, so we are allowed to simply discard dominated labels in our search.
+
+\begin{definition}[Pareto-Optimal Label]
+	A label $l \in L(v)$ is pareto-optimal if it is not dominated by any other label $m \in L(v)$.
+\end{definition}
+
+We will only add a label $l$ to a label set $L(v)$ if it is pareto-optimal. Labels $m \in L(v)$ are then removed from $L(v)$ if $l$ dominates them. $L(v)$ therefore is the set of pareto-optimal solutions at $v$. In fig. \ref{alg:remove_dominated} we define the procedure \textsc{removeDominated($l$)} as a label set operation.
+
+\begin{figure}[hbtp]
+	\setlength{\interspacetitleruled}{0pt}%
+	\setlength{\algotitleheightrule}{0pt}%
+	\begin{algorithm*}[H]
+		\SetFuncSty{textsc}
+		\SetKwFor{ForAll}{forall}{do}
+		\DontPrintSemicolon
+		\SetKwData{L}{L}
+
+		\SetKwFunction{removeDominated}{removeDominated}
+		\SetKwFunction{queueRemove}{remove}
+
+		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+		\Pn{\removeDominated{$l$}}{
+			\ForAll{$m \in L$}
+			{
+				\If{\text{$l$ dominates $m$}}{
+					\L.\queueRemove($m$)\;
+				}
+			}
+		}
+	\end{algorithm*}
+	\setlength{\interspacetitleruled}{2pt}%
+	\setlength{\algotitleheightrule}{\algotitleheightruledefault}%
+
+	\caption{\label{alg:remove_dominated}The operation which is defined on a label set $L$, removes all labels from the set which are dominated by the label $l$.}
+\end{figure}
+
+We now use \textsc{removeDominated} to define the procedure \textsc{relaxEdge$'$} as described in fig. \ref{alg:relax_edge_no_p} which propagates a label along an edge and updates the neighbor node's label set if necessary.
+
+\begin{figure}[hbtp]
+	\setlength{\interspacetitleruled}{0pt}%
+	\setlength{\algotitleheightrule}{0pt}%
+	\begin{algorithm*}[H]
+		\SetFuncSty{textsc}
+		\DontPrintSemicolon
+		\SetKwData{Q}{Q}
+		\SetKwData{L}{L}
+
+		\SetKwFunction{relaxEdgeNoP}{relaxEdge$'$}
+		\SetKwFunction{queueDeleteMin}{deleteMin}
+
+		\SetKwData{Q}{Q}
+		\SetKwData{dist}{d}
+		\SetKwData{L}{L}
+		\SetKwData{pred}{pred}
+		\SetKwArray{ds}{ds}
+		\SetKwFunction{queueDeleteMin}{deleteMin}
+		\SetKwFunction{queueInsert}{insert}
+		\SetKwFunction{queueMin}{min}
+		\SetKwFunction{queueMinKey}{minKey}
+		\SetKwFunction{queueDecreaseKey}{decreaseKey}
+		\SetKwFunction{queueContains}{contains}
+		\SetKwFunction{listInsert}{insert}
+		\SetKwFunction{removeDom}{removeDominated}
+
+		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+		\Pn{\relaxEdgeNoP{(u,v), l}}{
+			\If{$d_1(l) + \omega(u,v) < r_d$}
+			{
+				$l^{'} \leftarrow \{(d_0(l) + \omega(u,v), d_1(l) + \omega(u,v)), l\}$\;
+				\If{$l^{'}$ is not dominated by any label in \L{$v$}}
+				{
+					\L{$v$}.\removeDom{$l^{'}$} \;
+					\L{$v$}.\queueInsert{$l^{'}$} \;
+					\Q.\queueInsert{$l'$}
+				}
+			}
+		}
+	\end{algorithm*}
+	\setlength{\interspacetitleruled}{2pt}%
+	\setlength{\algotitleheightrule}{\algotitleheightruledefault}%
+
+	\caption{\label{alg:relax_edge_no_p}Relaxing an edge $(u,v) \in E$ when settling a label $l \in L(u)$.}
+\end{figure}
+
+\subsection{Parking at a Node}
+The procedure \textsc{relaxEdge$'$} does not account for parking nodes. When propagating a label $l \in L(u)$ along an edge $(u,v) \in E$ and $v \in P$ then we have to consider pausing at $v$. Since we do not know if pausing at $v$ or continuing without a pause is the better solution, we generate both labels and them to label set $L(v)$ and the queue $Q$ as defined in fig. \ref{alg:relax_edge}.
+
+\begin{figure}[hbtp]
+	\setlength{\interspacetitleruled}{0pt}%
+	\setlength{\algotitleheightrule}{0pt}%
+	\begin{algorithm*}[H]
+		\SetFuncSty{textsc}
+		\DontPrintSemicolon
+		\SetKwData{Q}{Q}
+		\SetKwData{L}{L}
+
+		\SetKwFunction{relaxEdge}{relaxEdge}
+		\SetKwFunction{queueDeleteMin}{deleteMin}
+
+		\SetKwData{Q}{Q}
+		\SetKwData{L}{L}
+		\SetKwData{D}{D}
+		\SetKwData{pred}{pred}
+		\SetKwArray{ds}{ds}
+		\SetKwFunction{queueDeleteMin}{deleteMin}
+		\SetKwFunction{queueInsert}{insert}
+		\SetKwFunction{queueMin}{min}
+		\SetKwFunction{queueMinKey}{minKey}
+		\SetKwFunction{queueDecreaseKey}{decreaseKey}
+		\SetKwFunction{queueContains}{contains}
+		\SetKwFunction{listInsert}{insert}
+		\SetKwFunction{removeDom}{removeDominated}
+
+		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+		\Pn{\relaxEdge{(u,v), l}}{
+			\If{$d_1(l) + \omega(u,v) < r_d$}
+			{
+				\D.\queueInsert{$(d_0(l) + \omega(u,v), d_1(l) + \omega(u,v), l)$}\;
+
+				\If{$v \in P$}
+				{
+					\D.\queueInsert{$(d_0(l) + \omega(u,v) + d_p, 0, l)$}\;
+				}
+
+				\ForAll{ $l' \in D$ }
+				{
+					\If{$l'$ is not dominated by any label in \L{$v$}}
+					{
+						\L{$v$}.\removeDom{$l^{'}$} \;
+						\L{$v$}.\queueInsert{$l^{'}$} \;
+						\Q.\queueInsert{$l'$}
+					}
+				}
+			}
+		}
+	\end{algorithm*}
+	\setlength{\interspacetitleruled}{2pt}%
+	\setlength{\algotitleheightrule}{\algotitleheightruledefault}%
+
+	\caption{\label{alg:relax_edge}Relaxing an edge $(u,v) \in E$ when settling a label $l \in L(u)$ with regard to parking nodes.}
+\end{figure}
+
+\subsection{Initialization and Stopping Criterion}
+We initialize the label set $L(s)$ of $s$ and the queue $Q$ with a label which only contains distances of zero and a dummy element as a predecessor. We stop the search when $t$ was removed from $Q$. The definition of the final algorithm \ref{alg:CSP} \textsc{Dijkstra+1DTC} is now trivial.
 
 \begin{algorithm}[bt]
-	\caption{\textsc{Dijkstra+DTC}}\label{alg:CSP}
+	\caption{\textsc{Dijkstra+1DTC}}\label{alg:CSP}
 
 	% Some settings
 	\DontPrintSemicolon %dontprintsemicolon
 	\SetFuncSty{textsc}
 	\SetKwFor{ForAll}{forall}{do}
+	\SetKw{Return}{return}
 
 	% Declaration of data containers and functions
 	\SetKwData{Q}{Q}
@@ -37,76 +237,52 @@ Each node $v$ holds a set $L(v)$ of \emph{labels}. Each label at a node $v$ hold
 	\SetKwFunction{queueContains}{contains}
 	\SetKwFunction{listInsert}{insert}
 	\SetKwFunction{removeDom}{removeDominated}
+	\SetKwFunction{settleNextNode}{settleNextNode}
 
 	% Algorithm interface
-	\KwIn{Graph $G = (V,E,\omega)$, parking nodes $P \subseteq V$, driving time restriction $r$, source node $s \in V$}
-	\KwData{Priority queue \Q, per node priority queue \L{$v$} of labels for all $v \in V$}
-	\KwOut{Distances \dist{$v$} for all $v \in V$, shortest-path tree of $s$ given by \pred{$\cdot$}}
+	\KwIn{Graph $G=(V,E,\omega)$, set of parking nodes $P \subseteq V$, set of driving time constraints $R$, start and target nodes $s,t \in V$}
+	\KwData{Priority queue \Q, per node set \L{$v$} of labels for all $v \in V$}
+	\KwOut{Shortest travel time from $s$ to $t$ and corresponding $s$-$t$-path given by the predecessors of the label $l_t \in L(t)$}
 
 	% The algorithm
 	\BlankLine
 	\tcp{Initialization}
-	\Q.\queueInsert{$s,(0,0)$}\;
-	\L{$s$}.\queueInsert{$(\bot,\bot),(0,0)$}\;
+	\Q.\queueInsert{$(0,0,\bot)$}\;
+	\L{$s$}.\queueInsert{$(0,0,\bot)$}\;
 	\BlankLine
 	\tcp{Main loop}
 	\While{\Q is not empty}
 	{
-		$u \leftarrow$ \Q.\queueDeleteMin{} \;
-		$(d_0, d_1) \leftarrow$ \L{$u$}.\queueMinKey{} \;
-		$l \leftarrow$ \L{$u$}.\queueDeleteMin{} \;
-		\BlankLine
-		\If{\L{$u$} is not empty}
+		\settleNextNode{}\;
+
+		\If{\text{minimum of $Q$ is label at $t$}}
 		{
-			$k_{dist} \leftarrow$ \L{$u$}.\queueMinKey{} \;
-			\Q.\queueInsert{$u$, $k_{dist}$} \;
-		}
-
-		\ForAll{ $(u,v) \in E$ }
-		{
-			\If{$d_0 + \omega(u,v) < r_d$}
-			{
-				$D \leftarrow \{(d_0 + \omega(u,v), d_1 + \omega(u,v))\}$
-
-				\If{$v \in P$}
-				{
-					$D$.\listInsert{$(d_0 + \omega(u,v) + r_p, 0)$}
-				}
-
-				\ForAll{ $x \in D$ }
-				{
-					\If{$x$ is not dominated by any label in \L{$v$}}
-					{
-						\L{$v$}.\removeDom{$x$} \;
-						\L{$v$}.\queueInsert{$(l,(u,v)), x$} \;
-						\uIf{\Q.\queueContains{v}}
-						{
-							\Q.\queueDecreaseKey{$v, x$}
-						}
-						\Else
-						{
-							\Q.\queueInsert{$v, x$}
-						}
-					}
-				}
-			}
+			\Return\;
 		}
 	}
 \end{algorithm}
 
-\section{A* with Driving Time Constraints}
-\begin{algorithm}[hbtp]
-	\caption{\textsc{A*+DTC}}\label{alg:CSPPot}
+\subsection{Correctness}
+TODO correctness stopping criterion
+
+\section{A* with One Driving Time Constraint}
+TODO dijkstra slow blabla therefore with ch potential just add potential everywhere
+
+\begin{algorithm}[bt]
+	\caption{\textsc{A*+1DTC}}\label{alg:CSPPot}
 
 	% Some settings
 	\DontPrintSemicolon %dontprintsemicolon
 	\SetFuncSty{textsc}
 	\SetKwFor{ForAll}{forall}{do}
+	\SetKw{Return}{return}
 
 	% Declaration of data containers and functions
 	\SetKwData{Q}{Q}
+	\SetKwData{dist}{d}
 	\SetKwData{L}{L}
-	\SetKwData{pot}{pot}
+	\SetKwData{pred}{pred}
+	\SetKwArray{ds}{ds}
 	\SetKwFunction{queueDeleteMin}{deleteMin}
 	\SetKwFunction{queueInsert}{insert}
 	\SetKwFunction{queueMin}{min}
@@ -115,62 +291,87 @@ Each node $v$ holds a set $L(v)$ of \emph{labels}. Each label at a node $v$ hold
 	\SetKwFunction{queueContains}{contains}
 	\SetKwFunction{listInsert}{insert}
 	\SetKwFunction{removeDom}{removeDominated}
+	\SetKwFunction{settleNextNode}{settleNextNode}
 
 	% Algorithm interface
-	\KwIn{Graph $G = (V,E,\omega)$, parking nodes $P \subseteq V$, driving time restriction $r$, potential \pot{}, source node $s \in V$}
-	\KwData{Priority queue \Q, per node priority queue \L{$v$} of labels for all $v \in V$}
-	\KwOut{Distances for all $v \in V$, tree of allowed shortest paths according to the restriction $r$ from $s$, given by $l_{pred}$}
+	\KwIn{Graph $G=(V,E,\omega)$, set of parking nodes $P \subseteq V$, set of driving time constraints $R$, start and target nodes $s,t \in V$, potential $pot()$}
+	\KwData{Priority queue \Q, per node set \L{$v$} of labels for all $v \in V$}
+	\KwOut{Shortest travel time from $s$ to $t$ and corresponding $s$-$t$-path given by the predecessors of the label $l_t \in L(t)$}
 
 	% The algorithm
 	\BlankLine
 	\tcp{Initialization}
-	\Q.\queueInsert{$s,(0,0)$}\;
-	\L{$s$}.\queueInsert{$(\bot,\bot),\pot{(0,0)}$}\;
+	\Q.\queueInsert{$pot((0,0,\bot))$}\;
+	\L{$s$}.\queueInsert{$(0,0,\bot)$}\;
 	\BlankLine
 	\tcp{Main loop}
 	\While{\Q is not empty}
 	{
-		$u \leftarrow$ \Q.\queueDeleteMin{} \;
-		$(d_0, d_1) \leftarrow$ \L{$u$}.\queueMinKey{} \;
-		$l \leftarrow$ \L{$u$}.\queueDeleteMin{} \;
-		\BlankLine
-		\If{\L{$u$} is not empty}
-		{
-			$k_{dist} \leftarrow$ \L{$u$}.\queueMinKey{} \;
-			\Q.\queueInsert{$u$, $k_{dist}$} \;
-		}
+		\settleNextNode{}\;
 
-		\ForAll{ $(u,v) \in E$ }
+		\If{\text{minimum of $Q$ is label at $t$}}
 		{
-			\If{$d_0 + \omega(u,v) < r_d$}
+			\Return\;
+		}
+	}
+\end{algorithm}
+
+TODO settlenextlabel is like in fig. \ref{alg:settle_next_label} but relax ege is now as in fig. \ref{alg:relax_edge_a_star}
+
+\begin{figure}[hbtp]
+	\setlength{\interspacetitleruled}{0pt}%
+	\setlength{\algotitleheightrule}{0pt}%
+	\begin{algorithm*}[H]
+		\SetFuncSty{textsc}
+		\DontPrintSemicolon
+		\SetKwData{Q}{Q}
+		\SetKwData{L}{L}
+
+		\SetKwFunction{relaxEdge}{relaxEdge}
+		\SetKwFunction{queueDeleteMin}{deleteMin}
+
+		\SetKwData{Q}{Q}
+		\SetKwData{L}{L}
+		\SetKwData{D}{D}
+		\SetKwData{pred}{pred}
+		\SetKwArray{ds}{ds}
+		\SetKwFunction{queueDeleteMin}{deleteMin}
+		\SetKwFunction{queueInsert}{insert}
+		\SetKwFunction{queueMin}{min}
+		\SetKwFunction{queueMinKey}{minKey}
+		\SetKwFunction{queueDecreaseKey}{decreaseKey}
+		\SetKwFunction{queueContains}{contains}
+		\SetKwFunction{listInsert}{insert}
+		\SetKwFunction{removeDom}{removeDominated}
+
+		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+		\Pn{\relaxEdge{(u,v), l}}{
+			\If{$d_1(l) + \omega(u,v) < r_d$}
 			{
-				$D \leftarrow \{(d_0 + \omega(u,v), d_1 + \omega(u,v))\}$
+				\D.\queueInsert{$(d_0(l) + \omega(u,v), d_1(l) + \omega(u,v), l)$}\;
 
 				\If{$v \in P$}
 				{
-					$D$.\listInsert{$(d_0 + \omega(u,v) + r_p, 0)$}
+					\D.\queueInsert{$(d_0(l) + \omega(u,v) + d_p, 0, l)$}\;
 				}
 
-				\ForAll{ $x \in D$ }
+				\ForAll{ $l' \in D$ }
 				{
-					\If{$x$ is not dominated by any label in \L{$v$}}
+					\If{$l'$ is not dominated by any label in \L{$v$}}
 					{
-						\L{$v$}.\removeDom{$x$} \;
-						\L{$v$}.\queueInsert{$(l,(u,v)), x$} \;
-						\uIf{\Q.\queueContains{v}}
-						{
-							\Q.\queueDecreaseKey{$v, x$}
-						}
-						\Else
-						{
-							\Q.\queueInsert{$v, x$}
-						}
+						\L{$v$}.\removeDom{$l^{'}$} \;
+						\L{$v$}.\queueInsert{$l^{'}$} \;
+						\Q.\queueInsert{$pot(l')$}
 					}
 				}
 			}
 		}
-	}
-\end{algorithm}
+	\end{algorithm*}
+	\setlength{\interspacetitleruled}{2pt}%
+	\setlength{\algotitleheightrule}{\algotitleheightruledefault}%
+
+	\caption{\label{alg:relax_edge_a_star} Relaxing an edge with regard to the potential.}
+\end{figure}
 
 \subsection{Potential for Driving Time Constraints}
 Given a target node $t$, the CH potential $\pi_{t,ch}$ yields a perfect estimate for the distance $d_{direct}(v,t)$ from $v$ to $t$ without regard for driving time restrictions and pauses. A lower bound for the time $d(v,t)$ from $v$ to $t$ with breaks due to the driving time limit can be calculated by taking the minimum necessary amount of breaks on the shortest path into account:
@@ -191,7 +392,7 @@ Following example of a query using the graph in Fig. \ref{fig:graph_infeasible_p
 	\label{fig:graph_infeasible_potential}
 \end{figure}
 
-A variant of the potential accounts for the distance $d(p,v)$ with $p$ being the last parking node that was used for a pause to calculate the minimum required pause time on the $v$-$t path$. Since the potential now uses information from a label $l$ with $l \in L(v)$, it no longer is a node potential but also depends on the chosen label at $v$.
+A variant of the potential accounts for the distance $d(p,v)$ with $p$ being the last parking node that was used for a pause to calculate the minimum required pause time on the $v$-$t$ path. Since the potential now uses information from a label $l$ with $l \in L(v)$, it no longer is a node potential but also depends on the chosen label at $v$.
 
 \begin{align*}
 	\pi_t(l,v) & = \floor*{ \frac{d_{direct}(p,v) + d_{direct}(v,t)}{t_d} } * t_p + d_{direct}(v,t) \\
@@ -300,7 +501,7 @@ The lower bound estimate for the length of the entire path to which a label belo
 % With a driving time limit of 3 and a pause time of 1, an $s$-$t$ path via $u$ needs a pause time of 1 while an $s$-$t$ path via $v$ does not pause. Therefore, $len(u,v) - \pi_t(u) + \pi_t(v) = -1$ and the feasibility condition does not hold.
 
 
-\subsection{Multiple Driving Time Constraints}
+\section{Multiple Driving Time Constraints}
 \section{Core Contraction Hierarchy Variant}
 \begin{algorithm}[hbtp]
 	\caption{\textsc{Core-CH with Driving Time Constraints}}\label{alg:CSPCoreCH}
