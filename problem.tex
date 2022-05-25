@@ -6,17 +6,17 @@ We introduce a set $P \subseteq V$ of parking nodes and a set $R$ of driving tim
 A path $p$ from $s$ to $t$ now includes not only the sequence of visited nodes $p = \langle s=v_0,v_1,...,t=v_k, \rangle$, but also a pause time $\rho: p \rightarrow \{0,r_{i,d}\}$ for each node i. It is $\rho(v_i) = 0$ $\forall v_i \notin P$.
 
 \begin{definition}[Driving Time]
-	The driving time $len_{dt}(p)$ of a path  $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ is defined analogously to the length of a path in the ordinary SPP. It is $len_{dt}(p) = \sum_{i=0}^{k-1} \omega((v_{i}, v_{i+1}))$.
+	The driving time $\drivingtime(p)$ of a path  $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ is defined analogously to the length of a path in the ordinary SPP. It is $\drivingtime(p) = \sum_{i=0}^{k-1} \omega((v_{i}, v_{i+1}))$.
 \end{definition}
 
 \begin{definition}[Travel Time]
-	The travel time $len_{tt}(p)$ of a path  $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ is defined as the sum of the driving time of the path and the total accumulated pause time $len_{tt}(p) = len_{dt}(p) + \sum_{i=0}^{k} \rho(v_i)$.
+	The travel time $\traveltime(p)$ of a path  $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ is defined as the sum of the driving time of the path and the total accumulated pause time $\traveltime(p) = \drivingtime(p) + \sum_{i=0}^{k} \rho(v_i)$.
 \end{definition}
 
 \begin{definition}[Path Compliance]
 	A valid path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ must comply with the driving time restrictions $R$. The path $p$ complies with $R$ if it complies with all $r_l \in R$.
 
-	Let $v_i$ be the starting node $s$ or any node on the path with $\rho(v_i) \ge r_{l,p}$ and let $v_j$ be the target node $t$ or any node on the path with $\rho(v_j) \ge r_{l,p}$ and $i < j$. Then let $q$ be the subpath of $p$ from $v_i$ to $v_j$. A path complies with driving time restriction $r_l$ if $len_{dt}(q) < r_{d,l}$ for all possible subpaths $q$ or there is a node $v_m$ on $q$ with $\rho(v_m) \ge r_{l,p}$ and $i < m < j$.
+	Let $v_i$ be the starting node $s$ or any node on the path with $\rho(v_i) \ge r_{l,p}$ and let $v_j$ be the target node $t$ or any node on the path with $\rho(v_j) \ge r_{l,p}$ and $i < j$. Then let $q$ be the subpath of $p$ from $v_i$ to $v_j$. A path complies with driving time restriction $r_l$ if $\drivingtime(q) < r_{d,l}$ for all possible subpaths $q$ or there is a node $v_m$ on $q$ with $\rho(v_m) \ge r_{l,p}$ and $i < m < j$.
 \end{definition}
 
 The long-haul truck driver routing problem now can be defined as follows.
@@ -24,7 +24,7 @@ The long-haul truck driver routing problem now can be defined as follows.
 \begin{namedproblem}
 	\problemtitle{\textsc{Long-Haul Truck Driver Routing}}
 	\probleminput{A graph $G=(V,E,\omega)$, a set of parking nodes $P \subseteq V$, a set of driving time constraints $R$, and start and target nodes $s,t \in V$}
-	\problemquestion{Find the path $p$ from $s$ to $t$ in $G$ which minimizes travel time $len_{tt}(p)$ and complies with the driving time restrictions $R$.}
+	\problemquestion{Find the path $p$ from $s$ to $t$ in $G$ which minimizes travel time $\traveltime(p)$ and complies with the driving time restrictions $R$.}
 \end{namedproblem}
 
 In many practical applications, the number of different driving time constraints is limited to only one or two constraints, i.e., $|R| = 1$ or  $|R| = 2$. Therefore, we will often only consider one of these special cases.
