@@ -59,11 +59,11 @@ Relaxing an edge consists of the three steps label \emph{propagation}, \emph{pru
 Labels can be propagated along edges. Let $l \in L(u)$ be a label at $u$ and $(u,v) = e \in E$, then $l$ can be propagated to $v$ resulting in a label $l'$ with $d_0(l') = d_0(l) + \omega(e)$, $d_1(l') = d_1(l) + \omega(e)$, and $\pred(l') = l$.
 
 \paragraph{Label Pruning.}
-After propagating a label, we discard the label if it violates the driving time constraint $r$. That is, if $d_1(l) \ge r_d$.
+After propagating a label, we discard the label if it violates the driving time constraint $r$. That is, if $d_1(l) \ge \restr_d$.
 
 
 \paragraph{Label Dominance}
-In general, it is no longer clear when a label presents a better solution than another label since it now contains two distance values. A label $l$ at a node $v$ might represent a path with a shorter travel time from $s$ to $v$ than another label $m$, but a shorter remaining driving time budget $r_d - d_1(l)$. The label $l$ yields a better solution for a query $s$-$v$, but this does not imply that it is part of a better solution for a query from $s$ to $t$. It might not even yield a path to $t$ at all while $m$ reaches the target due to the greater remaining driving time budget. In one case we can proof that a label $l \in L(v)$ cannot yield a better solution than a label $m \in L(v)$. We say $m$ \emph{dominates} $l$.
+In general, it is no longer clear when a label presents a better solution than another label since it now contains two distance values. A label $l$ at a node $v$ might represent a path with a shorter travel time from $s$ to $v$ than another label $m$, but a shorter remaining driving time budget $\restr_d - d_1(l)$. The label $l$ yields a better solution for a query $s$-$v$, but this does not imply that it is part of a better solution for a query from $s$ to $t$. It might not even yield a path to $t$ at all while $m$ reaches the target due to the greater remaining driving time budget. In one case we can proof that a label $l \in L(v)$ cannot yield a better solution than a label $m \in L(v)$. We say $m$ \emph{dominates} $l$.
 
 \begin{definition}[Label Dominancef for 1-DTC]
 	A label $l \in L(v)$ dominates another label $m \in L(v)$ if $d_0(m) \ge d_0(l)$ and $d_1(m) \ge d_1(l)$.
@@ -135,7 +135,7 @@ We now use \textsc{removeDominated} to define the procedure \textsc{relaxEdge$'$
 
 		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
 		\Pn{\relaxEdgeNoP{(u,v), l}}{
-			\If{$d_1(l) + \omega(u,v) < r_d$}
+			\If{$d_1(l) + \omega(u,v) < \restr_d$}
 			{
 				$l' \leftarrow \{(d_0(l) + \omega(u,v), d_1(l) + \omega(u,v)), l\}$\;
 				\If{$l'$ is not dominated by any label in \L{$v$}}
@@ -184,7 +184,7 @@ The procedure \textsc{relaxEdge$'$} does not account for parking nodes. When pro
 
 		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
 		\Pn{\relaxEdge{(u,v), l}}{
-			\If{$d_1(l) + \omega(u,v) < r_d$}
+			\If{$d_1(l) + \omega(u,v) < \restr_d$}
 			{
 				\D.\queueInsert{$(d_0(l) + \omega(u,v), d_1(l) + \omega(u,v), l)$}\;
 
@@ -346,7 +346,7 @@ TODO settlenextlabel is like in fig. \ref{alg:settle_next_label} but relax ege i
 
 		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
 		\Pn{\relaxEdge{(u,v), l}}{
-			\If{$d_1(l) + \omega(u,v) < r_d$}
+			\If{$d_1(l) + \omega(u,v) < \restr_d$}
 			{
 				\D.\queueInsert{$(d_0(l) + \omega(u,v), d_1(l) + \omega(u,v), l)$}\;
 
@@ -402,13 +402,13 @@ A variant of the potential accounts for the distance $\traveltime(p,v)$ with $p$
 Since the potential $\pi_t$ now uses label information it no longer is a node potential and the feasibility definition as defined in inequality \ref{eq:node_potential_feasibility} can no longer be applied. We still want to use potential and label information to calculate lower bound estimates for the length of paths.
 
 \begin{lemma}\label{lemma:pot_labels_get_larger}
-	Let $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ be a path with labels $l_i$ at nodes $v_i$. Then $d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) \le d_0(l_i) + \pi_t(l_i,v_i)$.
+	Let $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ be a path with labels $l_i$ at nodes $v_i$. Then $d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) \le d_0(l_i) + \pi_t(l_i,v_i)$.
 \end{lemma}
 
 The lower bound estimate for the length of the entire path to which a label belongs can only increase when propagating labels to a next node.
 
 \begin{proof}
-	Given a Graph $G=(V,E)$ with a set of parking nodes $P \subseteq V$, let $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ be a path in G with labels $l_i$ at nodes $v_i$. Let $p,q \in P \cup \{s\}$ the last parking node which was used by label $l_{i-1}$ and $l_{i}$ or $s$, if no parking node was used.
+	Given a Graph $G=(V,E)$ with a set of parking nodes $P \subseteq V$, let $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ be a path in G with labels $l_i$ at nodes $v_i$. Let $p,q \in P \cup \{s\}$ the last parking node which was used by label $l_{i-1}$ and $l_{i}$ or $s$, if no parking node was used.
 
 	\begin{align}
 		\begin{split}\label{eq:label_feasibility_proof_1}
@@ -441,7 +441,7 @@ The lower bound estimate for the length of the entire path to which a label belo
 		\end{split}
 	\end{align}
 
-	\emph{Case 2: $p \neq q$}. In this case, $q = v_i$ and $\traveltime(p,v_i) = \traveltime(p,q) = \drivingtime(p,v_i) + \restr_p = $. With \ref{eq:label_feasibility_proof_1} follows
+	\emph{Case 2: $p \neq q$}. In this case, $q = v_i$ and $\traveltime(p,v_i) = \traveltime(p,q) = \drivingtime(p,v_i) + \restr_p$. With \ref{eq:label_feasibility_proof_1} follows
 
 	\begin{align}
 		\begin{split}\label{eq:label_feasibility_proof_4}
@@ -465,7 +465,7 @@ The lower bound estimate for the length of the entire path to which a label belo
 \end{lemma}
 
 \begin{proof}
-	Let $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ be a path with labels $l_i$ at nodes $v_i$. With $d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) \ge d_0(l_{i}) + \pi_t(l_i,v_i)$ for all edges on $p$, the total length $len(p)$ of the path must follow $\pi_t(l_i,v_i) \le len(p) + \pi_t(l_k,t) \Leftrightarrow l(p) \ge \pi_t(l_i,v_i) - \pi_t(l_k,t)$. Since $\pi_t(l_k,t) = 0$, $l(p) \ge \pi_t(l_i,v_i)$ holds.
+	Let $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ be a path with labels $l_i$ at nodes $v_i$. With $d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) \ge d_0(l_{i}) + \pi_t(l_i,v_i)$ for all edges on $p$, the total length $len(p)$ of the path must follow $\pi_t(l_i,v_i) \le len(p) + \pi_t(l_k,t) \Leftrightarrow l(p) \ge \pi_t(l_i,v_i) - \pi_t(l_k,t)$. Since $\pi_t(l_k,t) = 0$, $l(p) \ge \pi_t(l_i,v_i)$ holds.
 \end{proof}
 
 \begin{theorem}\label{theorem:pot_stop_criterion}
@@ -473,17 +473,17 @@ The lower bound estimate for the length of the entire path to which a label belo
 \end{theorem}
 
 \begin{proof}
-	When a label $l$ at $t$ is removed from the queue during a $s$-$t$ query, all remaining label $m$ of a node $v$ in the queue fulfill $d_0(t) + \pi_t(l,t) \le d_0(v) + \pi_t(m,v)$. Assume that $d_0(t)$ is not the shortest distance from $s$ to $t$. Then, a shorter path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ exists which uses at least one unsettled label $m \in L(v_i)$. Since $l$ was already removed from the queue, $d_0(t) = d_0(t) + \pi_t(l,t) \le  d_0(v) + \pi_t(m,v) \le l(p)$ which contradicts the assumption that $p$ yields a shorter $s$-$t$ distance than $d_0(t)$.
+	When a label $l$ at $t$ is removed from the queue during a $s$-$t$ query, all remaining label $m$ of a node $v$ in the queue fulfill $d_0(t) + \pi_t(l,t) \le d_0(v) + \pi_t(m,v)$. Assume that $d_0(t)$ is not the shortest distance from $s$ to $t$. Then, a shorter path $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ exists which uses at least one unsettled label $m \in L(v_i)$. Since $l$ was already removed from the queue, $d_0(t) = d_0(t) + \pi_t(l,t) \le  d_0(v) + \pi_t(m,v) \le l(p)$ which contradicts the assumption that $p$ yields a shorter $s$-$t$ distance than $d_0(t)$.
 \end{proof}
 
 \section{Multiple Driving Time Constraints}
-Dijkstra's algorithm with one driving time constraint (1-DTC) can easily be adapted to handle multiple driving time constraints $r_i$. We abbreviate the generalized problem \emph{n-DTC}. For a number of $n$ driving time constraints, a label now contains the total travel time $d_0$ and $n$ driving time values $d_1, ... , d_n$. Each $d_i$ represents the driving time since the last pause at a node $v$ with pause time $\rho(v) \ge r_{i,p}$. Pausing at a node occurs with one of the available pause times $r_{i,p}$ of a driving time restriction $r_i \in R$. Pausing with an arbitrary pause time is possible but yields longer travel times and no advantage. When a path pauses at $v$ for a time $r_{i,p}$, the corresponding label $l \in L(v)$ has $d_j(l) = 0$ for all $0 < j \le i$ since the pauses with shorter pause times are \emph{included} in the longer pause.
+Dijkstra's algorithm with one driving time constraint (1-DTC) can easily be adapted to handle multiple driving time constraints $\restr_i$. We abbreviate the generalized problem \emph{n-DTC}. For a number of $n$ driving time constraints, a label now contains the total travel time $d_0$ and $n$ driving time values $d_1, \ldots , d_n$. Each $d_i$ represents the driving time since the last pause at a node $v$ with pause time $\rho(v) \ge \restr_{i,p}$. Pausing at a node occurs with one of the available pause times $\restr_{i,p}$ of a driving time restriction $\restr_i \in R$. Pausing with an arbitrary pause time is possible but yields longer travel times and no advantage. When a path pauses at $v$ for a time $\restr_{i,p}$, the corresponding label $l \in L(v)$ has $d_j(l) = 0$ for all $0 < j \le i$ since the pauses with shorter pause times are \emph{included} in the longer pause.
 
 \paragraph{Label Propagation.}
 Label propagation simply extends the component-wise addition of the edge weight to all elements of the distance vector. Let $l \in L(u)$ be a label at $u$ and $(u,v) = e \in E$, then $l$ can be propagated to $v$ resulting in a label $l'$ with $d_i(l') = d_i(l) + \omega(e)$ $\forall i \le |R|$, and $\pred(l') = l$.
 
 \paragraph{Label Pruning.}
-The pruning rule for driving time constraints generalizes is a similar way. A label is discarded if $d_i(l) \ge r_{d,i}$ for any $i$ with $0 < i \le |R|$.
+The pruning rule for driving time constraints generalizes is a similar way. A label is discarded if $d_i(l) \ge \restr_{d,i}$ for any $i$ with $0 < i \le |R|$.
 
 
 \paragraph{Label Dominance}
@@ -493,95 +493,184 @@ At last, label dominance can be generalized to multiple driving time constraints
 \end{definition}
 
 \section{Potential for Multiple Driving Time Constraints}
+TODO: Rewrite for only two dtc?
 In section \ref{section:potential_csp} we defined the potential $\pi_t(l,v)$ to extend Dijkstra to an A* search with one driving time constraint. We will now generalize $\pi_t$ for the use with an arbitrary number $n$ of driving time constraints.
 
 To calculate $\pi_t(l,v)$, we used the distance without regard for pausing from $v$ to $t$ and the distance $d_1(l)$ to calculate a lower bound for the amount of necessary pauses until we reach the target node. With one driving time restriction it is
 
 \[\textit{minimum number of pauses} = \floor*{ \frac{d_{1}(l) + \drivingtime(v,t)}{t_{d,i}} }.\]
 
-We now have to calculate the lower bound with respect to the different driving time constraints. How many pauses of which duration do we need at least to comply with all driving time restrictions $r_i$? We need a smaller or equal amount of pauses for longer driving time restrictions since they have a longer maximum allowed driving time $r_{d,i}$. At the same time, a pause of length $r_{p,i}$ will also include a pause of lengths $r_{p,j}$ with $j < i$. We therefore start with calculating the amount of necessary pauses of the longest restriction $r_n$. Then, we calculate how many pauses we need at least for the next smaller constraint and subtract the amount of pauses we just calculated for $r_n$. We repeat this process for each remaining driving time restriction and accumulate the product of number of pauses for $r_i$ and its corresponding pause time $r_{p,i}$ to yield the minimum total pause time on the remaining path to $t$. Finally, we add the raw driving time $\drivingtime{v,t}$. We now can define $\pi_t$ as
+We now have to calculate the lower bound with respect to the different driving time constraints. How many pauses of which duration do we need at least to comply with all driving time restrictions $\restr_i$? We need a smaller or equal amount of pauses for longer driving time restrictions since they have a longer maximum allowed driving time $\restr_{d,i}$. At the same time, a pause of length $\restr_{p,i}$ will also include a pause of lengths $\restr_{p,j}$ with $j < i$. We therefore start with calculating the amount of necessary pauses of the longest restriction $r_n$. Then, we calculate how many pauses we need at least for the next smaller constraint and subtract the amount of pauses we just calculated for $r_n$. We repeat this process for each remaining driving time restriction and accumulate the product of number of pauses for $\restr_i$ and its corresponding pause time $\restr_{p,i}$ to yield the minimum total pause time on the remaining path to $t$. Finally, we add the raw driving time $\drivingtime{v,t}$. We now can define $\pi_t$ as
 
-\begin{align*}
-	\pi_t(v,l) = \drivingtime(v,t) + \sum_{i=1}^n{ n_i * t_{p,i}}
-\end{align*}
+\begin{align}\label{eq:multiple_pauses_pot}
+	\pi_t(l,v) & = \drivingtime(v,t) + \sum_{i=1}^n{ n_i * \restr_{p,i}}
+\end{align}
 
 with
 
-\begin{align*}
+\begin{align}\label{eq:number_pauses}
 	n_i =\begin{dcases}
-		\floor*{ \frac{d_{i}(l) + \drivingtime(v,t)}{t_{i,d}} } - \floor*{ \frac{d_{i+1}(l) + \drivingtime(v,t)}{t_{d,i+1}} } & 0 < i < n \\
-		\floor*{ \frac{d_{i}(l) + \drivingtime(v,t)}{\restr_d} }                                                              & i=n
+		\floor*{ \frac{d_{i}(l) + \drivingtime(v,t)}{\restr_{d,i}} } - \floor*{ \frac{d_{i+1}(l) + \drivingtime(v,t)}{t_{d,i+1}} } & 0 < i < n \\
+		\floor*{ \frac{d_{i}(l) + \drivingtime(v,t)}{\restr_d} }                                                                   & i=n
 	\end{dcases}
-\end{align*}
+\end{align}
 
 The value of $n_i$ for $0 < i < n$ can also be calculated by reusing already computed values $n_j$ with $j > i$:
 
 \begin{align*}
 	n_i =\begin{dcases}
-		\floor*{ \frac{d_{i}(l) + \drivingtime(v,t)}{t_{i,d}} } - \sum_{j=i+1}^{n}{n_{j} } & 0 < i < n \\
-		\floor*{ \frac{d_{i}(l) + \drivingtime(v,t)}{\restr_d} }                           & i=n
+		\floor*{ \frac{d_{i}(l) + \drivingtime(v,t)}{\restr_{d,i}} } - \sum_{j=i+1}^{n}{n_{j} } & 0 < i < n \\
+		\floor*{ \frac{d_{i}(l) + \drivingtime(v,t)}{\restr_d} }                                & i=n
 	\end{dcases}
 \end{align*}
 
-If lemma \ref{lemma:pot_labels_get_larger} still holds then, lemma \ref{lemma:pot_lower_bound_csp} and theorem \ref{theorem:pot_stop_criterion} follow as a consequence.
+If lemma \ref{lemma:pot_labels_get_larger} still holds then lemma \ref{lemma:pot_lower_bound_csp} and theorem \ref{theorem:pot_stop_criterion} follow as a consequence.
+
+% \begin{lemma}
+% 	Lemma \ref{lemma:pot_labels_get_larger} still holds for an arbitrary number $n$ of driving time constraints.
+% \end{lemma}
+
+% \begin{proof}
+% 	Given a Graph $G=(V,E)$ with a set of parking nodes $P \subseteq V$, let $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ be a path in G with labels $l_i$ at nodes $v_i$. Let $l_{i-1}$ and $l_{i}$ label at nodes $v_{i-1}$ and $v_i$. In the proof of lemma \ref{lemma:pot_labels_get_larger} we considered the two cases of parking at $v_i$ and not parking at $v_i$. In the first case, the last used parking node of the two labels will not be the same, in the second case it will be the same node. We cannot simply differentiate these two cases now because we not only decide if we use a parking node or not, but we also decide how long the pause will be. Let $R$ be the set of driving time constraints $\restr_j$. If a label uses $v_i$ as a parking node with a pause time of $\restr_{p,k}$, then it fulfills the pause requirements for a pause for all driving time constraints $\restr_j$ with $0 < j \le k$. Therefore, $d_1(l_i) = \ldots = d_k(l_i) = 0$ and for $k < j \le |R|$ is the last parking node of $l_{i-1}$ and $l_i$ the same node which we name $p_j \in P \cup \{s\}$.
+
+% 	It is
+
+% 	\begin{align}
+% 		\begin{split}\label{eq:label_n_feasibility_proof_1}
+% 			d_0(l_{i}) + \pi_t(l_{i},v_{i}) & = \traveltime(s,v_{i}) + \drivingtime(v_i,t) + \sum_{j=1}^{n-1}{ n_j * \restr_{p,j}}\\
+% 			& = \traveltime(s,v_{i}) + \drivingtime(v_i,t) + \sum_{j=1}^n{ \floor*{ \frac{d_{j}(l) + \drivingtime(v_i,t)}{\restr_{d,j}} } - \floor*{ \frac{d_{j+1}(l) + \drivingtime(v_i,t)}{t_{d,j+1}} } * \restr_{p,j}}\\
+% 			& \phantom{{}=1} + \floor*{ \frac{d_{n}(l) + \drivingtime(v_i,t)}{\restr_{d,n}} }\\
+% 			& = \drivingtime(s,v_{i}) + \drivingtime(v_{i},t) + \textit{pause time on s-t path}
+% 		\end{split}
+% 	\end{align}
+
+
+% 	Since $\drivingtime(s,v_{i-1}) + \drivingtime(v_{i-1},t) = \drivingtime(s,v_i) + \drivingtime(v_i,t)$, we only have to proof that
+
+
+% 	We $d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) \le d_0(l_i) + \pi_t(l_i,v_i)$.
+
+% 	\begin{align}
+% 		\begin{split}\label{eq:label_n_feasibility_proof_2}
+% 			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= \traveltime(s,v_{i-1}) + \drivingtime(v_{i-1},t)\\
+% 			& + \sum_{j=1}^{n-1}{\left(\floor*{\frac{\drivingtime(p_j,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{p,j}}} - \floor*{\frac{\drivingtime(p_j,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{p,j+1}}}\right) * \restr_{d,j}}\\
+% 			& + \floor*{\frac{\drivingtime(p_n,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{p,n}}} * \restr_{d,n}\\
+% 			&= \traveltime(s,v_{i-1}) + \drivingtime(v_{i-1},t)\\
+% 			& + \sum_{j=1}^{k-1}{\left(\floor*{\frac{\drivingtime(p_j,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{p,j}}} - \floor*{\frac{\drivingtime(p_j,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{p,j+1}}}\right) * \restr_{d,j}}\\
+% 			& + \floor*{\frac{\drivingtime(p_n,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{p,n}}} * \restr_{d,n}
+% 		\end{split}
+% 	\end{align}
+
+% 	\begin{align}
+% 		\begin{split}
+% 			\traveltime(s,p) + \drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)\\
+% 			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_d} } * \restr_p\\
+% 			&= \traveltime(s,p) + \drivingtime(p,v_{i}) + \drivingtime(v_{i},t)\\
+% 			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p,v_{i}) + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
+% 			&\le \traveltime(s,p) + \traveltime(p,q) - \restr_p + \drivingtime(v_{i},t)\\
+% 			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(v_{i},t)}{\restr_d} } * \restr_p + \restr_p\\
+% 			&= \traveltime(s,q) + 0 + \drivingtime(v_{i},t)\\
+% 			& \phantom{{}=1} + \floor*{ \frac{0 + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
+% 			&= \traveltime(s,q) + \drivingtime(q,v_{i}) + \drivingtime(v_{i},t)\\
+% 			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q,v_{i}) + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
+% 			&= d_0(l_{i}) + \pi_t(l_{i1},v_{i})
+% 		\end{split}
+% 	\end{align}
+% \end{proof}
 
 \begin{lemma}
-	Lemma \ref{lemma:pot_labels_get_larger} still holds for an arbitrary number $n$ of driving time constraints.
+	Lemma \ref{lemma:pot_labels_get_larger} still holds for two driving time constraints.
 \end{lemma}
 
 \begin{proof}
-	Given a Graph $G=(V,E)$ with a set of parking nodes $P \subseteq V$, let $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ be a path in G with labels $l_i$ at nodes $v_i$. Let $p,q \in P \cup \{s\}$ the last parking node which was used by label $l_{i-1}$ and $l_{i}$ or $s$, if no parking node was used. Let
+	Given a Graph $G=(V,E)$ with a set of parking nodes $P \subseteq V$, let $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ be a path in G with labels $l_i$ at nodes $v_i$. Let $l_{i-1}$ and $l_{i}$ label at nodes $v_{i-1}$ and $v_i$. In the proof of lemma \ref{lemma:pot_labels_get_larger} we considered the two cases of parking at $v_i$ and not parking at $v_i$. In the first case, the last used parking node of the two labels will not be the same, in the second case it will be the same node. We now have two different driving time constraints and have to consider three cases: not parking at $v_i$ and parking at $v_i$ with pause time $r_{1,p}$ or $r_{2,p}$. It is
 
 	\begin{align}
-		\begin{split}\label{eq:label_n_feasibility_proof_1}
-			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= d_0(l_{i-1})+\floor*{ \frac{d_1(l_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_d} } * \restr_p + \drivingtime(v_{i-1},t)\\
-			&= d_0(l_{i-1})+ \floor*{ \frac{\drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_d} } * \restr_p + \drivingtime(v_{i-1},t)\\
-			&=\traveltime(s,p) + \drivingtime(p,v_{i-1})\\
-			& \phantom{{}=1} + \underbrace{\floor*{ \frac{\drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_d} } * \restr_p}_\text{minimum required pause time on p-t subpath} + \drivingtime(v_{i-1},t)
+		\begin{split}\label{eq:label_2_feasibility_proof_1}
+			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= d_0(l_{i-1}) + \floor*{ \frac{d_2(l_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left(\floor*{\frac{d_1(l_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{\frac{d_2(l_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,p} + \drivingtime(v_{i-1},t)\\
+			&= d_0(l_{i-1}) + \drivingtime(v_{i-1},t) + \floor*{ \frac{\drivingtime(p_2,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1}+ \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,p}\\
+			&= \traveltime(s, p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,p}
+		\end{split}
+	\end{align}.
+
+	\emph{Case 1: Not parking at $v_i$}. It is $p_i=q_i$ for $i \in \{1,2\}$. Similar to equation \ref{eq:label_feasibility_proof_2} we show
+
+	\begin{align}
+		\begin{split}\label{eq:label_2_feasibility_proof_2}
+			\drivingtime(p_i,v_{i-1}) + \drivingtime(v_{i-1},t) & = \drivingtime(p_i,v_{i-1}) + len(v_{i-1},v_i) + \drivingtime(v_i,t) \\
+			& = \drivingtime(q_i,v_{i-1}) + len(v_{i-1},v_i) + \drivingtime(v_i,t) \\
+			& = \drivingtime(q_i,v_i) + \drivingtime(v_i,t)
 		\end{split}
 	\end{align}
 
-	\emph{Case 1: $p=q$}
+	With equation \ref{eq:label_2_feasibility_proof_1} follows
 
 	\begin{align}
-		\begin{split}\label{eq:label_n_feasibility_proof_2}
-			\drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t) & = \drivingtime(p,v_{i-1}) + len(v_{i-1},v_i) + \drivingtime(v_i,t) \\
-			& = \drivingtime(q,v_{i-1}) + len(v_{i-1},v_i) + \drivingtime(v_i,t) \\
-			& = \drivingtime(q,v_i) + \drivingtime(v_i,t)
+		\begin{split}\label{eq:label_2_feasibility_proof_3}
+			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= \traveltime(s, p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,p}\\
+			&= \traveltime(s, q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,q}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(q_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,q}\\
+			&=d_0(l_{i}) + \pi_t(l_{i},v_{i})
 		\end{split}
 	\end{align}
 
-	With equations \ref{eq:label_n_feasibility_proof_1} follows
+	\emph{Case 2: Short pause at $v_i$}. It is $p_1 \neq q_1 \land p_2 = q_2$. In this case, $q_1 = v_i$ and $\traveltime(p_1,v_i) = \traveltime(p_1,q_1) = \drivingtime(p_1,v_i) + \restr_{1,p}$. With \ref{eq:label_2_feasibility_proof_1} follows
 
 	\begin{align}
-		\begin{split}\label{eq:label_n_feasibility_proof_3}
-			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= \traveltime(s,p) + \drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_d} } * \restr_p\\
-			&= \traveltime(s,q) + \drivingtime(q,v_{i}) + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q,v_{i1}) + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
-			&= d_0(l_{i}) + \pi_t(l_{i},v_{i})
-		\end{split}
-	\end{align}
-
-	\emph{Case 2: $p \neq q$}. In this case, $q = v_i$ and $\traveltime(p,v_i) = \traveltime(p,q) = \drivingtime(p,v_i) + \restr_p = $. With \ref{eq:label_n_feasibility_proof_1} follows
-
-	\begin{align}
-		\begin{split}\label{eq:label_n_feasibility_proof_4}
-			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= \traveltime(s,p) + \drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_d} } * \restr_p\\
-			&= \traveltime(s,p) + \drivingtime(p,v_{i}) + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p,v_{i}) + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
-			&\le \traveltime(s,p) + \traveltime(p,q) - \restr_p + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(v_{i},t)}{\restr_d} } * \restr_p + \restr_p\\
-			&= \traveltime(s,q) + 0 + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{0 + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
-			&= \traveltime(s,q) + \drivingtime(q,v_{i}) + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q,v_{i}) + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
+		\begin{split}\label{eq:label_2_feasibility_proof_4}
+			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= \traveltime(s, p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,p}\\
+			&= \traveltime(s, p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,p}\\
+			&\le \traveltime(s, p_1) + \traveltime(p_1,q_1) - r_{1,p} + \drivingtime(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,p} + r_{1,p}\\
+			&= \traveltime(s, q_1) + 0 + \drivingtime(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q_2,p_1) + \drivingtime(p_1,q_{1}) + 0 + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{0 + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(q_2,p_1) + \drivingtime(p_1,q_{1}) + 0 + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,p}\\
+			&= \traveltime(s, q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,q}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(q_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,q}\\
 			&= d_0(l_{i}) + \pi_t(l_{i1},v_{i})
+		\end{split}
+	\end{align}
+
+	\emph{Case 3: Long pause at $v_i$}. It is $p_j \neq q_j$ for $i \in \{1,2\}$ In this case, $q_j = v_i$ and $\traveltime(p_j,v_i) = \traveltime(p_j,q_j) = \drivingtime(p_j,v_i) + \restr_{2,p}$. With \ref{eq:label_2_feasibility_proof_1} follows
+
+	\begin{align}
+		\begin{split}\label{eq:label_2_feasibility_proof_5}
+			d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) &= \traveltime(s, p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,p}\\
+			&= \traveltime(s, p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,p}\\
+			&\le \traveltime(s, p_1) + \traveltime(p_1,v_{i}) - r_{2,p} + \drivingtime(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,p} + \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(v_{i},t)} {\restr_{1,d}} } - \floor*{\frac{\drivingtime(v_{i},t)}{\restr_{2,d}} } \underbrace{+ 1}_\text{this breaks it, can it go?} \right) * \restr_{1,p}\\
+			&= \traveltime(s, q_1) + \drivingtime(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{0 + 0 + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,p}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{0 + \drivingtime(v_{i},t)} {\restr_{1,d}} } - \floor*{\frac{0 + 0 + \drivingtime(v_{i},t)}{\restr_{2,d}} } \right) * \restr_{1,p}\\
+			&= \traveltime(s, q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)\\
+			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,q}\\
+			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(q_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,q}\\
+			&= d_0(l_{i}) + \pi_t(l_{i},v_{i})
 		\end{split}
 	\end{align}
 \end{proof}
 
+TODO um das +1 wegzukriegen muss man zeigen, dass auf kürzesten pfaden eine große Pause auch eine kleine Pause einspart. damit gilt das ganze auch nicht auf einem beliebigen pfad, sondern nur auf kürzesten pfaden. ansonsten gilt halt $d_0(l_{i-1}) + \pi_t(l_{i-1},v_{i-1}) \le d_0(l_{i}) + \pi_t(l_{i},v_{i}) + r_{1,p}$ und der suboptimale pfad kommt weiter hinten in der queue aber das macht nichts kaputt
+
+\section{Bidirectional Search with Multiple Driving Time Constraints}
 
 \section{Core Contraction Hierarchy Variant}
 \begin{algorithm}[hbtp]
@@ -631,13 +720,13 @@ If lemma \ref{lemma:pot_labels_get_larger} still holds then, lemma \ref{lemma:po
 
 		\ForAll{ $(u,v) \in E$ }
 		{
-			\If{$d_0 + \omega(u,v) < r_d$}
+			\If{$d_0 + \omega(u,v) < \restr_d$}
 			{
 				$D \leftarrow \{(d_0 + \omega(u,v), d_1 + \omega(u,v))\}$
 
 				\If{$v \in P$}
 				{
-					$D$.\listInsert{$(d_0 + \omega(u,v) + r_p, 0)$}
+					$D$.\listInsert{$(d_0 + \omega(u,v) + \restr_p, 0)$}
 				}
 
 				\ForAll{ $x \in D$ }
