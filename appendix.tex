@@ -12,14 +12,29 @@
 {\addchap{Appendix}}	% english style
 {\addchap{Anhang}}	% german style
 
+\section{List of Abbreviations}
+\label{app:abb}
 
-\section{Appendix Section 1}
-\label{appendix1}
+\begin{tabular}{cp{0.85\textwidth}}
+	SPP & Shortest Path Problem \\
+\end{tabular}
 
-\begin{figure} [ht]
-  \centering
-   ein Bild
-  \caption{A figure}
-  \label{fig:BPMNBeispiela}
-\end{figure}
+
+
+\section{List of Symbols}
+\label{app:symbols}
+
+We use Greek symbols for theoretical and abstract concepts such as the shortest distance between two nodes or an arbitrary node potential. Concrete functions and procedures, i.e., those with definitions, have verbose names. Algorithmic functions and procedures for which pseudocode is provided use \algofunction{smallCaps}, otherwise concrete functions use \mathfunction{italic~bold}.
+
+\subsection{Theoretical Concepts}
+\begin{tabular}{cp{0.85\textwidth}}
+	$\potential_t$    & A node potential to $t$                                                                                                                  \\
+	$\distance$       & Shortest distance $\distance(s,t)$ according to the shortest path problem between nodes $s$ and $t$                                      \\
+	$\traveltime$     & Travel time $\traveltime(s,t)$ according to the long-haul truck driver routing problem between nodes $s$ and $t$ (including pause time)  \\
+	$\tenttraveltime$ & Tentative travel time $\tenttraveltime(s,t)$ between nodes $s$ and $t$                                                                   \\
+	$\drivingtime$    & Driving time $\drivingtime(s,t)$ according to the long-haul truck driver routing problem between nodes $s$ and $t$ (excludes pause time) \\
+	$\restr$          & Driving time constraint according to the long-haul truck driver routing problem                                                          \\
+	$\pred$           & Predecessor of a label                                                                                                                   \\
+\end{tabular}
+
 

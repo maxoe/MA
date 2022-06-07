@@ -2,14 +2,20 @@
 %%
 
 %% ==============
-\chapter{Preliminaries}
+\chapter{Preliminaries and Related Work}
 \label{ch:preliminaries}
 %% ==============
+In this chapter, we will introduce our basic notation and discuss important algorithmic concepts on which the work of this thesis is based.
 
-\begin{enumerate}
-	\item introduction, a*, bidir
-	\item hierarchies in street networks and first algos
-	\item ch
-	\item ch potentials
-	\item what even is a core ch
-\end{enumerate}
+We define a weighted, directed graph $G$ as a tuple $G=(V,E,\mathfunction{len})$. $V$ is the set of vertices and $E$ the set of edges $(u,v) \in E$ between those vertices meaning that $u,v \in V$. The function $\mathfunction{len}$ is the weight function $\mathfunction{len}: E \rightarrow \mathbb{R}_{\ge 0}$ which assigns each edge a nonnegative weight or also called length of an edge. A path $p$ in $G$ is defined as a sequence of nodes $p = \langle v_0,v_1,...,v_k, \rangle$ with $(v_i,v_{i+1}) \in E$. For simplicity, we will reuse the same function $\mathfunction{len}$ which we use to denote the length of an edge to denote the length of a path $p$ in $G$. The length of a path $\mathfunction{len}(p)$ is defined by the sum of the weights of the edges on the path $\mathfunction{len}(p) = \sum_{i=0}^{k-1}{\mathfunction{len}((v_i,v_{i+1}))}$.
+
+Given two nodes $s$ and $t$ in a graph, we denote the shortest distance between them as $\distance(s,t)$. The shortest distance between two nodes is the minimum length of a path between them. The problem of finding the shortest distance between two nodes in a graph is called the shortest path problem which we often abbreviate as SPP. We can now formalize our problem of finding the fastest way through a road network as solving the SPP on a weighted graph. Each edge of the graph represents a road and each node represents an intersection. If not stated differently, the length \mathfunction{len} of an edge $(u,v)$ will always correspond to the time it takes to travel from $u$ to $v$ on the road which the edge represents. A solution of the SPP then yields the shortest time between to intersections in the road network and a path between them.
+
+Dijkstra's Algorithm, which was published in 1959, solves the SPP \cite{dijkstra:1959}. The advantage of Dijkstra's algorithm is its simplicity. It operates on the original graph only, without any additionally information or precomputed data structures. For many practical applications and for large graphs, Dijkstra's algorithm is too slow. A common extension is the A* search which was first published in 1968 \cite{hart:1968}. A* uses a heuristic which yields a lower bound for the distance between two nodes to direct the search towards the target node and half the search space in comparison to Dijkstra. In the route planning context, the heuristic often is called potential. We will denote the potential of a node $v$ to a node $t$ with $\potential_t(v)$.
+
+To further reduce the search space, it is possible to execute a bidirectional search. A bidirectional search to solve the SPP from $s$ to $t$ on a Graph $G$ consists of a forward search and a backward search. The forward search operates on $G$ with start node $s$ and target node $t$. The backward search operates on a backward Graph $\overleftarrow{G}$ with start node $t$ and target node $s$. The backward Graph is defined as the Graph $G$ with inverted edges. To be precise, it is $\overleftarrow{G} = (V,\overleftarrow{E},\overleftarrow{\mathfunction{len}})$ with $\overleftarrow{E} := \{(v,u) \in V \times V : (u,v) \in E\}$ and $\overleftarrow{\mathfunction{len}}(u,v) = \mathfunction{len}(v,u)$. When the searches meet at a node $v$ in the graph, the information of both searches is combined to yield an $s$-$t$ path via $v$ and hereby obtain a candidate for the shortest path between $s$ and $t$. The bidirectional search does only yield an advantage over a unidirectional search if the two searches are stopped earlier than in a unidirectional search. In the latter case, the bidirectional case would only execute the work of an $s$-$t$ search twice. Therefore, stronger stopping criteria are introduced. When introducing a strong stopping criterion for a bidirectional A* search, the stopping criterion also depends on the used potential function. The work of \cite{goldberg:2005} introduces a potential and stopping criterion which leading to an improvement over a unidirectional A* search.
+
+\section{Contraction Hierarchies}
+\label{sec:ch}
+\section{CH Potential\label{sec:ch_pot}}
+\section{Core Contraction Hierarchies}

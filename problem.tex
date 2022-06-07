@@ -1,30 +1,38 @@
 \chapter{Problem and Definitions}\label{chapter:problem_definitions}
-The long-haul truck driver routing problem is an extension to the common shortest path problem (SPP) which is defined as follows. Let $G=(V,E,\omega)$ be a graph where $V$ is the set of nodes, $E$ is the set of edges $(u,v)$ with $u,v \in V$, and $\omega$ is the weight function $\omega: E \rightarrow \mathbb{R}_{\ge 0}$ which assigns each edge a nonnegative weight or length. Given a start node $s \in V$ and a target node $t \in V$, the SPP searches a shortest path $p$ from $s$ to $t$, i.e., a path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ with $(v_i,v_{i+1}) \in E$ and minimal $len(p) = \sum_{i=0}^{k-1} \omega((v_{i}, v_{i+1}))$.
+Truck drivers have to follow laws and regulations regarding the maximum time they allowed to drive without stopping for a break. This leads to mandatory breaks on longer journeys. The regulation affect the duration of mandatory breaks. We name the extension of the shortest path problem which accounts for driving time limits and mandatory breaks the long-haul truck driver routing problem. It can be formalized as follows.
 
-We introduce a set $P \subseteq V$ of parking nodes and a set $R$ of driving time constraints $r_i$. Each driving time constraint is defined by a maximum allowed driving time $r_{i,d}$ and a pause time $r_{i,p}$. Thereby, the driving time constraints define a relation $r_i \le r_{i+1}$ with $r_i \le r_j \implies r_{i,d} \le r_{j,d} \land  r_{i,p} \le r_{j,p} \forall i,j$. In words, a greater or equal driving time restriction has a longer or equal driving and pause time and there must be no restriction $r_i$ with a longer driving time limit, but shorter pause time than another restriction $r_j$. Before exceeding a driving time of $r_{i,d}$, the driver must stop and pause for a time of at least $r_{i,p}$. Afterwards, the driver is allowed to drive for a maximum time of $r_{i,d}$ again without stopping. Stops can only take place at nodes $v \in P$.
+Let $G=(V,E,\mathfunction{len})$ be a graph and $s$ and $t$ nodes with $s,t \in V$. We extend the graph with a set $P \subseteq V$ of parking nodes. Additionally, we introduce a set $R$ of driving time constraints $r_i$. Each driving time constraint is defined by a maximum permitted driving time $r_{i,d}$ and a break time $r_{i,b}$. Thereby, the driving time constraints define a relation $r_i \le r_{i+1}$ with $r_i \le r_j \implies r_{i,d} \le r_{j,d} \land  r_{i,b} \le r_{j,b} \forall i,j$. In other words, a greater or equal driving time constraint has a longer or equal driving and break time and there must be no constraint $r_i$ with a longer driving time limit, but shorter break time than another constraint $r_j$. Before exceeding a driving time of $r_{i,d}$, the driver must stop and break for a time of at least $r_{i,b}$. Afterwards, the driver is allowed to drive for a maximum time of $r_{i,d}$ again without stopping. Breaks can only take place at nodes $v \in P$.
 
-A path $p$ from $s$ to $t$ now includes not only the sequence of visited nodes $p = \langle s=v_0,v_1,...,t=v_k, \rangle$, but also a pause time $\rho: p \rightarrow \{0,r_{i,d}\}$ for each node i. It is $\rho(v_i) = 0$ $\forall v_i \notin P$.
+A journey $j$ from $s$ to $t$ includes the path of visited nodes $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ and a break time $\mathfunction{breakTime}: p \rightarrow \{0,r_{i,d}\}$ at each node $i$. It is $\mathfunction{breakTime}(v_i) = 0$ $\forall v_i \notin P$. We also define the \mathfunction{breakTime} of an entire journey $j$ on $p$ as $\mathfunction{breakTime}(j) = \sum_{i=0}^{k-1}{\mathfunction{breakTime}((v_i,v_{i+1}))}$. A journey must always have a valid path.
 
-\begin{definition}[Driving Time]
-	The driving time $\drivingtime(p)$ of a path  $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ is defined analogously to the length of a path in the ordinary SPP. It is $\drivingtime(p) = \sum_{i=0}^{k-1} \omega((v_{i}, v_{i+1}))$.
+\begin{definition}[Valid Path]
+	A valid path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ must comply with the driving time constraints $R$ meaning that it has to comply with all $r_l \in R$.
+
+	Let $v_i$ be the starting node $s$ or any node on the path with $\mathfunction{breakTime}(v_i) \ge r_{l,b}$ and let $v_j$ be the target node $t$ or any node on the path with $\mathfunction{breakTime}(v_j) \ge r_{l,b}$ and $i < j$. Then let $q$ be the subpath of $p$ from $v_i$ to $v_j$. A path complies with driving time constraint $r_l$ if $\drivingtime(q) < r_{d,l}$ for all possible subpaths $q$ or there is a node $v_m$ on $q$ with $\mathfunction{breakTime}(v_m) \ge r_{l,b}$ and $i < m < j$.
 \end{definition}
 
-\begin{definition}[Travel Time]
-	The travel time $\traveltime(p)$ of a path  $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ is defined as the sum of the driving time of the path and the total accumulated pause time $\traveltime(p) = \drivingtime(p) + \sum_{i=0}^{k} \rho(v_i)$.
+We differentiate between driving time and travel time between of a journey.
+
+\begin{definition}[Driving Time of a Journey]
+	The driving time $\concretedt(j)$ of a journey $j$ is the length of the path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ of the journey.
 \end{definition}
 
-\begin{definition}[Path Compliance]
-	A valid path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ must comply with the driving time restrictions $R$. The path $p$ complies with $R$ if it complies with all $r_l \in R$.
-
-	Let $v_i$ be the starting node $s$ or any node on the path with $\rho(v_i) \ge r_{l,p}$ and let $v_j$ be the target node $t$ or any node on the path with $\rho(v_j) \ge r_{l,p}$ and $i < j$. Then let $q$ be the subpath of $p$ from $v_i$ to $v_j$. A path complies with driving time restriction $r_l$ if $\drivingtime(q) < r_{d,l}$ for all possible subpaths $q$ or there is a node $v_m$ on $q$ with $\rho(v_m) \ge r_{l,p}$ and $i < m < j$.
+\begin{definition}[Travel Time of a Journey]
+	The travel time $\concretett(j)$ of a journey is the sum of driving time $\concretedt(j)$ and break time  $\mathfunction{breakTime}(p)$ on its path.
 \end{definition}
+
+\begin{definition}[Shortest Journey]
+	A journey between two nodes $s$ and $t$ is called a shortest journey if its path is valid and there exists no different journey with a valid path between $s$ and $t$ with a smaller travel time.
+\end{definition}
+
+The shortest travel time between to nodes $s$ and $t$, i.e., the travel time of the shortest journey between them is denoted as $\traveltime(s,t)$. Accordingly, $\drivingtime(s,t)$ denotes the driving time of the shortest journey between $s$ and $t$. In general, driving time $\drivingtime(s,t)$ and distance $\distance(s,t)$ as in the SPP are not equal.
 
 The long-haul truck driver routing problem now can be defined as follows.
 
 \begin{namedproblem}
 	\problemtitle{\textsc{Long-Haul Truck Driver Routing}}
-	\probleminput{A graph $G=(V,E,\omega)$, a set of parking nodes $P \subseteq V$, a set of driving time constraints $R$, and start and target nodes $s,t \in V$}
-	\problemquestion{Find the path $p$ from $s$ to $t$ in $G$ which minimizes travel time $\traveltime(p)$ and complies with the driving time restrictions $R$.}
+	\probleminput{A graph $G=(V,E,\mathfunction{len})$, a set of parking nodes $P \subseteq V$, a set of driving time constraints $R$, and start and target nodes $s,t \in V$}
+	\problemquestion{Find the shortest journey from $s$ to $t$ in $G$. In other words, find the journey $j$ with $\traveltime(s,t) = \concretett(j)$.}
 \end{namedproblem}
 
 In many practical applications, the number of different driving time constraints is limited to only one or two constraints, i.e., $|R| = 1$ or  $|R| = 2$. Therefore, we will often only consider one of these special cases.

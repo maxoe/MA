@@ -1,6 +1,27 @@
-\newcommand{\concretepotential}{\pi}
+% styles
+%\newcommand{\mathfunction}[1]{\ensuremath{\boldsymbol{#1}}}
+\newcommand{\mathfunction}[1]{\texttt{\itshape #1}}
+\newcommand{\algofunction}[1]{\textsc{#1}}
+
+% symbols and names
+
+% theoretical
+\newcommand{\potential}{\pi}
 \newcommand{\distance}{\mu}
 \newcommand{\traveltime}{\mu_{tt}}
 \newcommand{\drivingtime}{\mu_{dt}}
-\newcommand{\restr}{r}
+
+% concrete functions
+\newcommand{\len}{\mathfunction{len}}
+\newcommand{\concretepotential}{\mathfunction{pot}}
+\newcommand{\concretett}{\mathfunction{travelTime}}
+\newcommand{\concretedt}{\mathfunction{drivingTime}}
+\newcommand{\breakDist}{\mathfunction{breakDist}}
 \newcommand{\pred}{pred}
+\newcommand{\chpotential}{\mathfunction{chPot}}
+\newcommand{\tenttraveltime}{\mathfunction{dist}}
+\newcommand{\minBreaks}{\mathfunction{minBreaks}}
+\newcommand{\minBreakTime}{\mathfunction{minBreakTime}}
+
+% data
+\newcommand{\restr}{r}
