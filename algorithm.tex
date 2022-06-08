@@ -266,8 +266,8 @@ We initialize the label set $L(s)$ of $s$ and the queue $Q$ with a label which o
 \end{algorithm}
 
 \subsection{Correctness\label{sec:dijkstra_csp_correctness}}
-An $s$-$t$ query with the original Dijkstra's algorithm can be stopped when $t$ was removed from the queue since all of the following nodes in the queue have larger distances and because edge lengths are nonnegative by definition. Therefore, relaxing any edge of those nodes cannot lead to an improvement of the distance at $t$.
-In our case, the labels in the queue are ordered by their travel time. Relaxing an edge can only increase the travel time since both, edge lengths and break times are nonnegative. Therefore, the same argument as for the original Dijkstra's algorithm applies and the first label at $t$ which was removed from the queue contains the shortest travel time $\traveltime(s,t)$.
+An $s$-$t$ query with the original Dijkstra's algorithm can be stopped when $t$ was removed from the queue since all of the following nodes in the queue have larger distances and because edge lengths are non negative by definition. Therefore, relaxing any edge of those nodes cannot lead to an improvement of the distance at $t$.
+In our case, the labels in the queue are ordered by their travel time. Relaxing an edge can only increase the travel time since both, edge lengths and break times are non negative. Therefore, the same argument as for the original Dijkstra's algorithm applies and the first label at $t$ which was removed from the queue contains the shortest travel time $\traveltime(s,t)$.
 
 \section{A* with One Driving Time Constraint}
 In this section, we transform the base algorithm described in section \ref{sec:dijkstra_csp} to a goal-directed A* search. We introduce a new potential $\concretepotential_t$ which is based on the CH potential described in section \ref{sec:ch_pot}. We then show that we still can stop the search when the first label at $t$ is removed from the queue.
@@ -423,14 +423,16 @@ A feasible node potential allows us to stop the A* search when the node $t$, res
 A variant of the potential accounts for the driving time since the last break of a label $\breakDist(l)$ to calculate the minimum required break time on the $v$-$t$ path. Since the potential now uses information from a label $l$ with $l \in L(v)$, it no longer is a node potential but also depends on the chosen label at $v$.
 
 \begin{align}
-	\concretepotential_t(l,v) & = \minBreakTime(\breakDist(l) + \chpotential(v)) +\chpotential(v) \\
-	                          & = \minBreakTime(\breakDist(l) + \distance(v,t)) + \distance(v,t)
+	\begin{split}
+		\concretepotential_t(l,v) & = \minBreakTime(\breakDist(l) + \chpotential(v)) +\chpotential(v) \\
+		& = \minBreakTime(\breakDist(l) + \distance(v,t)) + \distance(v,t)
+	\end{split}
 \end{align}
 
 Since the potential $\concretepotential_t$ now uses label information, it no longer is a node potential and the feasibility definition as defined in inequality \ref{eq:node_potential_feasibility} can no longer be applied. We still want to use potential and label information to calculate lower bound estimates for the length of paths. We therefore have to show that queue keys of labels, which represent a lower bound estimate for the travel time of the entire journey, can only increase over time.
 
 \begin{lemma}\label{lemma:pot_labels_get_larger}
-	Let $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ be a path with labels $l_i$ at nodes $v_i$. Then $\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) \le \concretett(l_i) + \concretepotential_t(l_i,v_i)$.
+	Let $p = \langle s=v_0,v_1,\ldots,t=v_k \rangle$ be a path with labels $l_i$ at nodes $v_i$. Then $\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) \le \concretett(l_i) + \concretepotential_t(l_i,v_i)$.
 \end{lemma}
 
 \begin{proof}
@@ -473,7 +475,7 @@ Since the potential $\concretepotential_t$ now uses label information, it no lon
 		\begin{split}\label{eq:label_feasibility_proof_2}
 			&\concretett(l') - \concretett(l) - \concretepotential_t(l,u) + \concretepotential_t(l',v)\\
 			&= \concretett(l) + \len(u,v) + \restr_b - \concretett(l)\\
-			& \phantom{{}=1} - (\minBreakTime(\breakDist(l)+potential(u)) + potential(u))\\
+			& \phantom{{}=1} - (\minBreakTime(\breakDist(l) + \chpotential(u)) + \chpotential(u))\\
 			& \phantom{{}=1} + \minBreakTime(\chpotential(v)) + \chpotential(v)\\
 			&=  \len(u,v) + \restr_b + \minBreakTime(\chpotential(v))\\
 			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential(u)) - \chpotential(u) + \chpotential(v)\\
@@ -490,12 +492,12 @@ Since the potential $\concretepotential_t$ now uses label information, it no lon
 \end{proof}
 
 TODO is this even necessary?
-\begin{lemma}\label{lemma:pot_lower_boundist_csp}
+\begin{lemma}\label{lemma:pot_lower_bound_csp}
 	The potential $\concretepotential_t(l,v)$ of a label $l$ at a node $v$ is a lower bound for the distance including breaks from $v$ to $t$.
 \end{lemma}
 
 \begin{proof}
-	Let $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ be a path with labels $l_i$ at nodes $v_i$. With $\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) \ge \concretett(l_{i}) + \concretepotential_t(l_i,v_i)$ for all edges on $p$, the total length $len(p)$ of the path must follow $\concretepotential_t(l_i,v_i) \le len(p) + \concretepotential_t(l_k,t) \Leftrightarrow l(p) \ge \concretepotential_t(l_i,v_i) - \concretepotential_t(l_k,t)$. Since $\concretepotential_t(l_k,t) = 0$, $l(p) \ge \concretepotential_t(l_i,v_i)$ holds.
+	Let $p = \langle s=v_0,v_1,\ldots,t=v_k \rangle$ be a path with labels $l_i$ at nodes $v_i$. With $\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) \ge \concretett(l_{i}) + \concretepotential_t(l_i,v_i)$ for all edges on $p$, the total length $len(p)$ of the path must follow $\concretepotential_t(l_i,v_i) \le len(p) + \concretepotential_t(l_k,t) \Leftrightarrow l(p) \ge \concretepotential_t(l_i,v_i) - \concretepotential_t(l_k,t)$. Since $\concretepotential_t(l_k,t) = 0$, $l(p) \ge \concretepotential_t(l_i,v_i)$ holds.
 \end{proof}
 
 \begin{theorem}\label{theorem:pot_stop_criterion}
@@ -503,204 +505,182 @@ TODO is this even necessary?
 \end{theorem}
 
 \begin{proof}
-	When a label $l$ at $t$ is removed from the queue during a $s$-$t$ query, all remaining label $m$ of a node $v$ in the queue fulfill $\concretett(t) + \concretepotential_t(l,t) \le \concretett(v) + \concretepotential_t(m,v)$. Assume that $\concretett(t)$ is not the shortest distance from $s$ to $t$. Then, a shorter path $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ exists which uses at least one unsettled label $m \in L(v_i)$. Since $l$ was already removed from the queue, $\concretett(t) = \concretett(t) + \concretepotential_t(l,t) \le  \concretett(v) + \concretepotential_t(m,v) \le l(p)$ which contradicts the assumption that $p$ yields a shorter $s$-$t$ distance than $\concretett(t)$.
+	When a label $l$ at $t$ is removed from the queue during a $s$-$t$ query, all remaining label $m$ of a node $v$ in the queue fulfill $\concretett(t) + \concretepotential_t(l,t) \le \concretett(v) + \concretepotential_t(m,v)$. Assume that $\concretett(t)$ is not the shortest distance from $s$ to $t$. Then, a shorter path $p = \langle s=v_0,v_1,\ldots,t=v_k \rangle$ exists which uses at least one unsettled label $m \in L(v_i)$. Since $l$ was already removed from the queue, $\concretett(t) = \concretett(t) + \concretepotential_t(l,t) \le  \concretett(v) + \concretepotential_t(m,v) \le l(p)$ which contradicts the assumption that $p$ yields a shorter $s$-$t$ distance than $\concretett(t)$.
 \end{proof}
 
 \section{Multiple Driving Time Constraints}
-Dijkstra's algorithm with one driving time constraint (1-DTC) can easily be adapted to handle multiple driving time constraints $\restr_i$. We abbreviate the generalized problem \emph{n-DTC}. For a number of $n$ driving time constraints, a label now contains the total travel time $\concretett$ and $n$ driving time values $\breakDist_1, \ldots , \breakDist_n$. Each $dist_i$ represents the driving time since the last break at a node $v$ with break time $\rho(v) \ge \restr_{i,b}$. Pausing at a node occurs with one of the available break times $\restr_{i,b}$ of a driving time constraint $\restr_i \in R$. Pausing with an arbitrary break time is possible but yields longer travel times and no advantage. When a path breaks at $v$ for a time $\restr_{i,b}$, the corresponding label $l \in L(v)$ has $dist_j(l) = 0$ for all $0 < j \le i$ since the breaks with shorter break times are \emph{included} in the longer break.
+Dijkstra's algorithm with one driving time constraint (1-DTC) can easily be adapted to handle multiple driving time constraints $\restr_i$. We abbreviate the generalized problem \emph{n-DTC}. For a number of $n$ driving time constraints, a label now contains the total travel time $\concretett$ and $n$ driving time values $\breakDist_1, \ldots , \breakDist_n$. Each $\breakDist_i$ represents the driving time since the last break at a node $v$ with break time $\breakTime(v) \ge \restr_{i,b}$. Pausing at a node occurs with one of the available break times $\restr_{i,b}$ of a driving time constraint $\restr_i \in R$. Pausing with an arbitrary break time is possible but yields longer travel times and no advantage. When a path breaks at $v$ for a time $\restr_{i,b}$, the corresponding label $l \in L(v)$ has $\breakDist(l) = 0$ for all $0 < j \le i$ since the breaks with shorter break times are \emph{included} in the longer break.
 
-\paragraph{Label Propagation.}
-Label propagation simply extends the component-wise addition of the edge weight to all elements of the distance vector. Let $l \in L(u)$ be a label at $u$ and $(u,v) = e \in E$, then $l$ can be propagated to $v$ resulting in a label $l'$ with $dist_i(l') = \breakDist_i(l) + \mathfunction{len}(e)$ $\forall i \le |R|$, and $\pred(l') = l$.
+\paragraph{Label Propagation}
+Label propagation simply extends the component-wise addition of the edge weight to all elements of the distance vector. Let $l \in L(u)$ be a label at $u$ and $(u,v) = e \in E$, then $l$ can be propagated to $v$ resulting in a label $l'$ with $\breakDist_i(l') = \breakDist_i(l) + \mathfunction{len}(e)$ $\forall i \le |R|$, and $\pred(l') = l$.
 
-\paragraph{Label Pruning.}
-The pruning rule for driving time constraints generalizes is a similar way. A label is discarded if $dist_i(l) \ge \restr_{d,i}$ for any $i$ with $0 < i \le |R|$.
+\paragraph{Label Pruning}
+The pruning rule for driving time constraints is generalized in a similar way. A label is discarded if $\breakDist_i(l) > \restr_{i,d}$ for any $i$ with $0 < i \le |R|$.
 
 
 \paragraph{Label Dominance}
 At last, label dominance can be generalized to multiple driving time constraints as follows.
 \begin{definition}[Label Dominance]
-	A label $l \in L(v)$ dominates another label $m \in L(v)$ if $dist_i(m) \ge \breakDist_i(l)$ $\forall i \le |R|$.
+	A label $l \in L(v)$ dominates another label $m \in L(v)$ if $\breakDist_i(m) \ge \breakDist_i(l)$ $\forall i \le |R|$.
 \end{definition}
 
 \section{Potential for Multiple Driving Time Constraints\label{section:potential_n_csp}}
 TODO: Rewrite for only two dtc?
 In section \ref{section:potential_csp} we defined the potential $\concretepotential_t(l,v)$ to extend Dijkstra to an A* search with one driving time constraint. We will now generalize $\concretepotential_t$ for the use with an arbitrary number $n$ of driving time constraints.
 
-To calculate $\concretepotential_t(l,v)$, we used the distance without regard for pausing from $v$ to $t$ and the distance $\breakDist_1(l)$ to calculate a lower bound for the amount of necessary breaks until we reach the target node. With one driving time constraint it is
+In eq. \refeq{eq:min_breaks} we used the distance $\distance(v,t)$ without regard for pausing from $v$ to $t$ and the driving time $\breakDist(l)$ since the last break on the journey to calculate a lower bound for the amount of necessary breaks until we reach the target node. We now have to calculate the lower bound with respect to all driving time constraints. How many breaks of which duration do we need at least to comply with all driving time constraints $\restr_i$? For longer driving time constraints, we will always need a greater or equal amount of breaks than for shorter driving time constraints since they have a longer maximum allowed driving time $\restr_{i,d}$. At the same time, a break of length $\restr_{i,b}$ will also include breaks of lengths $\restr_{j,b}$ with $j < i$. We start with simply calculating the amount of necessary breaks $\minBreaks_i(d)$ for all restrictions $r_i$.
 
-\[\textit{minimum number of breaks} = \floor*{ \frac{dist_{1}(l) + \drivingtime(v,t)}{t_{d,i}} }.\]
+\begin{align}\label{eq:min_breaks_n}
+	\minBreaks_i(d) = \begin{dcases}
+		\ceil*{ \frac{d}{\restr_{i,d}} } - 1 & d > 0 \\
+		0                                    & else
+	\end{dcases}
+\end{align}
 
-We now have to calculate the lower bound with respect to the different driving time constraints. How many breaks of which duration do we need at least to comply with all driving time constraints $\restr_i$? We need a smaller or equal amount of breaks for longer driving time constraints since they have a longer maximum allowed driving time $\restr_{d,i}$. At the same time, a break of length $\restr_{b,i}$ will also include a break of lengths $\restr_{b,j}$ with $j < i$. We therefore start with calculating the amount of necessary breaks of the longest restriction $r_n$. Then, we calculate how many breaks we need at least for the next smaller constraint and subtract the amount of breaks we just calculated for $r_n$. We repeat this process for each remaining driving time constraint and accumulate the product of number of breaks for $\restr_i$ and its corresponding break time $\restr_{b,i}$ to yield the minimum total break time on the remaining path to $t$. Finally, we add the raw driving time $\drivingtime{v,t}$. We now can define $\concretepotential_t$ as
+Consider the example graph in fig. \ref{fig:graph_short_long_break} with two driving time constraints with permitted driving times of $4$ and $9$. Since the distance $\distance(s,t)$ is $10$, a journey must have at least one long and two short breaks. If the long break is made at $u$, only one additional short break must be made at $w$. The long break made one shorter break obsolete. To obtain a lower bound for the amount of breaks for a restriction $r_i$, we therefore must subtract the amount of longer breaks.
+
+\begin{figure}[hbtp]
+	\centering
+	\input{figures/graph_short_long_break.tex}
+	\caption{An example graph where, depending on the driving time constraints, a long break at can render a short break obsolete.}
+	\label{fig:graph_short_long_break}
+\end{figure}
+
+This is an optimistic assumption since not in all cases, a longer break renders a short break obsolete. Revisit the example graph of fig. \ref{fig:graph_short_long_break} with permitted driving times of $4$ and $5$. We still need one long and two short breaks, but the long break now must take place at $v$ while the short breaks must take place at $u$ and $w$. The long break did not spare a short break. Since we are searching for a lower bound for the amount of breaks, optimistic assumptions are necessary. Given a label $l \in L(v)$, we now can calculate a lower bound estimate for the amount of necessary breaks for each restriction $r_i$.
+
+\begin{align}\label{eq:number_breaks_sum}
+	\breakEstimate_i(l,v)  =\begin{dcases}
+		\parbox[t]{.55\textwidth}{$\minBreaks_i(\breakDist_i(l) + \chpotential_t(v)) \\- \sum_{j=i+1}^{n}{\breakEstimate_j(l,v) }$} & 0 < i < n \\
+		\minBreaks_n(\breakDist_n(l) + \chpotential_t(v)) & i=n
+	\end{dcases}
+\end{align}
+
+Since we just subtract all break estimates for driving time constraints greater $i$ to obtain the estimate for $i$, we can just use
+
+\begin{align}\label{eq:break_estimate_n}
+	\breakEstimate_i(l,v) = \begin{dcases}
+		\parbox[t]{.55\textwidth}{$\minBreaks_i(\breakDist_i(l) + \chpotential_t(v)) \\- \minBreaks_{i+1}(\breakDist_{i+1}(l) + \chpotential_t(v))$} & 0 < i < n \\
+		\minBreaks_n(\breakDist_n(l) + \chpotential_t(v)) & i=n
+	\end{dcases}
+\end{align}
+
+Finally, we can define the lower bound potential for a label $l \in L(v)$ and a target node $t$ as
 
 \begin{align}\label{eq:multiple_breaks_pot}
-	\concretepotential_t(l,v) & = \drivingtime(v,t) + \sum_{i=1}^n{ n_i * \restr_{b,i}}
+	\begin{split}
+		\concretepotential_t(l,v) & =\chpotential(v,t) + \sum_{i=1}^n{ \breakEstimate_i(l,v) \cdot \restr_{i,b}}\\
+		& = \distance(v,t) + \sum_{i=1}^n{ \breakEstimate_i(l,v) \cdot \restr_{i,b}}
+	\end{split}
 \end{align}
 
-with
-
-\begin{align}\label{eq:number_breaks}
-	n_i =\begin{dcases}
-		\floor*{ \frac{dist_{i}(l) + \drivingtime(v,t)}{\restr_{d,i}} } - \floor*{ \frac{dist_{i+1}(l) + \drivingtime(v,t)}{t_{d,i+1}} } & 0 < i < n \\
-		\floor*{ \frac{dist_{i}(l) + \drivingtime(v,t)}{\restr_d} }                                                                      & i=n
-	\end{dcases}
-\end{align}
-
-The value of $n_i$ for $0 < i < n$ can also be calculated by reusing already computed values $n_j$ with $j > i$:
-
-\begin{align*}
-	n_i =\begin{dcases}
-		\floor*{ \frac{dist_{i}(l) + \drivingtime(v,t)}{\restr_{d,i}} } - \sum_{j=i+1}^{n}{n_{j} } & 0 < i < n \\
-		\floor*{ \frac{dist_{i}(l) + \drivingtime(v,t)}{\restr_d} }                                & i=n
-	\end{dcases}
-\end{align*}
-
-If lemma \ref{lemma:pot_labels_get_larger} still holds then lemma \ref{lemma:pot_lower_boundist_csp} and theorem \ref{theorem:pot_stop_criterion} follow as a consequence.
-
-% \begin{lemma}
-% 	Lemma \ref{lemma:pot_labels_get_larger} still holds for an arbitrary number $n$ of driving time constraints.
-% \end{lemma}
-
-% \begin{proof}
-% 	Given a Graph $G=(V,E)$ with a set of parking nodes $P \subseteq V$, let $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ be a path in G with labels $l_i$ at nodes $v_i$. Let $l_{i-1}$ and $l_{i}$ label at nodes $v_{i-1}$ and $v_i$. In the proof of lemma \ref{lemma:pot_labels_get_larger} we considered the two cases of parking at $v_i$ and not parking at $v_i$. In the first case, the last used parking node of the two labels will not be the same, in the second case it will be the same node. We cannot simply differentiate these two cases now because we not only decide if we use a parking node or not, but we also decide how long the break will be. Let $R$ be the set of driving time constraints $\restr_j$. If a label uses $v_i$ as a parking node with a break time of $\restr_{b,k}$, then it fulfills the break requirements for a break for all driving time constraints $\restr_j$ with $0 < j \le k$. Therefore, $\breakDist_1(l_i) = \ldots = \breakDist_k(l_i) = 0$ and for $k < j \le |R|$ is the last parking node of $l_{i-1}$ and $l_i$ the same node which we name $p_j \in P \cup \{s\}$.
-
-% 	It is
-
-% 	\begin{align}
-% 		\begin{split}\label{eq:label_n_feasibility_proof_1}
-% 			\concretett(l_{i}) + \concretepotential_t(l_{i},v_{i}) & = \traveltime(s,v_{i}) + \drivingtime(v_i,t) + \sum_{j=1}^{n-1}{ n_j * \restr_{b,j}}\\
-% 			& = \traveltime(s,v_{i}) + \drivingtime(v_i,t) + \sum_{j=1}^n{ \floor*{ \frac{dist_{j}(l) + \drivingtime(v_i,t)}{\restr_{d,j}} } - \floor*{ \frac{dist_{j+1}(l) + \drivingtime(v_i,t)}{t_{d,j+1}} } * \restr_{b,j}}\\
-% 			& \phantom{{}=1} + \floor*{ \frac{dist_{n}(l) + \drivingtime(v_i,t)}{\restr_{d,n}} }\\
-% 			& = \drivingtime(s,v_{i}) + \drivingtime(v_{i},t) + \textit{break time on s-t path}
-% 		\end{split}
-% 	\end{align}
-
-
-% 	Since $\drivingtime(s,v_{i-1}) + \drivingtime(v_{i-1},t) = \drivingtime(s,v_i) + \drivingtime(v_i,t)$, we only have to proof that
-
-
-% 	We $\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) \le \concretett(l_i) + \concretepotential_t(l_i,v_i)$.
-
-% 	\begin{align}
-% 		\begin{split}\label{eq:label_n_feasibility_proof_2}
-% 			\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) &= \traveltime(s,v_{i-1}) + \drivingtime(v_{i-1},t)\\
-% 			& + \sum_{j=1}^{n-1}{\left(\floor*{\frac{\drivingtime(p_j,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{b,j}}} - \floor*{\frac{\drivingtime(p_j,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{b,j+1}}}\right) * \restr_{d,j}}\\
-% 			& + \floor*{\frac{\drivingtime(p_n,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{b,n}}} * \restr_{d,n}\\
-% 			&= \traveltime(s,v_{i-1}) + \drivingtime(v_{i-1},t)\\
-% 			& + \sum_{j=1}^{k-1}{\left(\floor*{\frac{\drivingtime(p_j,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{b,j}}} - \floor*{\frac{\drivingtime(p_j,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{b,j+1}}}\right) * \restr_{d,j}}\\
-% 			& + \floor*{\frac{\drivingtime(p_n,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{b,n}}} * \restr_{d,n}
-% 		\end{split}
-% 	\end{align}
-
-% 	\begin{align}
-% 		\begin{split}
-% 			\traveltime(s,p) + \drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)\\
-% 			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_d} } * \restr_p\\
-% 			&= \traveltime(s,p) + \drivingtime(p,v_{i}) + \drivingtime(v_{i},t)\\
-% 			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p,v_{i}) + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
-% 			&\le \traveltime(s,p) + \traveltime(p,q) - \restr_b+ \drivingtime(v_{i},t)\\
-% 			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(v_{i},t)}{\restr_d} } * \restr_b+ \restr_p\\
-% 			&= \traveltime(s,q) + 0 + \drivingtime(v_{i},t)\\
-% 			& \phantom{{}=1} + \floor*{ \frac{0 + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
-% 			&= \traveltime(s,q) + \drivingtime(q,v_{i}) + \drivingtime(v_{i},t)\\
-% 			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q,v_{i}) + \drivingtime(v_{i},t)}{\restr_d} } * \restr_p\\
-% 			&= \concretett(l_{i}) + \concretepotential_t(l_{i1},v_{i})
-% 		\end{split}
-% 	\end{align}
-% \end{proof}
+We have to proof that queue keys still cannot decrease when propagating labels as as in lemma \ref{lemma:pot_labels_get_larger}. If that is true, lemma \ref{lemma:pot_lower_bound_csp} and theorem \ref{theorem:pot_stop_criterion} follow as a consequence.
 
 \begin{lemma}
 	Lemma \ref{lemma:pot_labels_get_larger} still holds for two driving time constraints.
 \end{lemma}
 
 \begin{proof}
-	Given a Graph $G=(V,E)$ with a set of parking nodes $P \subseteq V$, let $p = \langle s=v_0,v_1,\ldots,t=v_k, \rangle$ be a path in G with labels $l_i$ at nodes $v_i$. Let $l_{i-1}$ and $l_{i}$ label at nodes $v_{i-1}$ and $v_i$. In the proof of lemma \ref{lemma:pot_labels_get_larger} we considered the two cases of parking at $v_i$ and not parking at $v_i$. In the first case, the last used parking node of the two labels will not be the same, in the second case it will be the same node. We now have two different driving time constraints and have to consider three cases: not parking at $v_i$ and parking at $v_i$ with break time $r_{1,b}$ or $r_{2,b}$. It is
+	We follow the same outline as in the proof of lemma \ref{lemma:pot_lower_bound_csp} and therefore revisit the procedure \textsc{relaxEdge} at an edge $(u,v) \in E$ which now can produce three labels at $v$ for each label at $u$: not parking at $v$, short break at $v$, and long break at $v$.
+
+	Following additional general observations can be made:
+
+	\begin{enumerate}
+		\item[6.] Propagating a label $l \in L(u)$ to obtain a label $l' \in L(v)$ $\implies$ $\breakEstimate(l',v) \ge \breakEstimate(l,u)$\\(because of non negative edge weights and there can only be more or longer breaks for greater distances)
+	\end{enumerate}
+
+	\emph{Case 1: Not parking at $v$}. In this case, $\concretett(l') = \concretett(l) + \len(u,v)$ and $\breakDist_i(l') = \breakDist_i(l) + \len(u,v)$.
 
 	\begin{align}
-		\begin{split}\label{eq:label_2_feasibility_proof_1}
-			\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) &= \concretett(l_{i-1}) + \floor*{ \frac{\breakDist_1(l_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left(\floor*{\frac{\breakDist_1(l_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{\frac{\breakDist_1(l_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,b} + \drivingtime(v_{i-1},t)\\
-			&= \concretett(l_{i-1}) + \drivingtime(v_{i-1},t) + \floor*{ \frac{\drivingtime(p_2,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1}+ \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,b}\\
-			&= \traveltime(s, p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,b}
-		\end{split}
-	\end{align}.
-
-	\emph{Case 1: Not parking at $v_i$}. It is $p_i=q_i$ for $i \in \{1,2\}$. Similar to equation \ref{eq:label_feasibility_proof_2} we show
-
-	\begin{align}
-		\begin{split}\label{eq:label_2_feasibility_proof_2}
-			\drivingtime(p_i,v_{i-1}) + \drivingtime(v_{i-1},t) & = \drivingtime(p_i,v_{i-1}) + len(v_{i-1},v_i) + \drivingtime(v_i,t) \\
-			& = \drivingtime(q_i,v_{i-1}) + len(v_{i-1},v_i) + \drivingtime(v_i,t) \\
-			& = \drivingtime(q_i,v_i) + \drivingtime(v_i,t)
-		\end{split}
-	\end{align}
-
-	With equation \ref{eq:label_2_feasibility_proof_1} follows
-
-	\begin{align}
-		\begin{split}\label{eq:label_2_feasibility_proof_3}
-			\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) &= \traveltime(s, p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,b}\\
-			&= \traveltime(s, q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,q}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(q_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,q}\\
-			&=\concretett(l_{i}) + \concretepotential_t(l_{i},v_{i})
-		\end{split}
-	\end{align}
-
-	\emph{Case 2: Short break at $v_i$}. It is $p_1 \neq q_1 \land p_2 = q_2$. In this case, $q_1 = v_i$ and $\traveltime(p_1,v_i) = \traveltime(p_1,q_1) = \drivingtime(p_1,v_i) + \restr_{1,b}$. With \ref{eq:label_2_feasibility_proof_1} follows
-
-	\begin{align}
-		\begin{split}\label{eq:label_2_feasibility_proof_4}
-			\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) &= \traveltime(s, p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,b}\\
-			&= \traveltime(s, p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,b}\\
-			&\le \traveltime(s, p_1) + \traveltime(p_1,q_1) - r_{1,b} + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,b} + r_{1,b}\\
-			&= \traveltime(s, q_1) + 0 + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q_2,p_1) + \drivingtime(p_1,q_{1}) + 0 + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{0 + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(q_2,p_1) + \drivingtime(p_1,q_{1}) + 0 + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,b}\\
-			&= \traveltime(s, q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,q}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(q_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,q}\\
-			&= \concretett(l_{i}) + \concretepotential_t(l_{i1},v_{i})
+		\begin{split}\label{eq:label_n_feasibility_proof_1}
+			&\concretett(l') - \concretett(l) - \concretepotential_t(l,u) + \concretepotential_t(l',v)\\
+			&= \concretett(l) + \len(u,v) - \concretett(l)\\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b} + \chpotential(u))\\
+			& \phantom{{}=1} + (\breakEstimate_1(l',v) \cdot \restr_{1,b} + \breakEstimate_2(l',v) \cdot \restr_{2,b} + \chpotential(v))\\
+			&= \len(u,v) + \breakEstimate_1(l',v) \cdot \restr_{1,b} + \breakEstimate_2(l',v) \cdot \restr_{2,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&= \len(u,v) + \minBreaks_2(\breakDist_2(l') + \chpotential_t(v)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l') + \chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l') + \chpotential_t(v))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&= \len(u,v) + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \len(u,v) + \chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l) + \len(u,v) + \chpotential_t(v))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(5. and 6.)}}{\ge} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \chpotential_t(u)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \chpotential_t(u))\\
+			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l) + \chpotential_t(u))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&= \len(u,v) + \breakEstimate_2(l,u) \cdot \restr_{2,b} + \breakEstimate_1(l,u) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&= \len(u,v) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(4.)}}{\ge} 0
 		\end{split}
 	\end{align}
 
-	\emph{Case 3: Long break at $v_i$}. It is $p_j \neq q_j$ for $i \in \{1,2\}$ In this case, $q_j = v_i$ and $\traveltime(p_j,v_i) = \traveltime(p_j,q_j) = \drivingtime(p_j,v_i) + \restr_{2,b}$. With \ref{eq:label_2_feasibility_proof_1} follows
+	\emph{Case 2: Short break at $v$}. In this case, $\concretett(l') = \concretett(l) + \len(u,v) + \restr_b$ and $\breakDist_1(l') = 0$ and $\breakDist_2(l') = \breakDist_2(l) + \len(u,v)$.
 
 	\begin{align}
-		\begin{split}\label{eq:label_2_feasibility_proof_5}
-			\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) &= \traveltime(s, p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i-1})  + \drivingtime(v_{i-1},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i-1}) + \drivingtime(v_{i-1},t)}{\restr_{2,d}} }\right) * \restr_{1,b}\\
-			&= \traveltime(s, p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(p_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(p_2,p_1) + \drivingtime(p_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,b}\\
-			&\le \traveltime(s, p_1) + \traveltime(p_1,v_{i}) - r_{2,b} + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,b} + \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(v_{i},t)} {\restr_{1,d}} } - \floor*{\frac{\drivingtime(v_{i},t)}{\restr_{2,d}} } \underbrace{+ 1}_\text{this breaks it, can it go?} \right) * \restr_{1,b}\\
-			&= \traveltime(s, q_1) + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{0 + 0 + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,b}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{0 + \drivingtime(v_{i},t)} {\restr_{1,d}} } - \floor*{\frac{0 + 0 + \drivingtime(v_{i},t)}{\restr_{2,d}} } \right) * \restr_{1,b}\\
-			&= \traveltime(s, q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)\\
-			& \phantom{{}=1} + \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} } * \restr_{2,q}\\
-			& \phantom{{}=1} + \left( \floor*{ \frac{\drivingtime(q_1,v_{i})  + \drivingtime(v_{i},t)}{\restr_{1,d}} } - \floor*{ \frac{\drivingtime(q_2,q_1) + \drivingtime(q_1,v_{i}) + \drivingtime(v_{i},t)}{\restr_{2,d}} }\right) * \restr_{1,q}\\
-			&= \concretett(l_{i}) + \concretepotential_t(l_{i},v_{i})
+		\begin{split}\label{eq:label_n_feasibility_proof_2}
+			&\concretett(l') - \concretett(l) - \concretepotential_t(l,u) + \concretepotential_t(l',v)\\
+			&= \concretett(l) + \len(u,v) + r_{1,b} - \concretett(l)\\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b} + \chpotential(u))\\
+			& \phantom{{}=1} + (\breakEstimate_1(l',v) \cdot \restr_{1,b} + \breakEstimate_2(l',v) \cdot \restr_{2,b} + \chpotential(v))\\
+			&= \len(u,v) + r_{1,b} + \breakEstimate_1(l',v) \cdot \restr_{1,b} + \breakEstimate_2(l',v) \cdot \restr_{2,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&= \len(u,v) + r_{1,b} + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(0 + \chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l) + \len(u,v) + \chpotential_t(v))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(2.)}}{=} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(r_{1,d} + \chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l) + \len(u,v) + \chpotential_t(v))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(1. and 3.)}}{\ge} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \len(u,v) + \chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l) + \len(u,v) + \chpotential_t(v))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(5. and 4.)}}{\ge} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \chpotential_t(u)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \chpotential_t(u))\\
+			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l) + \chpotential_t(u))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&= \len(u,v) + \breakEstimate_2(l,u) \cdot \restr_{2,b} + \breakEstimate_1(l,u) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&= \len(u,v) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(4.)}}{\ge} 0
 		\end{split}
 	\end{align}
+
+
+	\emph{Case 3: Long break at $v$}. In this case, $\concretett(l') = \concretett(l) + \len(u,v) + \restr_b$ and $\breakDist_i(l') = 0$.
+
+	\begin{align}
+		\begin{split}\label{eq:label_n_feasibility_proof_3}
+			&\concretett(l') - \concretett(l) - \concretepotential_t(l,u) + \concretepotential_t(l',v)\\
+			&= \concretett(l) + \len(u,v) + r_{2,b} - \concretett(l)\\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{2,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b} + \chpotential(u))\\
+			& \phantom{{}=1} + (\breakEstimate_1(l',v) \cdot \restr_{2,b} + \breakEstimate_2(l',v) \cdot \restr_{2,b} + \chpotential(v))\\
+			&= \len(u,v) + r_{2,b} + \breakEstimate_1(l',v) \cdot \restr_{1,b} + \breakEstimate_2(l',v) \cdot \restr_{2,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(2.) and TODO is label}}{=} \len(u,v) + \minBreaks_2(\restr_{2,d} + \chpotential_t(v)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(\restr_{2,d} + \chpotential_t(v)) - \minBreaks_{2}(\restr_{2,d} + \chpotential_t(v))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(1. and 3. and $\restr_{2,d} >= \restr_{1,d}$)}}{\ge} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \len(u,v) + \chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_2(l) + \len(u,v) +\chpotential_t(v))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(5. and 4.)}}{\ge} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \chpotential_t(u)) \cdot \restr_{2,b}\\
+			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \chpotential_t(u))\\
+			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l) + \chpotential_t(u))) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&= \len(u,v) + \breakEstimate_2(l,u) \cdot \restr_{2,b} + \breakEstimate_1(l,u) \cdot \restr_{1,b} \\
+			& \phantom{{}=1} - (\breakEstimate_1(l,u) \cdot \restr_{1,b} + \breakEstimate_2(l,u) \cdot \restr_{2,b}) - \chpotential(u) + \chpotential(v)\\
+			&= \len(u,v) - \chpotential(u) + \chpotential(v)\\
+			&\stackrel{\text{(4.)}}{\ge} 0
+		\end{split}
+	\end{align}
+
 \end{proof}
 
-TODO um das +1 wegzukriegen muss man zeigen, dass auf kürzesten pfaden eine große Pause auch eine kleine Pause einspart. damit gilt das ganze auch nicht auf einem beliebigen pfad, sondern nur auf kürzesten pfaden. ansonsten gilt halt $\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) \le \concretett(l_{i}) + \concretepotential_t(l_{i},v_{i}) + r_{1,b}$ und der suboptimale pfad kommt weiter hinten in der queue aber das macht nichts kaputt
-
-- das ist gar nicht der Fall, muss anders gehen
 % \begin{lemma}
 % 	On shortest $s$-$t$ paths, each long break at a node $v$ with a break time of $r_{2,b}$ also includes a necessary short break. In other words, you cannot remove a long break from a shortest path without also violating the short driving time constraint $r_1$.
 % \end{lemma}
@@ -715,7 +695,7 @@ TODO um das +1 wegzukriegen muss man zeigen, dass auf kürzesten pfaden eine gro
 A common approach to improve constant factors of the runtime of shortest path queries is to start two searches which search for a path in forward direction from $s$ and in backward direction from $t$. The searches ideally meet in the middle, thus halving the theoretical search space of a Dijkstra search since the search radius of each search now is only halve the distance to the target node. The distances of the forward and backward search are combined at nodes which were settled by both searches. Since we aim to stop the search as early as possible, we have to decide on a new stopping criterion which allows the search to stop way before the forward search settles the target node $t$ or the backward search settles $s$. The stopping criterion especially becomes interesting if we use the potential of section \ref{section:potential_n_csp} for a bidirectional A* search.
 
 \subsection{Bidirectional Dijkstra with Multiple Driving Time Constraints}
-The input of the search remains a graph $G=(V,E,\mathfunction{len})$, a set of parking nodes $P \subseteq V$, a set of driving time constraints $R$, and start and target nodes $s,t \in V$. We now define the backwards graph $\overleftarrow{G}$ as the Graph $(V,\overleftarrow{E},\overleftarrow{\mathfunction{len}})$ with $\overleftarrow{E} := \{(v,u) \in V \times V : (u,v) \in E\}$ and $\overleftarrow{\mathfunction{len}}(u,v) = \mathfunction{len}(v,u)$. The forward search then is a normal A* search on $G$ with start node $s$ and target node $t$ and the backward search is a normal A* search on $\overleftarrow{G}$ with start node $t$ and target node $s$. Each search owns a queue of labels $\overrightarrow{Q}$ and $\overleftarrow{Q}$ and forward, respectively backward label sets $\overrightarrow{L}(v)$ and $\overleftarrow{L}(v)$ for each $v \in V$. During the search, forward and backward search alternately settle nodes until the stopping criterion is met, one search completed the search by itself, or the queues ran empty. We hold the tentative distance for $\traveltime(s,t)$ in a variable $\tenttraveltime(s,t)$ which we initialize with $\infty$ before settling the first node.
+The input of the search remains a graph $G=(V,E,\mathfunction{len})$, a set of parking nodes $P \subseteq V$, a set of driving time constraints $R$, and start and target nodes $s,t \in V$. We now define the backwards graph $\overleftarrow{G}$ as the graph $(V,\overleftarrow{E},\overleftarrow{\mathfunction{len}})$ with $\overleftarrow{E} := \{(v,u) \in V \times V : (u,v) \in E\}$ and $\overleftarrow{\mathfunction{len}}(u,v) = \mathfunction{len}(v,u)$. The forward search then is a normal A* search on $G$ with start node $s$ and target node $t$ and the backward search is a normal A* search on $\overleftarrow{G}$ with start node $t$ and target node $s$. Each search owns a queue of labels $\overrightarrow{Q}$ and $\overleftarrow{Q}$ and forward, respectively backward label sets $\overrightarrow{L}(v)$ and $\overleftarrow{L}(v)$ for each $v \in V$. During the search, forward and backward search alternately settle nodes until the stopping criterion is met, one search completed the search by itself, or the queues ran empty. We hold the tentative distance for $\traveltime(s,t)$ in a variable $\tenttraveltime(s,t)$ which we initialize with $\infty$ before settling the first node.
 
 When a search settles a node $v$, it additionally checks if the label set of the other search at $v$ contains any settled labels. If this is the case, forward and backward search met at this node. We then search for the label combination of labels $l \in \overrightarrow{L}(v)$ and $m \in \overleftarrow{L}(v)$ that yields the shortest travel time $\traveltime(s,t) = \traveltime(s,v) + \traveltime(v,t)$ without violating any constraint $r_i$. This is simply done by choosing the labels $l$ and $m$ with minimal $\concretett(l) + \concretett(m)$ while $\breakDist_1(l) + \breakDist_1(m) < r_{1,d}$ and $\breakDist_1(l) + \breakDist_1(m) < r_{2,d}$. If the resulting distance for an $s$-$t$ path via $v$ is smaller than the previously known minimum tentative distance $\tenttraveltime(s,t)$, we update $\tenttraveltime(s,t)$ accordingly. We stop the forward search if the minimum key of $\overrightarrow{Q}$ is greater than $\tenttraveltime(s,t)$ and stop the backward search when the minimum key of $\overleftarrow{Q}$ is greater than $\tenttraveltime(s,t)$.
 
@@ -741,13 +721,13 @@ With a bidirectional A* search, we can use the progress and the potential of the
 The backwards queue $\overleftarrow{Q}$ contains labels with a key of $\concretett(l) + \concretepotential_s(l,v)$ for label $l \in \overleftarrow{L}(v)$. Labels are removed from the queue with an increasing key. Therefore, we know that if a label  TODO continue
 
 \section{Core Contraction Hierarchy with Two Driving Time Constraints}
-Given a Graph $G = (V,E,\mathfunction{len})$, we construct a core contraction hierarchy in which the core contains all the parking nodes $P \subseteq V$. We denote the set of uncontracted core nodes as $C \subseteq V$. It is $P \subseteq C$. The set of nodes $V$ therefore is split into a set of core nodes $C$ and a set of contracted nodes $V_{CH} = V \setminus C$. The Graph $G_{CH} = (V_{CH},E_{CH},\mathfunction{len})$ with nodes $V_{CH}$ and edges $E_{CH} = \{(u,v) \in E : u,v \in V_{CH}\}$ therefore is a valid contraction hierarchy. It contains only contracted nodes and edges between those nodes. Thus, $E_{CH}$ contains only upward edges. The Graph $G_{C} = (V \setminus V_{CH},E \setminus E_{CH},\mathfunction{len})$ is called the core graph.
+Given a graph $G = (V,E,\mathfunction{len})$, we construct a core contraction hierarchy in which the core contains all the parking nodes $P \subseteq V$. We denote the set of uncontracted core nodes as $C \subseteq V$. It is $P \subseteq C$. The set of nodes $V$ therefore is split into a set of core nodes $C$ and a set of contracted nodes $V_{CH} = V \setminus C$. The graph $G_{CH} = (V_{CH},E_{CH},\mathfunction{len})$ with nodes $V_{CH}$ and edges $E_{CH} = \{(u,v) \in E : u,v \in V_{CH}\}$ therefore is a valid contraction hierarchy. It contains only contracted nodes and edges between those nodes. Thus, $E_{CH}$ contains only upward edges. The graph $G_{C} = (V \setminus V_{CH},E \setminus E_{CH},\mathfunction{len})$ is called the core graph.
 
 The core CH query essentially is a bidirectional Dijkstra with a modified stopping criterion. It operates on a modified forward graph $\overrightarrow{G}^*$ and a modified backward graph $\overleftarrow{G}^*$. The forward graph $\overrightarrow{G}^* = (V,\overrightarrow{E}^*,\mathfunction{len})$ consists of the forward graph of the contraction hierarchy $\overrightarrow{G}_{CH}$, extended by the core graph $G_C$. It is $\overrightarrow{E}^* = \overrightarrow{E}_{CH} \cup E_C $. Equivalently, the backward graph is defined as $\overleftarrow{G}^* = (V,\overleftarrow{E}^*,\overleftarrow{\mathfunction{len}})$ with $\overleftarrow{E}^* = \overleftarrow{E}_{CH} \cup E_C$ and $\overleftarrow{\mathfunction{len}}(u,v) = \mathfunction{len}(v,u)$.
 
 The bidirectional query in $G^*$ consists of a forward search from $s$ in $\overrightarrow{G}^*$ and backward search from $t$ in $\overleftarrow{G}^*$. Each search consists of two parts, an upward search in $G_{CH}$ and a Dijkstra search in $G_C$. A search may begin at a core node and only perform the Dijkstra search. It also may not reach the core graph at all and only perform the CH upward search.
 
-The stopping criterion of the bidirectional search must take into account that the Graph $G^*$ contains the contraction hierarchy $G_{CH}$. The common stopping criterion for $s$-$t$ queries in a CH is to stop the search if the minimum queue key of both queues $\overrightarrow{Q}$ and $\overleftarrow{Q}$ is greater or equal to the tentative minimum distance $\distance(s,t)$ \cite{geisberger:2012}. Since this criterion is more conservative than the stopping criterion for a bidirectional Dijkstra search, we can use it for our combination of CH and bidirectional Dijkstra.
+The stopping criterion of the bidirectional search must take into account that the graph $G^*$ contains the contraction hierarchy $G_{CH}$. The common stopping criterion for $s$-$t$ queries in a CH is to stop the search if the minimum queue key of both queues $\overrightarrow{Q}$ and $\overleftarrow{Q}$ is greater or equal to the tentative minimum distance $\distance(s,t)$ \cite{geisberger:2012}. Since this criterion is more conservative than the stopping criterion for a bidirectional Dijkstra search, we can use it for our combination of CH and bidirectional Dijkstra.
 
 \begin{algorithm}[hbtp]
 	\caption{\textsc{Core-CH with Driving Time Constraints}}\label{alg:CSPCoreCH}

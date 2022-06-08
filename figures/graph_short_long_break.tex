@@ -6,16 +6,16 @@
 \begin{tikzpicture}[scale=1.5, bend angle = 20]
 
 	% Obere Reihe
-	\node(u) at (2,3) [node, bright] {u};
-	\node(s) at (1,2) [node, bright] {s};
-	\node(t) at (3,2) [node, bright] {t};
-	\node(v) at (2,1) [node, bright] {v};
+	\node(s) at (1,1) [node, bright] {s};
+	\node(u) at (2,1) [node, bright] {u};
+	\node(v) at (3,1) [node, bright] {v};
+	\node(w) at (4,1) [node, bright] {w};
+	\node(t) at (5,1) [node, bright] {t};
 
-	\draw[->] (s) -> node[midway, above]{2} (u);
-	\draw[->] (u) -> node[midway, above]{2} (t);
-	\draw[->] (s) -> node[midway, above]{1} (v);
-	\draw[->] (v) -> node[midway, above]{1} (t);
-	\draw[->] (u) -> node[midway, right]{1} (v);
+	\draw[->] (s) -> node[midway, above]{4} (u);
+	\draw[->] (u) -> node[midway, above]{1} (v);
+	\draw[->] (v) -> node[midway, above]{1} (w);
+	\draw[->] (w) -> node[midway, above]{4} (t);
 	% \foreach \i [evaluate = \i as \lastNode using \i-1] in {2,3,...,\numberOfNodes}
 	% 	{
 	% 		\node (Top\i) at (\i,1) [node, bright] {\i}

@@ -3,12 +3,12 @@ Truck drivers have to follow laws and regulations regarding the maximum time the
 
 Let $G=(V,E,\mathfunction{len})$ be a graph and $s$ and $t$ nodes with $s,t \in V$. We extend the graph with a set $P \subseteq V$ of parking nodes. Additionally, we introduce a set $R$ of driving time constraints $r_i$. Each driving time constraint is defined by a maximum permitted driving time $r_{i,d}$ and a break time $r_{i,b}$. Thereby, the driving time constraints define a relation $r_i \le r_{i+1}$ with $r_i \le r_j \implies r_{i,d} \le r_{j,d} \land  r_{i,b} \le r_{j,b} \forall i,j$. In other words, a greater or equal driving time constraint has a longer or equal driving and break time and there must be no constraint $r_i$ with a longer driving time limit, but shorter break time than another constraint $r_j$. Before exceeding a driving time of $r_{i,d}$, the driver must stop and break for a time of at least $r_{i,b}$. Afterwards, the driver is allowed to drive for a maximum time of $r_{i,d}$ again without stopping. Breaks can only take place at nodes $v \in P$.
 
-A journey $j$ from $s$ to $t$ includes the path of visited nodes $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ and a break time $\mathfunction{breakTime}: p \rightarrow \{0,r_{i,d}\}$ at each node $i$. It is $\mathfunction{breakTime}(v_i) = 0$ $\forall v_i \notin P$. We also define the \mathfunction{breakTime} of an entire journey $j$ on $p$ as $\mathfunction{breakTime}(j) = \sum_{i=0}^{k-1}{\mathfunction{breakTime}((v_i,v_{i+1}))}$. A journey must always have a valid path.
+A journey $j$ from $s$ to $t$ includes the path of visited nodes $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ and a break time $\breakTime: p \rightarrow \{0,r_{i,d}\}$ at each node $i$. It is $\breakTime(v_i) = 0$ $\forall v_i \notin P$. We also define the \breakTime of an entire journey $j$ on $p$ as $\breakTime(j) = \sum_{i=0}^{k-1}{\breakTime((v_i,v_{i+1}))}$. A journey must always have a valid path.
 
 \begin{definition}[Valid Path]
 	A valid path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ must comply with the driving time constraints $R$ meaning that it has to comply with all $r_l \in R$.
 
-	Let $v_i$ be the starting node $s$ or any node on the path with $\mathfunction{breakTime}(v_i) \ge r_{l,b}$ and let $v_j$ be the target node $t$ or any node on the path with $\mathfunction{breakTime}(v_j) \ge r_{l,b}$ and $i < j$. Then let $q$ be the subpath of $p$ from $v_i$ to $v_j$. A path complies with driving time constraint $r_l$ if $\drivingtime(q) < r_{d,l}$ for all possible subpaths $q$ or there is a node $v_m$ on $q$ with $\mathfunction{breakTime}(v_m) \ge r_{l,b}$ and $i < m < j$.
+	Let $v_i$ be the starting node $s$ or any node on the path with $\breakTime(v_i) \ge r_{l,b}$ and let $v_j$ be the target node $t$ or any node on the path with $\breakTime(v_j) \ge r_{l,b}$ and $i < j$. Then let $q$ be the subpath of $p$ from $v_i$ to $v_j$. A path complies with driving time constraint $r_l$ if $\drivingtime(q) < r_{d,l}$ for all possible subpaths $q$ or there is a node $v_m$ on $q$ with $\breakTime(v_m) \ge r_{l,b}$ and $i < m < j$.
 \end{definition}
 
 We differentiate between driving time and travel time between of a journey.
@@ -18,7 +18,7 @@ We differentiate between driving time and travel time between of a journey.
 \end{definition}
 
 \begin{definition}[Travel Time of a Journey]
-	The travel time $\concretett(j)$ of a journey is the sum of driving time $\concretedt(j)$ and break time  $\mathfunction{breakTime}(p)$ on its path.
+	The travel time $\concretett(j)$ of a journey is the sum of driving time $\concretedt(j)$ and break time  $\breakTime(p)$ on its path.
 \end{definition}
 
 \begin{definition}[Shortest Journey]
