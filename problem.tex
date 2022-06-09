@@ -1,38 +1,36 @@
 \chapter{Problem and Definitions}\label{chapter:problem_definitions}
-Truck drivers have to follow laws and regulations regarding the maximum time they allowed to drive without stopping for a break. This leads to mandatory breaks on longer journeys. The regulation affect the duration of mandatory breaks. We name the extension of the shortest path problem which accounts for driving time limits and mandatory breaks the long-haul truck driver routing problem. It can be formalized as follows.
+Truck drivers have to follow laws and regulations regarding the maximum time they are allowed to drive without stopping for a break. This leads to mandatory breaks on longer routes. The regulation also affects the duration of mandatory breaks. We name the extension of the shortest path problem which accounts for driving time limits and mandatory breaks the long-haul truck driver routing problem. It can be formalized as follows.
 
-Let $G=(V,E,\mathfunction{len})$ be a graph and $s$ and $t$ nodes with $s,t \in V$. We extend the graph with a set $P \subseteq V$ of parking nodes. Additionally, we introduce a set $R$ of driving time constraints $r_i$. Each driving time constraint is defined by a maximum permitted driving time $r_{i,d}$ and a break time $r_{i,b}$. Thereby, the driving time constraints define a relation $r_i \le r_{i+1}$ with $r_i \le r_j \implies r_{i,d} \le r_{j,d} \land  r_{i,b} \le r_{j,b} \forall i,j$. In other words, a greater or equal driving time constraint has a longer or equal driving and break time and there must be no constraint $r_i$ with a longer driving time limit, but shorter break time than another constraint $r_j$. Before exceeding a driving time of $r_{i,d}$, the driver must stop and break for a time of at least $r_{i,b}$. Afterwards, the driver is allowed to drive for a maximum time of $r_{i,d}$ again without stopping. Breaks can only take place at nodes $v \in P$.
+Let $G=(V,E,\mathfunction{len})$ be a graph and $s$ and $t$ nodes with $s,t \in V$. We extend the graph with a set $P \subseteq V$ of parking nodes. Additionally, we introduce a set $\restrset$ of driving time constraints $\restr_i$. Each driving time constraint is defined by a maximum permitted driving time $\restr_{i,d}$ and a break time $\restr_{i,b}$. Thereby, the driving time constraints define a relation $\restr_i \le \restr_{i+1}$ with $\restr_i \le \restr_j \implies \restr_{i,d} \le \restr_{j,d} \land  \restr_{i,b} \le \restr_{j,b} \forall i,j$. In other words, a greater or equal driving time constraint has a longer or equal driving and break time and there must be no constraint $\restr_i$ with a longer driving time limit, but shorter break time than another constraint $\restr_j$. Before exceeding a driving time of $\restr_{i,d}$, the driver must stop and break for a time of at least $\restr_{i,b}$. Afterwards, the driver is allowed to drive for a maximum time of $\restr_{i,d}$ again without stopping. Breaks can only take place at nodes $v \in P$.
 
-A journey $j$ from $s$ to $t$ includes the path of visited nodes $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ and a break time $\breakTime: p \rightarrow \{0,r_{i,d}\}$ at each node $i$. It is $\breakTime(v_i) = 0$ $\forall v_i \notin P$. We also define the \breakTime of an entire journey $j$ on $p$ as $\breakTime(j) = \sum_{i=0}^{k-1}{\breakTime((v_i,v_{i+1}))}$. A journey must always have a valid path.
+A route $\route$ from $s$ to $t$ includes the path of visited nodes $p = \langle s=v_0,v_1,\dots,t=v_k \rangle$ and a break time $\breakTime: p \rightarrow \{0,\restr_{1,d},\dots,\restr_{n,d}\}$ at each node $i$ and $n = |\restrset|$. It is $\breakTime(v_i) = 0$ for all nodes $v_i \notin P$. We also define the \breakTime of an entire route $\route$ on $p$ as $\breakTime(\route) = \sum_{i=0}^{k-1}{\breakTime((v_i,v_{i+1}))}$. A route must always have a valid path.
 
 \begin{definition}[Valid Path]
-	A valid path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ must comply with the driving time constraints $R$ meaning that it has to comply with all $r_l \in R$.
-
-	Let $v_i$ be the starting node $s$ or any node on the path with $\breakTime(v_i) \ge r_{l,b}$ and let $v_j$ be the target node $t$ or any node on the path with $\breakTime(v_j) \ge r_{l,b}$ and $i < j$. Then let $q$ be the subpath of $p$ from $v_i$ to $v_j$. A path complies with driving time constraint $r_l$ if $\drivingtime(q) < r_{d,l}$ for all possible subpaths $q$ or there is a node $v_m$ on $q$ with $\breakTime(v_m) \ge r_{l,b}$ and $i < m < j$.
+	A valid path $p = \langle s=v_0,v_1,...,t=v_k \rangle$ must comply with the driving time constraints $\restrset$ meaning that it has to comply with all $\restr \in \restrset$. A path complies with a specific driving time constraint $\restr' \in \restrset$ if there is no subpath $p'$ between two nodes $u,w \in P' = \{s,t\} \cup \{v_i \in p : \breakTime(v_i) \ge c'_{b}\}$ on the path which exceeds the driving time limit $\len(p') > \restr'_{d}$ and has no third node $v_i \in P'$ in between $u$ and $w$.
 \end{definition}
 
-We differentiate between driving time and travel time between of a journey.
+We differentiate between driving time and travel time between of a route.
 
-\begin{definition}[Driving Time of a Journey]
-	The driving time $\concretedt(j)$ of a journey $j$ is the length of the path $p = \langle s=v_0,v_1,...,t=v_k, \rangle$ of the journey.
+\begin{definition}[Driving Time of a Route]
+	The driving time $\concretedt(\route)$ of a route $\route$ is the length $\len(p)$ of the path $p = \langle s=v_0,v_1,...,t=v_k \rangle$ of the route.
 \end{definition}
 
-\begin{definition}[Travel Time of a Journey]
-	The travel time $\concretett(j)$ of a journey is the sum of driving time $\concretedt(j)$ and break time  $\breakTime(p)$ on its path.
+\begin{definition}[Travel Time of a Route]
+	The travel time $\concretett(\route)$ of a route $\route$ is the sum of driving time $\concretedt(\route)$ and break time  $\breakTime(p)$ on its path.
 \end{definition}
 
-\begin{definition}[Shortest Journey]
-	A journey between two nodes $s$ and $t$ is called a shortest journey if its path is valid and there exists no different journey with a valid path between $s$ and $t$ with a smaller travel time.
+\begin{definition}[Shortest Route]
+	A route between two nodes $s$ and $t$ is called a shortest route if its path is valid and there exists no different route with a valid path between $s$ and $t$ with a smaller travel time.
 \end{definition}
 
-The shortest travel time between to nodes $s$ and $t$, i.e., the travel time of the shortest journey between them is denoted as $\traveltime(s,t)$. Accordingly, $\drivingtime(s,t)$ denotes the driving time of the shortest journey between $s$ and $t$. In general, driving time $\drivingtime(s,t)$ and distance $\distance(s,t)$ as in the SPP are not equal.
+The shortest travel time between to nodes $s$ and $t$, i.e., the travel time of the shortest route between them is denoted as $\traveltime(s,t)$. Accordingly, $\drivingtime(s,t)$ denotes the driving time of the shortest route between $s$ and $t$. In general, driving time $\drivingtime(s,t)$ and distance $\distance(s,t)$ as in the SPP are not equal.
 
 The long-haul truck driver routing problem now can be defined as follows.
 
 \begin{namedproblem}
 	\problemtitle{\textsc{Long-Haul Truck Driver Routing}}
-	\probleminput{A graph $G=(V,E,\mathfunction{len})$, a set of parking nodes $P \subseteq V$, a set of driving time constraints $R$, and start and target nodes $s,t \in V$}
-	\problemquestion{Find the shortest journey from $s$ to $t$ in $G$. In other words, find the journey $j$ with $\traveltime(s,t) = \concretett(j)$.}
+	\probleminput{A graph $G=(V,E,\mathfunction{len})$, a set of parking nodes $P \subseteq V$, a set of driving time constraints $\restrset$, and start and target nodes $s,t \in V$}
+	\problemquestion{Find the shortest route from $s$ to $t$ in $G$. In other words, find the route $\route$ with $\traveltime(s,t) = \concretett(\route)$.}
 \end{namedproblem}
 
-In many practical applications, the number of different driving time constraints is limited to only one or two constraints, i.e., $|R| = 1$ or  $|R| = 2$. Therefore, we will often only consider one of these special cases.
+In many practical applications, the number of different driving time constraints is limited to only one or two constraints, i.e., $|\restrset| = 1$ or  $|\restrset| = 2$. Therefore, we will often only consider one of these special cases.

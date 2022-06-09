@@ -1,0 +1,15 @@
+%% evaluation.tex
+%%
+
+%% ==============
+\chapter{Improvements and Implementation}
+In this chapter, we describe detailed modifications to the algorithm described in section \ref{sec:astar_corech} which enable further improvements of running time in specific cases and in practice.
+
+\section{Label Queue}
+
+\section{Bidirectional Backward Pruning}
+With a bidirectional A* search, we can use the progress and the potential of the backward search to prune the forward search and vice versa. [TODO cite] A label $l$ at a node $v$ which was propagated along an edge $(u,v)$ can be discarded if we can proof that all paths using the label are longer or equal to the tentative travel time $\tenttraveltime(s,t)$. We know the travel time $\concretett(l)$ of the label $l$ at $v$ and need to find a lower bound for the remaining distance to $t$. We will describe the pruning of the forward search, the backward search can be pruned accordingly.
+
+The backwards queue $\overleftarrow{Q}$ contains labels with a key of $\concretett(l) + \concretepotential_s(l,v)$ for label $l \in \overleftarrow{L}(v)$. Labels are removed from the queue with an increasing key. Therefore, we know that if a label  TODO continue
+
+\section{Core Contraction Hierarchy Stopping Criteria}
