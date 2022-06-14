@@ -69,6 +69,7 @@
 \selectbiblanguage{ngerman}		% for \bibliographystyle{babalpha}
 
 \usepackage{tabularx,lipsum,environ}
+\usepackage[binary-units]{siunitx}
 %% --- End of Packages ---
 
 

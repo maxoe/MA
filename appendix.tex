@@ -24,17 +24,26 @@
 \section{List of Symbols}
 \label{app:symbols}
 
-We use Greek symbols for theoretical and abstract concepts such as the shortest distance between two nodes or an arbitrary node potential. Concrete functions and procedures, i.e., those with definitions, have verbose names. Algorithmic functions and procedures for which pseudocode is provided use \algofunction{smallCaps}, otherwise concrete functions use \mathfunction{italic~bold}.
+We use Greek symbols for theoretical and abstract concepts such as the shortest distance between two nodes or an arbitrary valid node potential. Concrete functions and procedures, i.e., those with definitions, have verbose names. Algorithmic functions and procedures for which pseudocode is provided use \algofunction{SmallCaps}.
 
-\subsection{Theoretical Concepts}
-\begin{tabular}{cp{0.85\textwidth}}
-	$\potential_t$    & A node potential to $t$                                                                                                                  \\
-	$\distance$       & Shortest distance $\distance(s,t)$ according to the shortest path problem between nodes $s$ and $t$                                      \\
-	$\traveltime$     & Travel time $\traveltime(s,t)$ according to the long-haul truck driver routing problem between nodes $s$ and $t$ (including pause time)  \\
-	$\tenttraveltime$ & Tentative travel time $\tenttraveltime(s,t)$ between nodes $s$ and $t$                                                                   \\
-	$\drivingtime$    & Driving time $\drivingtime(s,t)$ according to the long-haul truck driver routing problem between nodes $s$ and $t$ (excludes pause time) \\
-	$\restr$          & Driving time constraint according to the long-haul truck driver routing problem                                                          \\
-	$\pred$           & Predecessor of a label                                                                                                                   \\
+\begin{tabular}{rp{0.85\textwidth}}
+	$\potential_t(v)$         & A node potential to $t$                                                                                                                   \\
+	$\distance(s,t)$          & Shortest distance between $s$ and $t$.                                                                                                    \\
+	$\traveltime(s,t)$        & Shortest travel time between $s$ and $t$.                                                                                                 \\
+	$\drivingtime(s,t)$       & Driving time of the shortest route between $s$ and $t$                                                                                    \\
+	\\
+	$\route$                  & A route consisting of a path and a function $\breakTime(v)$ function.                                                                     \\
+	$\restr$                  & A driving time constraint consisting of maximum allowed driving time $c^d$ and break time $c^b$                                           \\
+	$\restrset$               & A set of one or more driving time constraints                                                                                             \\
+	$L(v)$                    & The label set of a node $v$                                                                                                               \\
+	$\breakDist_i(l)$         & Distance since the last break of a label with a duration of at least $c_i^b$ or distance since the last break if the index $i$ is omitted \\
+	$\pred(l)$                & Predecessor label of a label $l$.                                                                                                         \\
+
+	$\concretedt(l)$          & Driving time of a label $l$                                                                                                               \\
+	$\concretett(l)$          & Travel time of a label $l$                                                                                                                \\
+	$\concretepotential(l,v)$ & The potential of a label $l \in L(v)$ as defined in section \ref{section:potential_n_csp}                                                 \\
+	$\len((u,v))$             & The weight, respectively length of an edge $(u,v)$, alternatively used for the length $\len(p)$ of a path $p$                             \\
 \end{tabular}
+
 
 
