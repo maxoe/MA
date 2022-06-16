@@ -1,3 +1,4 @@
+% !TeX root = thesis.tex
 %% evaluation.tex
 %%
 
@@ -10,3 +11,50 @@
 
 \section{Experiments}
 In this section, we evaluate the running time and behavior of our algorithms of chapter~\ref{ch:Algorithm} in various experiments and describe the underlying data. Our machine runs openSUSE Leap 15.3, has \SI{128}{\giga\byte} (8x\SI{16}{\giga\byte}) of \SI{2133}{\mega\hertz} DDR4 RAM, and a 4-core Intel Xeon E5-1630v3 CPU which runs at \SI{3.7}{\giga\hertz}. The code is written in Rust and compiled with cargo 1.59.0-nightly using the release profile with lto~=~true and codegen-units~=~1.
+
+\subparagraph{Data.} Our data is a road network of Europe from Open Street Map\footnote{\url{https://download.geofabrik.de/europe-latest.osm.pbf} of March 22, 2022} (OSM). We extract the routing graph from the OSM data using RoutingKit\footnote{\url{https://github.com/RoutingKit/RoutingKit}}, respectively a custom extension\footnote{\url{https://github.com/maxoe/RoutingKit}} of RoutingKit which is capable of extracting parking nodes accordingly and building the core CH as described in section \ref{sec:build_corech}. The obtained routing graph has $81.5$ million nodes and $190$ million edges. If not stated otherwise, our set $P$ of parking nodes consists of 6800 nodes which were selected due to their OSM attributes. We will later conduct experiments with different choices for $P$.
+
+\subparagraph{Methodology.} All experiments are run sequentially. We evaluate the different algorithms of chapter \ref{ch:Algorithm} and always include the optimizations of chapter \refeq{ch:impl}. We conduct experiments regarding the preprocessing time of the OSM data and the running time of queries on the extracted routing graph. We average preprocessing running times over 10 runs and running times of $s$-$t$ queries over \num{10000} queries with $s$ and $t$ independently chosen uniformly at random for each query.
+
+\subsection{Running Time of Queries}
+\begin{figure}[hbtp]
+	\centering
+	\includegraphics[width=.95\textwidth]{plots/measure_all_csp_2_1000_queries_rank_times-core_ch_chpot-time_ms.png}
+	\caption{Running times of the goal-directed core CH algorithm for queries to nodes of increasing Dijkstra rank, logarithmic scales.}
+	\label{fig:rank_times}
+\end{figure}
+
+\begin{table}[hbtp]
+	\centering
+	\begin{tabular}{ccccccc}
+		\toprule
+		              &               &         & \multicolumn{2}{c}{Running Time [\si{\milli\second}]} & \multicolumn{2}{c}{Search Space [nodes]}                 \\
+		Goal-Directed & Bidirectional & Core CH & 1-DTC                                                 & 2-DTC                                    & 1-DTC & 2-DTC \\
+		\midrule
+		\xmark        & \xmark        & \xmark  &                                                       &                                          &       &       \\
+		\cmark        & \xmark        & \xmark  &                                                       &                                          &       &       \\
+		\xmark        & \cmark        & \xmark  &                                                       &                                          &       &       \\
+		\cmark        & \cmark        & \xmark  &                                                       &                                          &       &       \\
+		\xmark        & \cmark        & \cmark  &                                                       &                                          &       &       \\
+		\cmark        & \cmark        & \cmark  &                                                       &                                          &       &       \\
+		\bottomrule
+	\end{tabular}
+	\caption{Comparison of running times of the base algorithm and its different extensions from section \ref{ch:Algorithm}.}
+	\label{tbl:extensions_runtime}
+\end{table}
+
+\begin{table}[hbtp]
+	\centering
+	\begin{tabular}{ccrr}
+		\toprule
+		Backward Pruning & Additional Core CH Stopping Criteria & Running Time [\si{\milli\second}] & Search Space [nodes] \\
+		\midrule
+		\xmark           & \xmark                               &                                   &                      \\
+		\cmark           & \xmark                               &                                   &                      \\
+		\xmark           & \cmark                               &                                   &                      \\
+		\cmark           & \cmark                               &                                   &                      \\
+		\bottomrule
+	\end{tabular}
+	\caption{Comparison of running times of the goal-directed core CH algorithm with different optimizations from section\ref{ch:impl}.}
+	\label{tbl:opt_runtime}
+\end{table}

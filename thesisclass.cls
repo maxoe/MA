@@ -70,6 +70,7 @@
 
 \usepackage{tabularx,lipsum,environ}
 \usepackage[binary-units]{siunitx}
+\usepackage{pifont}
 %% --- End of Packages ---
 
 
@@ -106,6 +107,11 @@
   \end{tabularx}
   \par\addvspace{.5\baselineskip}
 }
+
+\DeclareSIUnit{\nothing}{\relax}
+
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
 %% --- End of New Commands ---
 
 
