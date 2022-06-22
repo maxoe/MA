@@ -1,4 +1,63 @@
 
+@inproceedings{abraham:2012,
+  title = {Hierarchical {{Hub Labelings}} for {{Shortest Paths}}},
+  booktitle = {Proceedings of the 20th {{Annual European Symposium}} on {{Algorithms}} (Esa'12), {{Volume}} 7501 of {{Lecture Notes}} in {{Computer Science}}},
+  author = {Abraham, Ittai and Delling, Daniel and Goldberg, Andrew V. and Werneck, Renato F.},
+  year = {2012},
+  pages = {24--35},
+  publisher = {{Springer}},
+  abstract = {We study hierarchical hub labelings for computing shortest paths. Our new theoretical insights into the structure of hierarchical labels lead to faster preprocessing algorithms, making the labeling ap-proach practical for a wider class of graphs. We also find smaller labels for road networks, improving the query speed.},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\8RMTNGPF\\summary\;jsessionid=A3E97DC3856704964E608A6E06985621.html}
+}
+
+@misc{bast:2015,
+  title = {Route {{Planning}} in {{Transportation Networks}}},
+  author = {Bast, Hannah and Delling, Daniel and Goldberg, Andrew and {M{\"u}ller-Hannemann}, Matthias and Pajor, Thomas and Sanders, Peter and Wagner, Dorothea and Werneck, Renato F.},
+  year = {2015},
+  month = apr,
+  number = {arXiv:1504.05140},
+  eprint = {1504.05140},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.1504.05140},
+  abstract = {We survey recent advances in algorithms for route planning in transportation networks. For road networks, we show that one can compute driving directions in milliseconds or less even at continental scale. A variety of techniques provide different trade-offs between preprocessing effort, space requirements, and query time. Some algorithms can answer queries in a fraction of a microsecond, while others can deal efficiently with real-time traffic. Journey planning on public transportation systems, although conceptually similar, is a significantly harder problem due to its inherent time-dependent and multicriteria nature. Although exact algorithms are fast enough for interactive queries on metropolitan transit systems, dealing with continent-sized instances requires simplifications or heavy preprocessing. The multimodal route planning problem, which seeks journeys combining schedule-based transportation (buses, trains) with unrestricted modes (walking, driving), is even harder, relying on approximate solutions even for metropolitan inputs.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Data Structures and Algorithms,G.2.1,G.2.2,G.2.3,H.2.8,H.3.5,H.4.2},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\PLVYUFT6\\Bast et al. - 2015 - Route Planning in Transportation Networks.pdf;C\:\\Users\\Max\\Zotero\\storage\\ZFTWR4NM\\1504.html}
+}
+
+@incollection{batz:2009,
+  title = {Time-{{Dependent Contraction Hierarchies}}},
+  booktitle = {2009 {{Proceedings}} of the {{Eleventh Workshop}} on {{Algorithm Engineering}} and {{Experiments}} ({{ALENEX}})},
+  author = {Batz, G. Veit and Delling, Daniel and Sanders, Peter and Vetter, Christian},
+  editor = {Finocchi, Irene and Hershberger, John},
+  year = {2009},
+  month = jan,
+  pages = {97--105},
+  publisher = {{Society for Industrial and Applied Mathematics}},
+  address = {{Philadelphia, PA}},
+  doi = {10.1137/1.9781611972894.10},
+  abstract = {Contraction hierarchies are a simple hierarchical routing technique that has proved extremely efficient for static road networks. We explain how to generalize them to networks with time-dependent edge weights. This is the first hierarchical speedup technique for timedependent routing that allows bidirectional query algorithms. For large realistic networks with considerable time-dependence (Germany, weekdays) our method outperforms previous techniques with respect to query time using comparable or lower preprocessing time.},
+  isbn = {978-0-89871-930-7 978-1-61197-289-4},
+  langid = {english},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\LPMKEBCN\\Batz et al. - 2009 - Time-Dependent Contraction Hierarchies.pdf}
+}
+
+@article{batz:2013,
+  title = {Minimum Time-Dependent Travel Times with Contraction Hierarchies},
+  author = {Batz, G. Veit and Geisberger, Robert and Sanders, Peter and Vetter, Christian},
+  year = {2013},
+  month = apr,
+  journal = {Journal of Experimental Algorithmics (JEA)},
+  publisher = {{ACM}},
+  doi = {10.1145/2444016.2444020},
+  abstract = {Time-dependent road networks are represented as weighted graphs, where the weight of an edge depends on the time one passes through that edge. This way, we can model periodic congestions during rush hour and similar effects. In this work we deal with ...},
+  langid = {english},
+  annotation = {PUB27 		New York, NY, USA},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\TC2INPKG\\Veit et al. - 2013 - Minimum time-dependent travel times with contracti.pdf;C\:\\Users\\Max\\Zotero\\storage\\PAU2WMNN\\2444016.html}
+}
+
 @book{bektas:2017,
   title = {Computational {{Logistics}}},
   editor = {Bekta{\c s}, Tolga and Coniglio, Stefano and {Martinez-Sykora}, Antonio and Vo{\ss}, Stefan},
@@ -11,6 +70,58 @@
   isbn = {978-3-319-68495-6 978-3-319-68496-3},
   langid = {english},
   file = {C\:\\Users\\Max\\Zotero\\storage\\62QJ6464\\Bektaş et al. - 2017 - Computational Logistics.pdf}
+}
+
+@mastersthesis{bomsdorf:2020,
+  title = {Exact and {{Heuristic Solution}} of the {{Time-Dependent Truck Driver Scheduling}} and {{Routing Problem}} with {{Two Types}} of {{Breaks}}},
+  author = {Bomsdorf, Stefan},
+  year = {2020},
+  address = {{Aachen}},
+  school = {RWTH Aachen},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\QZ5LN6H5\\thesis_tdsrp-2b.pdf}
+}
+
+@inproceedings{delling:2011,
+  title = {{{PHAST}}: {{Hardware-Accelerated Shortest Path Trees}}},
+  shorttitle = {{{PHAST}}},
+  booktitle = {2011 {{IEEE International Parallel}} \& {{Distributed Processing Symposium}}},
+  author = {Delling, Daniel and Goldberg, Andrew V. and Nowatzyk, Andreas and Werneck, Renato F.},
+  year = {2011},
+  month = may,
+  pages = {921--931},
+  issn = {1530-2075},
+  doi = {10.1109/IPDPS.2011.89},
+  abstract = {We present a novel algorithm to solve the nonnegative single-source shortest path problem on road networks and other graphs with low highway dimension. After a quick preprocessing phase, we can compute all distances from a given source in the graph with essentially a linear sweep over all vertices. Because this sweep is independent of the source, we are able to reorder vertices in advance to exploit locality. Moreover, our algorithm takes advantage of features of modern CPU architectures, such as SSE and multi-core. Compared to Dijkstra's algorithm, our method needs fewer operations, has better locality, and is better able to exploit parallelism at multi-core and instruction levels. We gain additional speedup when implementing our algorithm on a GPU, where our algorithm is up to three orders of magnitude faster than Dijkstra's algorithm on a high-end CPU. This makes applications based on all-pairs shortest-paths practical for continental-sized road networks. Several algorithms, such as computing the graph diameter, exact arc flags, or centrality measures (exact reaches or betweenness), can be greatly accelerated by our method.},
+  keywords = {Arrays,Graphics processing unit,Instruction sets,Parallel processing,Random access memory,Registers,Roads},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\CLH3VS3Q\\6012901.html}
+}
+
+@inproceedings{delling:2014,
+  title = {Robust {{Exact Distance Queries}} on {{Massive Networks}}},
+  booktitle = {Proceedings of the 22nd {{Annual European Symposium}} on {{Algorithms}} ({{ESA}}'14), Volume 8737 of {{Lecture Notes}} in {{Computer Science}}},
+  author = {Delling, Daniel and Goldberg, Andrew V and Pajor, Thomas and Werneck, Renato F.},
+  year = {2014},
+  pages = {321--333},
+  publisher = {{Springer}},
+  langid = {english},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\ZQPMFJ94\\Delling et al. - Robust Exact Distance Queries on Massive Networks.pdf}
+}
+
+@misc{dibbelt:2015,
+  title = {Customizable {{Contraction Hierarchies}}},
+  author = {Dibbelt, Julian and Strasser, Ben and Wagner, Dorothea},
+  year = {2015},
+  month = aug,
+  number = {arXiv:1402.0402},
+  eprint = {1402.0402},
+  eprinttype = {arxiv},
+  primaryclass = {cs},
+  publisher = {{arXiv}},
+  doi = {10.48550/arXiv.1402.0402},
+  abstract = {We consider the problem of quickly computing shortest paths in weighted graphs given auxiliary data derived in an expensive preprocessing phase. By adding a fast weight-customization phase, we extend Contraction Hierarchies by Geisberger et al to support the three-phase workflow introduced by Delling et al. Our Customizable Contraction Hierarchies use nested dissection orders as suggested by Bauer et al. We provide an in-depth experimental analysis on large road and game maps that clearly shows that Customizable Contraction Hierarchies are a very practicable solution in scenarios where edge weights often change.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Artificial Intelligence,Computer Science - Data Structures and Algorithms},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\RH2VNTL4\\Dibbelt et al. - 2015 - Customizable Contraction Hierarchies.pdf;C\:\\Users\\Max\\Zotero\\storage\\KCKR7U9N\\1402.html}
 }
 
 @article{dijkstra:1959,
@@ -27,6 +138,24 @@
   langid = {english},
   keywords = {Mathematical Method},
   file = {C\:\\Users\\Max\\Zotero\\storage\\K6VPHCKT\\Dijkstra - 1959 - A note on two problems in connexion with graphs.pdf}
+}
+
+@inproceedings{geisberger:2011,
+  title = {Efficient {{Routing}} in {{Road Networks}} with {{Turn Costs}}},
+  booktitle = {Experimental {{Algorithms}}},
+  author = {Geisberger, Robert and Vetter, Christian},
+  editor = {Pardalos, Panos M. and Rebennack, Steffen},
+  year = {2011},
+  series = {Lecture {{Notes}} in {{Computer Science}}},
+  pages = {100--111},
+  publisher = {{Springer}},
+  address = {{Berlin, Heidelberg}},
+  doi = {10.1007/978-3-642-20662-7_9},
+  abstract = {We present an efficient algorithm for shortest path computation in road networks with turn costs. Each junction is modeled as a node, and each road segment as an edge in a weighted graph. Turn costs are stored in tables that are assigned to nodes. By reusing turn cost tables for identical junctions, we improve the space efficiency. Preprocessing based on an augmented node contraction allows fast shortest path queries. Compared to an edge-based graph, we reduce preprocessing time by a factor of 3.4 and space by a factor of 2.4 without change in query time.},
+  isbn = {978-3-642-20662-7},
+  langid = {english},
+  keywords = {algorithm engineering,banned turn,route planning,turn cost},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\7WK5PL2V\\Geisberger and Vetter - 2011 - Efficient Routing in Road Networks with Turn Costs.pdf}
 }
 
 @article{geisberger:2012,
@@ -82,6 +211,24 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\7ZWY6RID\\Irnich and Desaulniers - 2006 - Shortest Path Problems with Resource Constraints.pdf}
 }
 
+@inproceedings{kleff:2017,
+  title = {Time-{{Dependent Route Planning}} for~{{Truck~Drivers}}},
+  booktitle = {Computational {{Logistics}}},
+  author = {Kleff, Alexander and Br{\"a}uer, Christian and Schulz, Frank and Buchhold, Valentin and Baum, Moritz and Wagner, Dorothea},
+  editor = {Bekta{\c s}, Tolga and Coniglio, Stefano and {Martinez-Sykora}, Antonio and Vo{\ss}, Stefan},
+  year = {2017},
+  series = {Lecture {{Notes}} in {{Computer Science}}},
+  pages = {110--126},
+  publisher = {{Springer International Publishing}},
+  address = {{Cham}},
+  doi = {10.1007/978-3-319-68496-3_8},
+  abstract = {We study the problem of computing time-dependent shortest routes for truck drivers. In contrast to conventional route planning, truck drivers have to obey government regulations that impose limits on non-stop driving times. Therefore, route planners must plan break periods in advance and select suitable parking lots. To ensure that maximum driving times are not exceeded, predictable congestion due to, e.~g., peak hours should also be taken into account. Therefore, we introduce the truck driver routing problem in time-dependent road networks. It turns out that the combination of time-dependent driving times with constraints imposed by drivers' working hours requires computation of multiple time-dependent profiles for optimal solutions. Although conceptually simple, profile search is expensive. We greatly reduce (empirical) running times by calculating bounds on arrival and departure times during additional search phases to only query partial profiles and only to a fraction of the parking lots. Carefully integrating this approach with a one-to-many extension of time-dependent contraction hierarchies makes our approach practical. For even faster queries, we also propose a heuristic variant that works very well in practice. Excellent performance of our algorithms is demonstrated on a recent real-world instance of Germany that is much harder than time-dependent instances considered in previous works.},
+  isbn = {978-3-319-68496-3},
+  langid = {english},
+  keywords = {Drivers’ working hours,Parking locations,Time-dependent shortest paths,Truck driver scheduling},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\8RAVL243\\Kleff et al. - 2017 - Time-Dependent Route Planning for Truck Drivers.pdf}
+}
+
 @article{kleff:2020,
   title = {Efficient {{Route Planning}} with {{Temporary Driving Bans}}, {{Road Closures}}, and {{Rated Parking Areas}}},
   author = {Kleff, Alexander and Schulz, Frank and Wagenblatt, Jakob and Zeitz, Tim},
@@ -92,6 +239,32 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\VHMBJGDE\\Kleff et al. - 2020 - Efficient Route Planning with Temporary Driving Ba.pdf}
 }
 
+@article{mayerle:2020,
+  title = {The Long-Haul Full-Load Vehicle Routing and Truck Driver Scheduling Problem with Intermediate Stops: {{An}} Economic Impact Evaluation of {{Brazilian}} Policy},
+  shorttitle = {The Long-Haul Full-Load Vehicle Routing and Truck Driver Scheduling Problem with Intermediate Stops},
+  author = {Mayerle, S{\'e}rgio Fernando and De Genaro Chiroli, Daiane Maria and {Neiva de Figueiredo}, Jo{\~a}o and Rodrigues, Hidelbrando Ferreira},
+  year = {2020},
+  month = oct,
+  journal = {Transportation Research Part A: Policy and Practice},
+  volume = {140},
+  pages = {36--51},
+  issn = {0965-8564},
+  doi = {10.1016/j.tra.2020.07.021},
+  abstract = {This paper presents a methodology to identify the economic impact of different policies for heavy vehicle routing and driver scheduling in long-haul full-load trips with intermediate stops for refueling and for regulation-driven meal and rest periods. This methodology can be used both as a planning tool to help policy-makers define policies through scenario simulations, and as an evaluation tool to examine ex-post economic impact once policies have been changed as illustrated herein for the Brazilian case. The paper introduces a mathematical formulation, proposes a state-space graph search approach, and develops an algorithmic solution for a variant of the vehicle routing and truck driver scheduling problem with intermediate stops (VRTDSPIS), which is especially important in countries with vast territory where long-range freight trucking trips are common. In addition, it is particularly relevant for the economies of emerging markets that may have evolving regulatory frameworks and suboptimal infrastructure environments. Regulatory maximum driving and minimum driver resting time windows impose significant constraints to trucker routines, especially in sparsely populated regions through which long range vehicle trips with full load are common. Such trips can take days to be concluded and numerous alternative routes are possible, each with very different alternatives for refueling and rest. While the literature to date has focused mostly on truck driver scheduling given pre-determined routes and individual country's laws and regulations, this paper proposes a joint solution for the routing and scheduling problem with time window constraints, determining simultaneously a routing and scheduling plan that meets all maximum driving and minimum resting time interval regulatory requirements at minimum cost. An illustration applying the methodology to evaluate the economic impact of truck driver regulatory changes in Brazil is presented.},
+  langid = {english},
+  keywords = {Driver regulatory constraints,Full-load long haul trip optimization,Road freight in emerging markets,Trucking policy planning and evaluation,Vehicle routing and driver scheduling problem},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\NIKJSCQW\\S0965856420306765.html}
+}
+
+@misc{sartori:20210107,
+  title = {Scheduling Hours of Service for Truck Drivers with Interdependent Routes},
+  author = {Sartori, Carlo and Smet, Pieter and Vanden Berghe, Greet},
+  year = {20210107},
+  journal = {Scheduling hours of service for truck drivers with interdependent routes},
+  abstract = {When transporting goods, truck drivers may have to perform load transfers between two vehicles at cross-dock or transfer locations. These transfers create interdependencies between the routes of different truck drivers and require careful temporal synchronization. The situation becomes even more complex when driver schedules must comply with customer time windows, working periods and regulatory resting requirements. Although the scheduling of hours of service for truck drivers is a well-known problem, existing algorithms cannot cope with interdependent routes. Successfully accommodating this real-world characteristic demands the introduction of a new, more general truck scheduling problem: The Truck Driver Scheduling Problem with Interdependent Routes. This paper introduces a mathematical model and a label propagation algorithm to solve this new problem. Experiments indicate that the algorithm can quickly schedule a large number of interdependent routes and outperforms a mathematical programming approach. The algorithm produces valid schedules for multiple drivers and thus becomes a foundation for future vehicle routing algorithms that address interdependent routes and hours of service regulations.},
+  keywords = {Hours of service,Interdependent routes,Label propagation,Scheduling,Truck driver scheduling}
+}
+
 @article{strasser:2021,
   title = {A {{Fast}} and {{Tight Heuristic}} for {{A}}* in {{Road Networks}}},
   author = {Strasser, Ben and Zeitz, Tim},
@@ -100,6 +273,22 @@
   abstract = {We study exact, efficient and practical algorithms for route planning in large road networks. Routing applications often require integrating the current traffic situation, planning ahead with traffic predictions for the future, respecting forbidden turns, and many other features depending on the exact application. While Dijkstra's algorithm can be used to solve these problems, it is too slow for many applications. A* is a classical approach to accelerate Dijkstra's algorithm. A* can support many extended scenarios without much additional implementation complexity. However, A*'s performance depends on the availability of a good heuristic that estimates distances. Computing tight distance estimates is a challenge on its own. On road networks, shortest paths can also be quickly computed using hierarchical speedup techniques. They achieve speed and exactness but sacrifice A*'s flexibility. Extending them to certain practical applications can be hard. In this paper, we present an algorithm to efficiently extract distance estimates for A* from Contraction Hierarchies (CH), a hierarchical technique. We call our heuristic CH-Potentials. Our approach allows decoupling the supported extensions from the hierarchical speed-up technique. Additionally, we describe A* optimizations to accelerate the processing of low degree nodes, which often occur in road networks.},
   langid = {english},
   file = {C\:\\Users\\Max\\Zotero\\storage\\KEA28MJ5\\Strasser and Zeitz - 2021 - A Fast and Tight Heuristic for A in Road Networks.pdf}
+}
+
+@article{tuin:2018,
+  title = {Route {{Planning}} with {{Breaks}} and {{Truck Driving Bans Using Time-Dependent Contraction Hierarchies}}},
+  author = {van der Tuin, Marieke and de Weerdt, Mathijs and Batz, G.},
+  year = {2018},
+  month = jun,
+  journal = {Proceedings of the International Conference on Automated Planning and Scheduling},
+  volume = {28},
+  pages = {356--364},
+  issn = {2334-0843},
+  abstract = {Mandatory breaks for truck drivers are nowadays scheduled after the route has been decided. However, in some cases it is beneficial to plan these breaks during waiting time caused by truck driving bans. Optimally planning a single break considering driving bans can be done using Dijkstra's algorithm with multiple labels. This has large effects on predicted travel times: 17\% of the analysed routes having a night rest obtain an earlier arrival time by 5 hours on average. However, the computation times of this algorithm are long. A novel heuristic version of time-dependent contraction hierarchies leads to significant reductions in computation times from several seconds to several milliseconds per route. Experiments show that the solutions are still optimal for a representative test set consisting of 10,000 route queries.},
+  copyright = {Copyright (c) 2021 Proceedings of the International Conference on Automated Planning and Scheduling},
+  langid = {english},
+  keywords = {drivers legislation},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\MLPGIQUC\\Tuin et al. - 2018 - Route Planning with Breaks and Truck Driving Bans .pdf}
 }
 
 

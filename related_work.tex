@@ -1,0 +1,19 @@
+% !TeX root = thesis.tex
+%% related_work.tex
+%%
+
+%% ==============
+\chapter{Related Work\label{ch:related_work}}
+%% ==============
+Previous work addresses various adaptions of the long-haul truck driver routing problem. The work of \cite{kleff:2017} restricts the long-haul truck driver routing problem by only allowing one pause on a route, but includes traffic predictions using time-dependent road networks. It uses a version of core contraction hierarchies where all the parking nodes are part of the core which we will revisit later in this work. In \cite{kleff:2020}, the long-haul truck driver routing problem is restricted to one type of driving time constraint but with an unlimited amount of breaks on a route. The work also addresses temporary driving bans, road closures, and a rating of parking areas. It therefore searches for pareto-optimal solutions with regard to travel time and ratings of the used parking areas. The approach is too slow to be used in practice, but it uses a combination of the A* algorithm and CH-Potentials which we also will revisit later.
+
+Other publications address different extensions to the shortest path problem to address complex real-world scenarios. Most of them strive to integrate the additional requirements into CH or other speed-up techniques which exploit the hierarchy of road networks \cite{bast:2015}. Integrating traffic predictions, respectively time-dependent road networks with CH is addressed by \cite{batz:2009,batz:2013}. Turn costs are addressed by \cite{geisberger:2011}. Mitigating the complex task of integrating additional information into CH is addressed by \cite{strasser:2021} by building a tight potential based on CH which then is used in combination with the A* algorithm. They use the same principle to address live traffic and extend the CH variant to a customizable contraction hierarchy \cite{dibbelt:2015} to address temporary driving bans.
+
+\cite{sartori:20210107}
+
+
+\cite{mayerle:2020}
+
+\cite{tuin:2018}
+
+\cite{bomsdorf:2020}

@@ -37,7 +37,9 @@ We use Greek symbols for theoretical and abstract concepts such as the shortest 
 	$\drivingtime(s,t)$       & Driving time of the shortest route between $s$ and $t$                                                                                    \\
 	\\
 	$\route$                  & A route consisting of a path and a function $\breakTime(v)$ function.                                                                     \\
-	$\restr$                  & A driving time constraint consisting of maximum allowed driving time $c^d$ and break time $c^b$                                           \\
+	$\restr$                  & A driving time constraint                                                                                                                 \\
+	$c^d$                     & Maximum allowed driving time of a driving time constraint $c$                                                                             \\
+	$c^b$                     & Minimum pause time of a driving time constraint $\restr$                                                                                  \\
 	$\restrset$               & A set of one or more driving time constraints                                                                                             \\
 	$L(v)$                    & The label set of a node $v$                                                                                                               \\
 	$\breakDist_i(l)$         & Distance since the last break of a label with a duration of at least $c_i^b$ or distance since the last break if the index $i$ is omitted \\
@@ -45,8 +47,10 @@ We use Greek symbols for theoretical and abstract concepts such as the shortest 
 
 	$\concretedt(l)$          & Driving time of a label $l$                                                                                                               \\
 	$\concretett(l)$          & Travel time of a label $l$                                                                                                                \\
-	$\concretepotential(l,v)$ & The potential of a label $l \in L(v)$ as defined in section \ref{section:potential_n_csp}                                                 \\
+	$\concretepotential(l,v)$ & The potential of a label $l \in L(v)$ as defined in Section \ref{section:potential_n_csp}                                                 \\
 	$\len((u,v))$             & The weight, respectively length of an edge $(u,v)$, alternatively used for the length $\len(p)$ of a path $p$                             \\
+	$\ch$                     & A contraction hierarchy with vertices $\chv$ and edges $\che$                                                                             \\
+	$\corech$                 & A core contraction hierarchy with vertices $\corechv$ and edges $\coreche$                                                                \\
 \end{tabular}
 
 

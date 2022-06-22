@@ -165,7 +165,7 @@ When propagating a label $l \in L(u)$ along an edge $(u,v) \in E$ and $v \in P$,
 \end{figure}
 
 \subsection{Initialization and Stopping Criterion}
-We initialize the label set $L(s)$ of $s$ and the queue $Q$ with a label which only contains distances of zero and a dummy element as a predecessor. We stop the search when $t$ was removed from $Q$. The definition of the final algorithm~\ref{alg:CSP} \textsc{Dijkstra+1-DTC} is now trivial.
+We initialize the label set $L(s)$ of $s$ and the queue $Q$ with a label which only contains distances of zero and a dummy element as a predecessor. We stop the search when $t$ was removed from $Q$. The definition of the final Algorithm~\ref{alg:CSP} \textsc{Dijkstra+1-DTC} is now trivial.
 
 \begin{algorithm}[bt]
 	\caption{\textsc{Dijkstra+1-DTC}}\label{alg:CSP}
@@ -220,9 +220,9 @@ An $s$-$t$ query with Dijkstra's algorithm can be stopped when $t$ was removed f
 In our case, the labels in the queue are ordered by their travel time. Relaxing an edge can only increase the travel time since both edge lengths and break times are non-negative. Therefore, the same argument as for Dijkstra's algorithm applies and the first label at $t$ which was removed from the queue contains the shortest travel time $\traveltime(s,t)$.
 
 \section{Goal-Directed Search with One Driving Time Constraint}
-In this section, we transform the base algorithm described in section~\ref{sec:dijkstra_csp} to a goal-directed search with the A* algorithm. We introduce a new potential $\concretepotential_t$ which is based on the CH potential $\chpotential_t$ which is described in section~\ref{sec:ch_pot}. We then show that we still can stop the search when the first label at $t$ is removed from the queue.
+In this Section, we extend the base algorithm described in Section~\ref{sec:dijkstra_csp} to a goal-directed search with the A* algorithm. We introduce a new potential $\concretepotential_t$ based on the CH-Potentials in Section~\ref{sec:ch_pot}. We then show that we still can stop the search when the first label at $t$ is removed from the queue.
 
-The difference between Dijkstra and A* is the order in which nodes are being removed from the queue. In our case, this corresponds to the order of labels being removed from the queue. Instead of using their travel time $\concretett(l)$ as a queue key, a label $l \in L(v)$ is added to the queue with the key $\concretett(l) + \concretepotential_t(l,v)$. As shown in algorithm~\ref{alg:CSPPot}, the adaption of the pseudocode of the coarse algorithm is trivial.
+The difference between Dijkstra and A* is the order in which nodes are being removed from the queue. In our case, this corresponds to the order of labels being removed from the queue. Instead of using their travel time $\concretett(l)$ as a queue key, a label $l \in L(v)$ is added to the queue with the key $\concretett(l) + \concretepotential_t(l,v)$. Algorithm~\ref{alg:CSPPot} shows the adaption of the coarse algorithm.
 
 \begin{algorithm}[bt]
 	\caption{\textsc{A*+1-DTC}}\label{alg:CSPPot}
@@ -303,7 +303,7 @@ The only thing left is the adaption of \textsc{RelaxEdge} in Figure~\ref{alg:rel
 		\SetKwFunction{removeDom}{RemoveDominated}
 
 		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
-		\Pn{\RelaxEdge{(u,v), l}}{
+		\Pn{\RelaxEdge{$(u,v)$, $l$}}{
 			\If{$\breakDist(l) + \mathfunction{len}(u,v) < \restr^d$}
 			{
 				\D.\setInsert{$(\concretett(l) + \mathfunction{len}(u,v), \breakDist(l) + \mathfunction{len}(u,v), l)$}\;
@@ -332,7 +332,7 @@ The only thing left is the adaption of \textsc{RelaxEdge} in Figure~\ref{alg:rel
 \end{figure}
 
 \subsection{Potential for One Driving Time Constraint}\label{section:potential_csp}
-Given a target node $t$, the CH potential $\chpotential_t(v)$ yields a perfect estimate for the distance $\distance(v,t)$ from $v$ to $t$ without regard for driving time constraints and breaks. This trivially is a lower bound for the remaining travel time for any label at $v$. A better lower bound for the remaining travel time of a label at $v$ to $t$, including breaks due to the driving time limit, can be calculated by taking the minimum necessary amount of breaks into account. We define \minBreaks($d$) as a function which calculates the minimum amount of necessary breaks given a driving time $d$.
+Given a target node $t$, the CH-Potentials yield a perfect estimate for the distance $\distance(v,t)$ from $v$ to $t$ without regard for driving time constraints and breaks. This is a lower bound for the remaining travel time for any label at $v$. A better lower bound for the remaining travel time of a label at $v$ to $t$, including breaks due to the driving time limit, can be calculated by taking the minimum necessary amount of breaks into account. We define \minBreaks($d$) as a function which calculates the minimum amount of necessary breaks given a driving time $d$.
 
 \begin{align}\label{eq:min_breaks}
 	\minBreaks(d) = \begin{dcases}
@@ -368,7 +368,7 @@ A feasible node potential allows us to stop the A* search when the node $t$, res
 \begin{figure}[hbtp]
 	\centering
 	\input{figures/graph_infeasible_potential.tex}
-	\caption{A graph for which the feasibility condition of equation~\ref{eq:node_potential_feasibility} does not always hold with the potential $\concretepotential'$.}
+	\caption{A graph for which the feasibility condition of~\ref{eq:node_potential_feasibility} does not always hold with the potential $\concretepotential'$.}
 	\label{fig:graph_infeasible_potential}
 \end{figure}
 
@@ -381,7 +381,7 @@ A variant of the potential accounts for the driving time since the last break of
 	\end{split}
 \end{align}
 
-Since the potential now uses information from a label $l$ with $l \in L(v)$, it no longer is a node potential but also depends on the chosen label at $v$. The feasibility definition as defined in inequality~\ref{eq:node_potential_feasibility} can no longer be applied. We therefore have to show that queue keys of labels, which represent a lower bound estimate for the travel time of the entire route, can only increase over time.
+Since the potential now uses information from a label $l$ with $l \in L(v)$, it no longer is a node potential but also depends on the chosen label at $v$. The feasibility definition as defined in~\ref{eq:node_potential_feasibility} can no longer be applied. We therefore have to show that queue keys of labels can only increase over time.
 
 \begin{lemma}\label{lemma:pot_labels_get_larger}
 	Let $p = \langle s=v_0,v_1,\ldots,t=v_k \rangle$ be a path with labels $l_i$ at nodes $v_i$. Then $\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) \le \concretett(l_i) + \concretepotential_t(l_i,v_i)$.
@@ -395,8 +395,8 @@ Since the potential now uses information from a label $l$ with $l \in L(v)$, it 
 	\begin{enumerate}
 		\item $d \ge d' \implies \minBreakTime(d) \ge \minBreakTime(d')$
 		\item $\minBreakTime(d + \restr^d) = \restr^b + \minBreakTime(d)$
-		\item $\restr^d \ge \breakDist(l') \ge \breakDist(l) + \len(u,v) \ge \breakDist(l)$\\(line $2$ in \textsc{RelaxEdge} in Figure~\ref{alg:relax_edge_a_star})
-		\item   $\len(u,v) - \chpotential_t(u)+ \chpotential_t(v) \ge 0$ (feasibility of the CH potential)
+		\item $\restr^d \ge \breakDist(l') \ge \breakDist(l) + \len(u,v) \ge \breakDist(l)$\\(Line $2$ in \textsc{RelaxEdge} in Figure~\ref{alg:relax_edge_a_star})
+		\item   $\len(u,v) - \chpotential_t(u)+ \chpotential_t(v) \ge 0$ (feasibility of the CH-Potentials)
 		\item  $\len(u,v) + \chpotential_t(v) \ge \chpotential_t(u)$
 	\end{enumerate}
 
@@ -448,7 +448,7 @@ Since the potential now uses information from a label $l$ with $l \in L(v)$, it 
 \end{lemma}
 
 \begin{proof}
-	Let $p = \langle s=v_0,v_1,\ldots,t=v_k \rangle$ be a path with labels $l_i$ at nodes $v_i$. With lemma~\ref{lemma:pot_labels_get_larger} and $\concretepotential_t(l_k,t) = 0$ follows
+	Let $p = \langle s=v_0,v_1,\ldots,t=v_k \rangle$ be a path with labels $l_i$ at nodes $v_i$. With Lemma~\ref{lemma:pot_labels_get_larger} and $\concretepotential_t(l_k,t) = 0$ follows
 
 	\begin{align*}
 		\concretett(l_{i}) + \concretepotential_t(l_{i},v_{i}) & \le \concretett(l_{i+1}) + \concretepotential_t(l_{i+1},v_{i+1})     \\
@@ -463,11 +463,11 @@ Since the potential now uses information from a label $l$ with $l \in L(v)$, it 
 \end{theorem}
 
 \begin{proof}
-	When a label $l_t$ at $t$ is removed from the queue during an $s$-$t$ query, all remaining labels $l$ at nodes $v$ in the queue fulfill $\concretett(t) + \concretepotential_t(l_t,t) \le \concretett(v) + \concretepotential_t(l,v)$. The same holds for all labels which will be inserted into the queue at a later point in time (lemma~\ref{lemma:pot_labels_get_larger}). Assume that $\concretett(l_t)$ is not the shortest route from $s$ to $t$ with time $\traveltime(s,t)$. Then, a shorter route exists which uses at least one unsettled label $l \in L(v)$ at a node $v$. With lemma~\ref{lemma:pot_lower_bound_csp} and $\concretepotential_t(l_t,t) = 0$ follows $\concretett(t) = \concretett(t) + \concretepotential_t(l_t,t) \le \concretett(v) + \concretepotential_t(l,v) \le \concretett(p)$ which contradicts the assumption that $p$ yields a shorter $s$-$t$ travel time. Therefore, it must be $\concretett(l_t) = \traveltime(s,t)$ when $l_t$ was removed from the queue and the search can be stopped.
+	When a label $l_t$ at $t$ is removed from the queue during an $s$-$t$ query, all remaining labels $l$ at nodes $v$ in the queue fulfill $\concretett(v) + \concretepotential_t(l,v) \ge \concretett(t) + \concretepotential_t(l_t,t)$. The same holds for all labels which will be inserted into the queue at a later point in time (Lemma~\ref{lemma:pot_labels_get_larger}). Assume that $\concretett(l_t)$ is not the shortest route from $s$ to $t$ with time $\traveltime(s,t)$. Then, a shorter route exists which uses at least one unsettled label $l \in L(v)$ at a node $v$. With Lemma~\ref{lemma:pot_lower_bound_csp} and $\concretepotential_t(l_t,t) = 0$ follows $\concretett(t) = \concretett(t) + \concretepotential_t(l_t,t) \le \concretett(v) + \concretepotential_t(l,v) \le \concretett(p)$ which contradicts the assumption that $p$ yields a shorter $s$-$t$ travel time. Therefore, it must be $\concretett(l_t) = \traveltime(s,t)$ when $l_t$ was removed from the queue and the search can be stopped.
 \end{proof}
 
 \section{Multiple Driving Time Constraints\label{section:n_csp}}
-Dijkstra's algorithm with one driving time constraint (1-DTC) can easily be adapted to handle multiple driving time constraints $\restr_i$. With $n=|\restrset|$ driving time constraints, a label $l$ now contains the total travel time $\concretett(l)$ and $n$ driving time values $\breakDist_1(l), \ldots , \breakDist_n(l)$. Each value $\breakDist_i(l)$ represents the driving time since the last break at a node $v$ with break time $\breakTime(v) \ge \restr_i^b$. Pausing at a node occurs with one of the available break times $\restr_i^b$ of a driving time constraint $\restr_i \in \restrset$. Pausing with an arbitrary break time is permitted but yields longer travel times and no advantage and is therefore ignored. When a route breaks at $v$ for a time $\restr_i^b$, the corresponding label $l \in L(v)$ has $\breakDist(l) = 0$ for all $0 < j \le i$ since the breaks with shorter break times are included in the longer break. In the following, we redefine the fundamental concepts of section~\ref{sec:dijkstra_csp} for multiple driving time constraints.
+Dijkstra's algorithm with one driving time constraint (1-DTC) can easily be adapted to handle multiple driving time constraints $\restr_i$. With $n=|\restrset|$ driving time constraints, a label $l$ now contains the total travel time $\concretett(l)$ and $n$ driving time values $\breakDist_1(l), \ldots , \breakDist_n(l)$. Each value $\breakDist_i(l)$ represents the driving time since the last break at a node $v$ with break time $\breakTime(v) \ge \restr_i^b$. Pausing at a node occurs with one of the available break times $\restr_i^b$ of a driving time constraint $\restr_i \in \restrset$. Pausing with an arbitrary break time is permitted but yields longer travel times and no advantage and is therefore ignored. When a route breaks at $v$ for a time $\restr_i^b$, the corresponding label $l \in L(v)$ has $\breakDist(l) = 0$ for all $0 < j \le i$ since the breaks with shorter break times are included in the longer break. In the following, we redefine the fundamental concepts of Section~\ref{sec:dijkstra_csp} for multiple driving time constraints.
 
 \subparagraph{Label Propagation}
 Label propagation simply extends the component-wise addition of the edge weight. Let $l \in L(u)$ be a label at $u$ and $(u,v) = e \in E$, then $l$ can be propagated to $v$ resulting in a label $l'$ with $\concretett(l') = \concretett(l) + \mathfunction{len}(e)$, $\breakDist_i(l') = \breakDist_i(l) + \mathfunction{len}(e)$ $\forall\ 1 \le i \le |\restrset|$, and $\pred(l') = l$.
@@ -486,9 +486,9 @@ Label dominance can be generalized to multiple driving time constraints as follo
 \subsection{Potential for Multiple Driving Time Constraints\label{section:potential_n_csp}}
 TODO: Rewrite for only two dtc?
 
-In section~\ref{section:potential_csp} we defined the potential $\concretepotential_t(l,v)$ to extend Dijkstra's algorithm with one driving time constraint to a goal-directed search using the A* algorithm. We will now generalize $\concretepotential_t$ for the use with an arbitrary number of driving time constraints.
+In Section~\ref{section:potential_csp} we defined the potential $\concretepotential_t(l,v)$ to extend Dijkstra's algorithm with one driving time constraint to a goal-directed search using the A* algorithm. We will now generalize $\concretepotential_t$ for the use with an arbitrary number of driving time constraints.
 
-In equation~\refeq{eq:min_breaks} we used the distance $\distance(v,t)$ without regard for pausing from $v$ to $t$ and the driving time $\breakDist(l)$ since the last break on the route to calculate a lower bound for the amount of necessary breaks until we reach the target node. We now have to calculate the lower bound with respect to all driving time constraints. How many breaks of which duration do we need at least to comply with all driving time constraints $\restr_i$? For longer driving time constraints, we will always need a greater or equal amount of breaks than for shorter driving time constraints since they have a longer maximum allowed driving time $\restr_i^d$. At the same time, a break of length $\restr_i^b$ will also include breaks of lengths $\restr_j^b$ with $j < i$. We start with calculating the amount of necessary breaks $\minBreaks_i(d)$, given a driving time $d$, for all constraints $\restr_i$ independently.
+In Equation~\refeq{eq:min_breaks} we used the distance $\distance(v,t)$ without regard for pausing from $v$ to $t$ and the driving time $\breakDist(l)$ since the last break on the route to calculate a lower bound for the amount of necessary breaks until we reach the target node. We now have to calculate the lower bound with respect to all driving time constraints. How many breaks of which duration do we need at least to comply with all driving time constraints $\restr_i$? For longer driving time constraints, we will always need a greater or equal amount of breaks than for shorter driving time constraints since they have a longer maximum allowed driving time $\restr_i^d$. At the same time, a break of length $\restr_i^b$ will also include breaks of lengths $\restr_j^b$ with $j < i$. We start with calculating the amount of necessary breaks $\minBreaks_i(d)$, given a driving time $d$, for all constraints $\restr_i$ independently.
 
 \begin{align}\label{eq:min_breaks_n}
 	\minBreaks_i(d) = \begin{dcases}
@@ -541,7 +541,7 @@ Finally, the lower bound potential for a label $l \in L(v)$ and a target node $t
 	\end{split}
 \end{align}
 
-If queue keys still cannot decrease when propagating labels, lemma~\ref{lemma:pot_lower_bound_csp} and theorem~\ref{theorem:pot_stop_criterion} follow as a consequence. We follow the outline of the proof of lemma~\ref{lemma:pot_labels_get_larger} and therefore revisit the procedure \textsc{RelaxEdge} at an edge $(u,v) \in E$ with a label $l \in L(u)$ and a new label $l' \in L(v)$.
+If queue keys still cannot decrease when propagating labels, Lemma~\ref{lemma:pot_lower_bound_csp} and theorem~\ref{theorem:pot_stop_criterion} follow as a consequence. We follow the outLine of the proof of Lemma~\ref{lemma:pot_labels_get_larger} and therefore revisit the procedure \textsc{RelaxEdge} at an edge $(u,v) \in E$ with a label $l \in L(u)$ and a new label $l' \in L(v)$.
 
 \begin{lemma}
 	Lemma~\ref{lemma:pot_labels_get_larger} still holds for two driving time constraints.
@@ -550,7 +550,7 @@ If queue keys still cannot decrease when propagating labels, lemma~\ref{lemma:po
 \begin{proof}
 	There now are three cases to differentiate: not parking at $v$, short break at $v$, and long break at $v$.
 
-	Following general observations can be made in an addition to the proof of lemma~\ref{lemma:pot_labels_get_larger}:
+	Following general observations can be made in an addition to the proof of Lemma~\ref{lemma:pot_labels_get_larger}:
 
 	\begin{enumerate}
 		\setcounter{enumi}{5}
@@ -656,7 +656,7 @@ If queue keys still cannot decrease when propagating labels, lemma~\ref{lemma:po
 \end{proof}
 
 \section{Bidirectional Goal-Directed Search with Multiple Driving Time Constraints\label{sec:bidir_astar}}
-We now extend the goal-directed approach of section~\ref{section:potential_n_csp} to a bidirectional approach. Our algorithm will consist of a forward search from $s$ in $\overrightarrow{G}$ and a backward search from $t$ in $\overleftarrow{G}$. The distances of the forward and backward search are combined at nodes were which were settled by both searches. We therefore introduce a concept to merge the label sets of backward and forward search to find the best currently known valid route using information of both searches. Since we aim to stop the search as early as possible, we have to decide on a stopping criterion which allows the search to stop way before the forward search settles the target node $t$ or the backward search settles $s$. The correctness of the stopping criterion is closely tied to the potential of section~\ref{section:potential_n_csp}.
+We now extend the goal-directed approach of Section~\ref{section:potential_n_csp} to a bidirectional approach. Our algorithm will consist of a forward search from $s$ in $\overrightarrow{G}$ and a backward search from $t$ in $\overleftarrow{G}$. The distances of the forward and backward search are combined at nodes were which were settled by both searches. We therefore introduce a concept to merge the label sets of backward and forward search to find the best currently known valid route using information of both searches. Since we aim to stop the search as early as possible, we have to decide on a stopping criterion which allows the search to stop way before the forward search settles the target node $t$ or the backward search settles $s$. The correctness of the stopping criterion is closely tied to the potential of Section~\ref{section:potential_n_csp}.
 
 The input of the search remains a graph $G=(V,E,\mathfunction{len})$, a set of parking nodes $P \subseteq V$, a set of driving time constraints $\restrset$, and start and target nodes $s,t \in V$. There are two potentials $\overrightarrow{\concretepotential_t}$ and $\overleftarrow{\concretepotential}_s$ which we call the forward and the backward potential. The forward potential yields lower bounds for the remaining travel time of a label to $t$ in $\overrightarrow{G}=G$. The backward potential yields lower bounds for the remaining travel time of a label to $s$ in $\overleftarrow{G}$. The forward search then is a normal A* search on $\overrightarrow{G}$ with start node $s$ and target node $t$ and the backward search is a normal A* search on $\overleftarrow{G}$ with start node $t$ and target node $s$. Each search owns a queue of labels $\overrightarrow{Q}$ and $\overleftarrow{Q}$ and a label set $\overrightarrow{L}(v)$, respectively $\overleftarrow{L}(v)$ for each $v \in V$.
 
@@ -671,27 +671,25 @@ During the search, forward and backward search alternately settle nodes until th
 
 	Since the search stops when the minimum keys of $\overrightarrow{Q}$ and $\overleftarrow{Q}$ are both greater than $\tenttraveltime(s,t)$, all labels $l$ which will be settled by continuing the search have a greater distance $\concretett(l)$. Therefore, if any new connection between forward and backward search which complies with the driving time constraints will be found, its distance will be greater than $\tenttraveltime(s,t)$.
 
-	The shortest path with travel time $\traveltime(s,t)$ consists of two subpaths of forward and backward search which were connected at a node $v$. There exist label $l \in \overrightarrow{L}$ and $m \in \overleftarrow{L}$ with $\concretett(l) + \concretett(m) = \traveltime(s,t)$. Each label is the result of a unidirectional search from $s$, respectively from $t$. In section~\ref{sec:dijkstra_csp_correctness} we proved that a unidirectional search can be stopped when the first label at its target node was removed from the queue. Since $l$ and $m$ are both smaller or equal to $\tenttraveltime(s,t)$ and both queue keys of forward and backward queue are greater, $l$ and $m$ where already removed from the respective queue. Therefore, we know that $\overrightarrow{L}(v)$ and $\overleftarrow{L}(v)$ contain the labels with the shortest distance from $s$ to $v$, respectively from $t$ to $v$. Consequently, when the second of both labels was settled at $v$, $\traveltime(s,t)$ was updated with the value $\concretett(l) + \concretett(m)$.
+	The shortest path with travel time $\traveltime(s,t)$ consists of two subpaths of forward and backward search which were connected at a node $v$. There exist label $l \in \overrightarrow{L}$ and $m \in \overleftarrow{L}$ with $\concretett(l) + \concretett(m) = \traveltime(s,t)$. Each label is the result of a unidirectional search from $s$, respectively from $t$. In Section~\ref{sec:dijkstra_csp_correctness} we proved that a unidirectional search can be stopped when the first label at its target node was removed from the queue. Since $l$ and $m$ are both smaller or equal to $\tenttraveltime(s,t)$ and both queue keys of forward and backward queue are greater, $l$ and $m$ where already removed from the respective queue. Therefore, we know that $\overrightarrow{L}(v)$ and $\overleftarrow{L}(v)$ contain the labels with the shortest distance from $s$ to $v$, respectively from $t$ to $v$. Consequently, when the second of both labels was settled at $v$, $\traveltime(s,t)$ was updated with the value $\concretett(l) + \concretett(m)$.
 \end{proof}
 
 \section{Goal-Directed Core Contraction Hierarchy Search\label{sec:astar_corech}}
-Given a graph $G = (V,E,\mathfunction{len})$, we construct a core contraction hierarchy in which the core contains all the parking nodes $P \subseteq V$. We denote the set of uncontracted core nodes as $C \subseteq V$. It is $P \subseteq C$. The set of nodes $V$ therefore is split into a set of core nodes $C$ and a set of contracted nodes $V_{CH} = V \setminus C$. The graph $G_{CH} = (V_{CH},E_{CH},\mathfunction{len})$ with nodes $V_{CH}$ and edges $E_{CH} = \{(u,v) \in E \mid u,v \in V_{CH}\}$ therefore is a valid contraction hierarchy. It contains only contracted nodes and edges between those nodes. Thus, $E_{CH}$ contains only upward edges. The graph $G_{C} = (V \setminus V_{CH},E \setminus E_{CH},\mathfunction{len})$ is called the core graph.
+Given a graph $G = (V,E,\mathfunction{len})$, we construct a core contraction hierarchy in which the core contains all the parking nodes $P \subseteq V$. We denote the set of uncontracted core nodes as $C \subseteq V$. It is $P = C$. The set of nodes $V$ therefore is split into a set of core nodes $C$ and a set of contracted nodes $\chv = V \setminus C$. The graph $\ch = (\chv,\che,\mathfunction{len})$ with nodes $\chv$ and edges $\che = \{(u,v) \in E \mid u,v \in \chv\}$ therefore is a valid contraction hierarchy. It contains only contracted nodes and edges between those nodes. Thus, $\che$ contains only upward edges. The graph $G_{C} = (V \setminus \chv,E \setminus \che,\mathfunction{len})$ is called the core graph.
 
-The goal-directed core CH query reuses the bidirectional, goal-directed approach of section~\ref{sec:bidir_astar} on a modified forward graph $\overrightarrow{G}^*$ and a modified backward graph $\overleftarrow{G}^*$. The forward graph $\overrightarrow{G}^* = (V,\overrightarrow{E}^*,\mathfunction{len})$ consists of the forward graph of the contraction hierarchy $\overrightarrow{G}_{CH}$, extended by the core graph $G_C$. It is $\overrightarrow{E}^* = \overrightarrow{E}_{CH} \cup E_C $. Equivalently, the backward graph is defined as $\overleftarrow{G}^* = (V,\overleftarrow{E}^*,\overleftarrow{\mathfunction{len}})$ with $\overleftarrow{E}^* = \overleftarrow{E}_{CH} \cup E_C$ and $\overleftarrow{\mathfunction{len}}(u,v) = \mathfunction{len}(v,u)$.
+The goal-directed core CH query reuses the bidirectional, goal-directed approach of Section~\ref{sec:bidir_astar} on a modified forward graph $\overrightarrow{\corech}$ and a modified backward graph $\overleftarrow{\corech}$. The forward graph $\overrightarrow{\corech} = (V,\overrightarrow{E}^*,\mathfunction{len})$ consists of the forward graph of the contraction hierarchy $\overrightarrow{G}_{CH}$, extended by the core graph $G_C$. It is $\overrightarrow{E}^* = \overrightarrow{E}_{CH} \cup E_C $. Equivalently, the backward graph is defined as $\overleftarrow{\corech} = (V,\overleftarrow{E}^*,\overleftarrow{\mathfunction{len}})$ with $\overleftarrow{E}^* = \overleftarrow{E}_{CH} \cup E_C$ and $\overleftarrow{\mathfunction{len}}(u,v) = \mathfunction{len}(v,u)$.
 
-The bidirectional query in $G^*$ consequently consists of a forward search from $s$ in $\overrightarrow{G}^*$ and backward search from $t$ in $\overleftarrow{G}^*$. Each search consists of two parts, an upward search in $G_{CH}$ and a search in $G_C$. A search may begin at a core node skip the upward part, it also may not reach the core graph at all and only perform the CH upward search.
+The bidirectional query in $\corech$ consequently consists of a forward search from $s$ in $\overrightarrow{\corech}$ and backward search from $t$ in $\overleftarrow{\corech}$. Each search consists of two parts, an upward search in $\ch$ and a search in $G_C$. A search may begin at a core node skip the upward part, it also may not reach the core graph at all and only perform the CH upward search.
 
-The stopping criterion of the bidirectional search must take into account that the graph $G^*$ contains the contraction hierarchy $G_{CH}$. The common stopping criterion for $s$-$t$ queries in a CH is to stop the search if the minimum queue key of both queues $\overrightarrow{Q}$ and $\overleftarrow{Q}$ is greater or equal to the tentative minimum distance $\distance(s,t)$ \cite{geisberger:2012}. Since this criterion is a valid stopping criterion for the bidirectional A* algorithm, we can use it for our combination of CH and bidirectional A*.
+The stopping criterion of the bidirectional search must take into account that the graph $\corech$ contains the contraction hierarchy $\ch$. The common stopping criterion for $s$-$t$ queries in a CH is to stop the search if the minimum queue key of both queues $\overrightarrow{Q}$ and $\overleftarrow{Q}$ is greater or equal to the tentative minimum distance $\distance(s,t)$ \cite{geisberger:2012}. Since this criterion is a valid stopping criterion for the bidirectional A* algorithm, we can use it for our combination of CH and bidirectional A*.
 
 \subparagraph{Correctness}
 \begin{proof}
 	We simply derive the correctness of the core contraction hierarchy search from the correctness of a CH search and the correctness of the bidirectional A*. The label set of a node $v \in C_{CH}$ can never contain more than one label for the forward search and one label for the backward search. Let $C'$ be the set of nodes which are reachable from another core node, i.e. $C' = C \cup \{v \mid (u,v) \in E \wedge u \in C\}$.
 
-	\emph{Case 1: Neither forward nor backward search settle a node in $C'$.} No parking is involved since $P \subseteq C$. The query constitutes a simple CH query without labels, extended by pruning with the driving time constraints and goal-direction. The correctness directly follows from the correctness of the bidirectional A* algorithm with driving time constraints as shown in section~\ref{section:n_csp}.
+	\emph{Case 1: Neither forward nor backward search settle a node in $C'$.} No parking is involved since $P \subseteq C$. The query constitutes a simple CH query without labels, extended by pruning with the driving time constraints and goal-direction. The correctness directly follows from the correctness of the bidirectional A* algorithm with driving time constraints as shown in Section~\ref{section:n_csp}.
 
 	\emph{Case 2: Forward or backward search settle a node in $C'$, but not both.} No valid $s$-$t$ route exists per definition of $C'$. The correctness of the query is trivial since forward and backward search cannot settle a common node.
 
-	\emph{Case 3: Both forward and backward search settle a node in $C'$.} The query continues in the core as a bidirectional goal-directed search as described in section~\ref{section:n_csp}. Since the chosen stopping criterion is valid for this case, the result will be correct.
+	\emph{Case 3: Both forward and backward search settle a node in $C'$.} The query continues in the core as a bidirectional goal-directed search as described in Section~\ref{section:n_csp}. Since the chosen stopping criterion is valid for this case, the result will be correct.
 \end{proof}
-
-\subsection{Building the Core Contraction Hierarchy\label{sec:build_corech}}

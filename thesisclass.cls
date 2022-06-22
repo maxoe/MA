@@ -112,6 +112,7 @@
 
 \newcommand{\cmark}{\ding{51}}%
 \newcommand{\xmark}{\ding{55}}%
+
 %% --- End of New Commands ---
 
 
