@@ -5,9 +5,9 @@
 %% ==============
 \chapter{Evaluation}
 \label{ch:Evaluation}
-\begin{enumerate}
-	\item theoretical complexity?
-\end{enumerate}
+is multi-criteria spp with travel time and time since last break as criteria, optimal multi-criteria path is not prefix optimal  \cite{tuin:2018}
+
+according to \cite{hansen:1980} np-hard
 
 \section{Experiments}
 In this Section, we evaluate the running time and behavior of our algorithms of chapter~\ref{ch:Algorithm} in various experiments and describe the underlying data. Our machine runs openSUSE Leap 15.3, has \SI{128}{\giga\byte} (8x\SI{16}{\giga\byte}) of \SI{2133}{\mega\hertz} DDR4 RAM, and a 4-core Intel Xeon E5-1630v3 CPU which runs at \SI{3.7}{\giga\hertz}. The code is written in Rust and compiled with cargo 1.59.0-nightly using the release profile with lto~=~true and codegen-units~=~1.
