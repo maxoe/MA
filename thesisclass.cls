@@ -71,6 +71,8 @@
 \usepackage{tabularx,lipsum,environ}
 \usepackage[binary-units]{siunitx}
 \usepackage{pifont}
+
+\usepackage{csvsimple}
 %% --- End of Packages ---
 
 
