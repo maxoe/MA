@@ -4,13 +4,7 @@
 
 %% ==============
 \chapter{Evaluation\label{ch:Evaluation}}
-\section{Theoretical Complexity}
-TODO is multi-criteria spp with travel time and the time since last break as criteria, optimal multi-criteria path is not prefix optimal  \cite{tuin:2018}
-
-according to \cite{hansen:1980} np-hard
-
-\section{Experiments}
-In this Section, we evaluate the running time and behavior of our algorithms of chapter~\ref{ch:Algorithm} in various experiments and describe the underlying data. Our machine runs openSUSE Leap 15.3, has \SI{128}{\giga\byte} (8x\SI{16}{\giga\byte}) of \SI{2133}{\mega\hertz} DDR4 RAM, and a 4-core Intel Xeon E5-1630v3 CPU which runs at \SI{3.7}{\giga\hertz}. The code is written in Rust and compiled with cargo 1.59.0-nightly using the release profile with lto~=~true and codegen-units~=~1.
+In this Section, we evaluate the running time and behavior of our algorithms of chapter~\ref{ch:Algorithm} in various experiments and describe the underlying data. Our machine runs openSUSE Leap 15.3, has \SI{128}{\giga\byte} (8x\SI{16}{\giga\byte}) of \SI{2133}{\mega\hertz} DDR4 RAM, and a 4-core Intel Xeon E5-1630v3 CPU which runs at \SI{3.7}{\giga\hertz}. The code is written in Rust and compiled with cargo 1.64.0-nightly using the release profile with lto~=~true and codegen-units~=~1.
 
 \subparagraph{Data.} Our data is a road network of Europe from Open Street Map\footnote{\url{https://download.geofabrik.de/europe-latest.osm.pbf} of March 22, 2022} (OSM). We extract the routing graph from the OSM data using RoutingKit\footnote{\url{https://github.com/RoutingKit/RoutingKit}}, respectively a custom extension\footnote{\url{https://github.com/maxoe/RoutingKit}} of RoutingKit which is capable of extracting parking nodes accordingly and building the core CH as described in Section \ref{sec:build_corech}. The obtained routing graph has $81.5$ million nodes and $190$ million edges. If not stated otherwise, our set $P$ of parking nodes consists of 6800 nodes which were selected due to their OSM attributes. We will later conduct experiments with different choices for $P$.
 
@@ -19,7 +13,10 @@ In this Section, we evaluate the running time and behavior of our algorithms of 
 \subsection{Comparison of Algorithms and Optimizations}
 We evaluate the different algorithms of chapter \ref{ch:Algorithm} and the optimizations of chapter \refeq{ch:impl}.
 
-First, we compare the running times of queries of the algorithms of chapter \ref{ch:Algorithm} on a German road network which was obtained in the exact same way from OSM as the European road network\footnote{\url{https://download.geofabrik.de/europe/germany-latest.osm.pbf} of March 22, 2022}. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable. To avoid distortions, we also scale down the driving time constraints. Otherwise, most random $s$-$t$ queries on the German road network would be to short to require a break and almost no query would require more than one break. TODO
+First, we compare the running times of queries of the algorithms of chapter \ref{ch:Algorithm} on a German road network which was obtained in the exact same way from OSM as the European road network\footnote{\url{https://download.geofabrik.de/europe/germany-latest.osm.pbf} of March 22, 2022}. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable. To avoid distortions, we also scale down the driving time constraints. Otherwise, most random $s$-$t$ queries on the German road network would be to short to require a break and almost no query would require more than one break. We aim for a similar average number of breaks and average break time on a route. Therefore, we first adjust the maximum allowed driving time without a break and then the break time of a break.
+
+
+The average travel time of all queries of Table \ref{tbl:extensions_runtime} is \SI{4}{\hour} \SI{43}{\second}, the average break time on a route is \SI{17.5}{\minute}. This leads to an average driving time of \SI{3}{\hour} \SI{43}{\minute} \SI{13}{\second}.
 
 As Table \ref{tbl:extensions_runtime} shows, the goal-directed search already performs an order of magnitude better than the baseline Dijkstra's algorithm with our amendments for driving time constraints. TODO bidir. The largest improvement brings the bidirectional search which improves the baseline by a factor of about \num{10000} and the goal-directed variant by a factor of about \num{1000}.
 

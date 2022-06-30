@@ -19,38 +19,34 @@ Labels in a label set $L(v)$ represent a possible route, respectively a possible
 	\item $\pred(l)$, its preceding label
 \end{itemize}
 
+As in Dijkstra's algorithm, the queue is a min-Queue with ascending keys. The key of a label $l$ is the allocated $\traveltime(l)$.
+
 \subsection{Settling a Label}
 In contrast to Dijkstra's algorithm, the search \emph{settles} a label $l \in L(u)$ in each iteration instead of a node $u$. When settling a label, the search first removes $l$ from the queue. Similar to Dijkstra, it then relaxes all edges $(u,v) \in E$ with $l \in L(u)$ as shown in Figure~\ref{alg:settle_next_label}.
 
-\begin{figure}[hbtp]
-	\setlength{\interspacetitleruled}{0pt}%
-	\setlength{\algotitleheightrule}{0pt}%
-	\begin{algorithm*}[H]
-		\SetFuncSty{textsc}
-		\DontPrintSemicolon
-		\SetKwData{Q}{Q}
-		\SetKwData{L}{L}
+\begin{algorithm}[hbtp]
+	\SetFuncSty{textsc}
+	\DontPrintSemicolon
+	\SetKwData{Q}{Q}
+	\SetKwData{L}{L}
 
-		\SetKwFunction{SettleNextLabel}{SettleNextLabel}
-		\SetKwFunction{RelaxEdge}{RelaxEdge}
-		\SetKwFunction{queueDeleteMin}{deleteMin}
+	\SetKwFunction{SettleNextLabel}{SettleNextLabel}
+	\SetKwFunction{RelaxEdge}{RelaxEdge}
+	\SetKwFunction{queueDeleteMin}{deleteMin}
 
-		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
-		\Pn{\SettleNextLabel{}}{
-			$l \leftarrow$ \Q.\queueDeleteMin{} \;
-			\BlankLine
+	\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+	\Pn{\SettleNextLabel{}}{
+		$l \leftarrow$ \Q.\queueDeleteMin{} \;
+		\BlankLine
 
-			\ForAll{ $(u,v) \in E$ }
-			{
-				\RelaxEdge{$(u,v),l$}
-			}
+		\ForAll{ $(u,v) \in E$ }
+		{
+			\RelaxEdge{$(u,v),l$}
 		}
-	\end{algorithm*}
-	\setlength{\interspacetitleruled}{2pt}%
-	\setlength{\algotitleheightrule}{\algotitleheightruledefault}%
-
+	}
 	\caption{\label{alg:settle_next_label}Settling a label $l \in L(u)$ removes the label from the queue and relaxes all the outgoing edges of $u$.}
-\end{figure}
+\end{algorithm}
+
 
 Relaxing an edge consists of the three steps label \emph{propagation}, \emph{pruning} and \emph{dominance} checks.
 
@@ -76,98 +72,85 @@ If a label $l \in L(v)$ is dominated by another label $l' \in L(v)$, then $l'$ r
 
 A label $l$ will only be inserted into a label set $L(v)$ if it is pareto-optimal. If a label $l$ is inserted into $L(v)$, labels $l' \in L(v)$ are removed from $L(v)$ if $l$ dominates them. $L(v)$ therefore is the set of known pareto-optimal solutions at $v$. In Figure~\ref{alg:remove_dominated} we define the procedure \textsc{RemoveDominated($l$)} as an operation on a label set.
 
-\begin{figure}[hbtp]
-	\setlength{\interspacetitleruled}{0pt}%
-	\setlength{\algotitleheightrule}{0pt}%
-	\begin{algorithm*}[H]
-		\SetFuncSty{textsc}
-		\SetKwFor{ForAll}{forall}{do}
-		\DontPrintSemicolon
-		\SetKwData{L}{L}
+\begin{algorithm}[hbtp]
+	\SetFuncSty{textsc}
+	\SetKwFor{ForAll}{forall}{do}
+	\DontPrintSemicolon
+	\SetKwData{L}{L}
 
-		\SetKwFunction{RemoveDominated}{RemoveDominated}
-		\SetKwFunction{queueRemove}{remove}
+	\SetKwFunction{RemoveDominated}{RemoveDominated}
+	\SetKwFunction{queueRemove}{remove}
 
-		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
-		\Pn{\RemoveDominated{$l$}}{
-			\ForAll{$l' \in L$}
-			{
-				\If{\text{$l$ dominates $l'$}}{
-					\L.\queueRemove($l'$)\;
-				}
+	\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+	\Pn{\RemoveDominated{$l$}}{
+		\ForAll{$l' \in L$}
+		{
+			\If{\text{$l$ dominates $l'$}}{
+				\L.\queueRemove($l'$)\;
 			}
 		}
-	\end{algorithm*}
-	\setlength{\interspacetitleruled}{2pt}%
-	\setlength{\algotitleheightrule}{\algotitleheightruledefault}%
-
+	}
 	\caption{\label{alg:remove_dominated}The procedure $L$.\textsc{RemoveDominated}($l$) removes all labels from the label set $L$ which are dominated by the label $l$.}
-\end{figure}
+\end{algorithm}
+
 
 \subsection{Parking at a Node}
-When propagating a label $l \in L(u)$ along an edge $(u,v) \in E$ and $v \in P$, we have to consider pausing at $v$. Since we do not know if pausing at $v$ or continuing without a break is the better solution, we generate both labels and add them to label set $L(v)$ and the queue $Q$. We now can define the procedure \textsc{RelaxEdge} as in Figure~\ref{alg:relax_edge}.
+When propagating a label $l \in L(u)$ along an edge $(u,v) \in E$ and $v \in P$, we have to consider pausing at $v$. Since we do not know if pausing at $v$ or continuing without a break is the better solution, we generate both labels and add them to the label set $L(v)$ and the queue $Q$. We now can define the procedure \textsc{RelaxEdge} as in Figure~\ref{alg:relax_edge}.
 
-\begin{figure}[hbtp]
-	\setlength{\interspacetitleruled}{0pt}%
-	\setlength{\algotitleheightrule}{0pt}%
-	\begin{algorithm*}[H]
-		\SetFuncSty{textsc}
-		\DontPrintSemicolon
-		\SetKwData{Q}{Q}
-		\SetKwData{L}{L}
+\begin{algorithm}[htbp]
+	\SetFuncSty{textsc}
+	\DontPrintSemicolon
+	\SetKwData{Q}{Q}
+	\SetKwData{L}{L}
 
-		\SetKwFunction{RelaxEdge}{RelaxEdge}
-		\SetKwFunction{queueDeleteMin}{deleteMin}
+	\SetKwFunction{RelaxEdge}{RelaxEdge}
+	\SetKwFunction{queueDeleteMin}{deleteMin}
 
-		\SetKwData{Q}{Q}
-		\SetKwData{L}{L}
-		\SetKwData{D}{D}
-		\SetKwData{pred}{pred}
-		\SetKwArray{ds}{ds}
-		\SetKwFunction{queueDeleteMin}{deleteMin}
-		\SetKwFunction{queueInsert}{queueInsert}
-		\SetKwFunction{setInsert}{insert}
-		\SetKwFunction{queueMin}{min}
-		\SetKwFunction{queueMinKey}{minKey}
-		\SetKwFunction{queueDecreaseKey}{decreaseKey}
-		\SetKwFunction{queueContains}{contains}
-		\SetKwFunction{listInsert}{insert}
-		\SetKwFunction{removeDom}{RemoveDominated}
+	\SetKwData{Q}{Q}
+	\SetKwData{L}{L}
+	\SetKwData{D}{D}
+	\SetKwData{pred}{pred}
+	\SetKwArray{ds}{ds}
+	\SetKwFunction{queueDeleteMin}{deleteMin}
+	\SetKwFunction{queueInsert}{queueInsert}
+	\SetKwFunction{setInsert}{insert}
+	\SetKwFunction{queueMin}{min}
+	\SetKwFunction{queueMinKey}{minKey}
+	\SetKwFunction{queueDecreaseKey}{decreaseKey}
+	\SetKwFunction{queueContains}{contains}
+	\SetKwFunction{listInsert}{insert}
+	\SetKwFunction{removeDom}{RemoveDominated}
 
-		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
-		\Pn{\RelaxEdge{(u,v), l}}{
-			$\D \leftarrow \{\}$\;
-			\If{$\breakDist(l) + \mathfunction{len}(u,v) \le \restr^d$}
+	\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+	\Pn{\RelaxEdge{(u,v), l}}{
+		$\D \leftarrow \{\}$\;
+		\If{$\breakDist(l) + \mathfunction{len}(u,v) \le \restr^d$}
+		{
+			\D.\setInsert{$(\concretett(l) + \mathfunction{len}(u,v), \breakDist(l) + \mathfunction{len}(u,v), l)$}\;
+
+			\If{$v \in P$}
 			{
-				\D.\setInsert{$(\concretett(l) + \mathfunction{len}(u,v), \breakDist(l) + \mathfunction{len}(u,v), l)$}\;
+				\D.\setInsert{$(\concretett(l) + \mathfunction{len}(u,v) + \restr^b, 0, l)$}\;
+			}
 
-				\If{$v \in P$}
+			\ForAll{ $l' \in D$ }
+			{
+				\If{$l'$ is not dominated by any label in \L{$v$}}
 				{
-					\D.\setInsert{$(\concretett(l) + \mathfunction{len}(u,v) + \restr^b, 0, l)$}\;
-				}
-
-				\ForAll{ $l' \in D$ }
-				{
-					\If{$l'$ is not dominated by any label in \L{$v$}}
-					{
-						\L{$v$}.\removeDom{$l'$} \;
-						\L{$v$}.\setInsert{$l'$} \;
-						\Q.\queueInsert{$\concretett(l')$,$l'$}
-					}
+					\L{$v$}.\removeDom{$l'$} \;
+					\L{$v$}.\setInsert{$l'$} \;
+					\Q.\queueInsert{$\concretett(l')$,$l'$}
 				}
 			}
 		}
-	\end{algorithm*}
-	\setlength{\interspacetitleruled}{2pt}%
-	\setlength{\algotitleheightrule}{\algotitleheightruledefault}%
-
+	}
 	\caption{\label{alg:relax_edge}Relaxing an edge $(u,v) \in E$ when settling a label $l \in L(u)$ with regard to parking nodes.}
-\end{figure}
+\end{algorithm}
 
-\subsection{Initialization and Stopping Criterion}
-We initialize the label set $L(s)$ of $s$ and the queue $Q$ with a label which only contains distances of zero and a dummy element as a predecessor. We stop the search when $t$ was removed from $Q$. The definition of the final Algorithm~\ref{alg:CSP} \textsc{Dijkstra+1-DTC} is now trivial.
+\subsection{Initialization and Main Loop}
+We initialize the label set $L(s)$ of $s$ and the queue $Q$ with a label which only contains distances of zero and a dummy element as a predecessor. We stop the search when $t$ was removed from $Q$. The definition of the final algorithm is given as Algorithm~\ref{alg:CSP} \textsc{Dijkstra+1-DTC}.
 
-\begin{algorithm}[bt]
+\begin{algorithm}[htbt]
 	\caption{\textsc{Dijkstra+1-DTC}}\label{alg:CSP}
 
 	% Some settings
@@ -216,11 +199,16 @@ We initialize the label set $L(s)$ of $s$ and the queue $Q$ with a label which o
 \end{algorithm}
 
 \subsection{Correctness\label{sec:dijkstra_csp_correctness}}
-An $s$-$t$ query with Dijkstra's algorithm can be stopped when $t$ was removed from the queue since all of the following nodes in the queue have larger distances and edge lengths are non-negative by definition. Therefore, relaxing an outgoing edge of these nodes cannot lead to an improvement of the distance at $t$.
-In our case, the labels in the queue are ordered by their travel time. Relaxing an edge can only increase the travel time since both edge lengths and break times are non-negative. Therefore, the same argument as for Dijkstra's algorithm applies and the first label at $t$ which was removed from the queue contains the shortest travel time $\traveltime(s,t)$.
+Given a start node $s$ and a target node $t$, Dijkstra's algorithm returns the shortest distance between $s$ and $t$. The algorithm can be stopped after $t$ was removed from the queue since all the following nodes in the queue have larger distances and the edge lengths are non-negative by definition. Therefore, relaxing an outgoing edge of these nodes cannot lead to an improvement of the distance at $t$.
+
+In our case, the algorithm shall return the shortest travel time $\traveltime(s,t)$ between two nodes $s$ and $t$. We have a queue of labels which is sorted in ascending order by their travel time. When removing a label $l$ from the queue, all the other labels in the queue therefore have a larger travel time than $\concretett(l)$. Additionally, all the edge lengths and the break times are non-negative. Relaxing an edge thus can only increase the travel time. The same argument as for the correctness of Dijkstra's algorithm applies: Since relaxing an edge can only increase travel time, labels which are added later to the queue will also have a larger travel time than $\concretett(l)$. Therefore, when we remove the first label $l_t \in L(t)$ at $t$ from the queue, we know that this time cannot be improved further and it is correct to stop the search.
+
+When relaxing an edge $(u,v)$ and propagating a label $l \in L(u)$, we check if the new label complies with the driving time constraints. We do not insert the new label into $L(v)$ and the queue if it violates a constraint. Therefore, label sets and the queue only contain labels which represent a valid route and $l_t$ must also represent a valid route.
+
+If we propagated a label to a parking node, we produce a second label since we have the two choices of parking and not parking at the node. We treat both labels equally and insert both labels into label set and queue if they are not dominated or represent an invalid route. The label with the smaller travel time will be removed first from the queue, and the second label will be handled at a later stage when its travel time becomes the smallest of all labels in the queue. It is not possible to miss possible routes between $s$ and $t$ because we produce all the labels and only discard dominated labels and labels representing invalid routes. There therefore cannot be a label with a better travel time from $s$ to $t$ than the label $l_t$ which we removed as the first label at t from the queue. Therefore, its travel time $\concretett(l_t)$ is equal to the shortest travel time $\traveltime(s,t)$ between $s$ and $t$.
 
 \section{Goal-Directed Search with One Driving Time Constraint}
-In this Section, we extend the base algorithm described in Section~\ref{sec:dijkstra_csp} to a goal-directed search with the A* algorithm. We introduce a new potential $\concretepotential_t$ based on the CH-Potentials in Section~\ref{sec:ch_pot}. We then show that we still can stop the search when the first label at $t$ is removed from the queue.
+In this section, we extend the base algorithm described in Section~\ref{sec:dijkstra_csp} to a goal-directed search with the A* algorithm. We introduce a new potential $\concretepotential_t$ based on the CH-Potentials in Section~\ref{sec:ch_pot}. We then show that we still can stop the search when the first label at $t$ is removed from the queue.
 
 The difference between Dijkstra and A* is the order in which nodes are being removed from the queue. In our case, this corresponds to the order of labels being removed from the queue. Instead of using their travel time $\concretett(l)$ as a queue key, a label $l \in L(v)$ is added to the queue with the key $\concretett(l) + \concretepotential_t(l,v)$. Algorithm~\ref{alg:CSPPot} shows the adaption of the coarse algorithm.
 
@@ -273,66 +261,62 @@ The difference between Dijkstra and A* is the order in which nodes are being rem
 	}
 \end{algorithm}
 
-The only thing left is the adaption of \textsc{RelaxEdge} in Figure~\ref{alg:relax_edge} where we change the queue keys to use $\concretett(l) + \concretett(l,v)$ instead. The result is shown in Figure~\ref{alg:relax_edge_a_star}.
+The only thing left is the adaption of \textsc{RelaxEdge} in Figure~\ref{alg:relax_edge} where we change the queue keys to use $\concretett(l) + \concretepotential(l,v)$ instead. The result is shown in Figure~\ref{alg:relax_edge_a_star}.
 
-\begin{figure}[hbtp]
-	\setlength{\interspacetitleruled}{0pt}%
-	\setlength{\algotitleheightrule}{0pt}%
-	\begin{algorithm*}[H]
-		\SetFuncSty{textsc}
-		\DontPrintSemicolon
-		\SetKwData{Q}{Q}
-		\SetKwData{L}{L}
+\begin{algorithm}[hbtp]
+	\SetFuncSty{textsc}
+	\DontPrintSemicolon
+	\SetKwData{Q}{Q}
+	\SetKwData{L}{L}
 
-		\SetKwFunction{RelaxEdge}{RelaxEdge}
-		\SetKwFunction{queueDeleteMin}{deleteMin}
+	\SetKwFunction{RelaxEdge}{RelaxEdge}
+	\SetKwFunction{queueDeleteMin}{deleteMin}
 
-		\SetKwData{Q}{Q}
-		\SetKwData{L}{L}
-		\SetKwData{D}{D}
-		\SetKwData{pred}{pred}
-		\SetKwArray{ds}{ds}
-		\SetKwFunction{queueDeleteMin}{deleteMin}
-		\SetKwFunction{queueInsert}{queueInsert}
-		\SetKwFunction{setInsert}{insert}
-		\SetKwFunction{queueMin}{min}
-		\SetKwFunction{queueMinKey}{minKey}
-		\SetKwFunction{queueDecreaseKey}{decreaseKey}
-		\SetKwFunction{queueContains}{contains}
-		\SetKwFunction{listInsert}{insert}
-		\SetKwFunction{removeDom}{RemoveDominated}
+	\SetKwData{Q}{Q}
+	\SetKwData{L}{L}
+	\SetKwData{D}{D}
+	\SetKwData{pred}{pred}
+	\SetKwArray{ds}{ds}
+	\SetKwFunction{queueDeleteMin}{deleteMin}
+	\SetKwFunction{queueInsert}{queueInsert}
+	\SetKwFunction{setInsert}{insert}
+	\SetKwFunction{queueMin}{min}
+	\SetKwFunction{queueMinKey}{minKey}
+	\SetKwFunction{queueDecreaseKey}{decreaseKey}
+	\SetKwFunction{queueContains}{contains}
+	\SetKwFunction{listInsert}{insert}
+	\SetKwFunction{removeDom}{RemoveDominated}
 
-		\SetKwProg{Pn}{Procedure}{:}{\KwRet}
-		\Pn{\RelaxEdge{$(u,v)$, $l$}}{
-			\If{$\breakDist(l) + \mathfunction{len}(u,v) < \restr^d$}
+	\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+	\Pn{\RelaxEdge{$(u,v)$, $l$}}{
+		$\D \leftarrow \{\}$\;
+		\If{$\breakDist(l) + \mathfunction{len}(u,v) \le \restr^d$}
+		{
+			\D.\setInsert{$(\concretett(l) + \mathfunction{len}(u,v), \breakDist(l) + \mathfunction{len}(u,v), l)$}\;
+
+			\If{$v \in P$}
 			{
-				\D.\setInsert{$(\concretett(l) + \mathfunction{len}(u,v), \breakDist(l) + \mathfunction{len}(u,v), l)$}\;
+				\D.\setInsert{$(\concretett(l) + \mathfunction{len}(u,v) + \restr^b, 0, l)$}\;
+			}
 
-				\If{$v \in P$}
+			\ForAll{ $l' \in D$ }
+			{
+				\If{$l'$ is not dominated by any label in \L{$v$}}
 				{
-					\D.\setInsert{$(\concretett(l) + \mathfunction{len}(u,v) + \breakDist_p, 0, l)$}\;
-				}
-
-				\ForAll{ $l' \in D$ }
-				{
-					\If{$l'$ is not dominated by any label in \L{$v$}}
-					{
-						\L{$v$}.\removeDom{$l'$} \;
-						\L{$v$}.\setInsert{$l'$} \;
-						\Q.\queueInsert{$\concretett(l') + \concretepotential_t(l')$, l'}
-					}
+					\L{$v$}.\removeDom{$l'$} \;
+					\L{$v$}.\setInsert{$l'$} \;
+					\Q.\queueInsert{$\concretett(l') + \concretepotential_t(l',v)$, l'}
 				}
 			}
 		}
-	\end{algorithm*}
-	\setlength{\interspacetitleruled}{2pt}%
-	\setlength{\algotitleheightrule}{\algotitleheightruledefault}%
-
+	}
 	\caption{\label{alg:relax_edge_a_star} Relaxing an edge with regard to the potential.}
-\end{figure}
+\end{algorithm}
 
 \subsection{Potential for One Driving Time Constraint}\label{section:potential_csp}
-Given a target node $t$, the CH-Potentials yield a perfect estimate for the distance $\distance(v,t)$ from $v$ to $t$ without regard for driving time constraints and breaks. This is a lower bound for the remaining travel time for any label at $v$. A better lower bound for the remaining travel time of a label at $v$ to $t$, including breaks due to the driving time limit, can be calculated by taking the minimum necessary amount of breaks into account. We define \minBreaks($d$) as a function which calculates the minimum amount of necessary breaks given a driving time $d$.
+In general, every feasible potential can be used for the goal-directed algorithm. We use CH-Potentials as foundation to build a potential which accounts for necessary break times on the route.
+
+Given a target node $t$, the CH-Potentials yield a perfect estimate for the distance $\distance(v,t)$ from $v$ to $t$ without regard for driving time constraints and breaks. This is a lower bound for the remaining travel time for any label at $v$. A better lower bound for the remaining travel time of a label at $v$ to $t$, including breaks due to the driving time limit, can be calculated by taking the minimum necessary amount of breaks into account. We define \minBreaks($d$) as a function of time which calculates the minimum amount of necessary breaks for any arbitrary driving time $d$.
 
 \begin{align}\label{eq:min_breaks}
 	\minBreaks(d) = \begin{dcases}
@@ -351,8 +335,7 @@ and finally define our node potential as
 
 \begin{align}
 	\begin{split}
-		\concretepotential{'}_t(v) & = \minBreakTime(d) + \chpotential_t(v) \\
-		& = \minBreakTime(d) + \distance(v,t)
+		\concretepotential{'}_t(v) & = \minBreakTime(d) + \chpotential_t(v)
 	\end{split}
 \end{align}
 
@@ -376,15 +359,14 @@ A variant of the potential accounts for the driving time since the last break of
 
 \begin{align}
 	\begin{split}
-		\concretepotential_t(l,v) & = \minBreakTime(\breakDist(l) + \chpotential(v)) +\chpotential(v) \\
-		& = \minBreakTime(\breakDist(l) + \distance(v,t)) + \distance(v,t)
+		\concretepotential_t(l,v) & = \minBreakTime(\breakDist(l) + \chpotential_t(v)) +\chpotential_t(v)
 	\end{split}
 \end{align}
 
 Since the potential now uses information from a label $l$ with $l \in L(v)$, it no longer is a node potential but also depends on the chosen label at $v$. The feasibility definition as defined in~\ref{eq:node_potential_feasibility} can no longer be applied. We therefore have to show that queue keys of labels can only increase over time.
 
 \begin{lemma}\label{lemma:pot_labels_get_larger}
-	Let $p = \langle s=v_0,v_1,\ldots,t=v_k \rangle$ be a path with labels $l_i$ at nodes $v_i$. Then $\concretett(l_{i-1}) + \concretepotential_t(l_{i-1},v_{i-1}) \le \concretett(l_i) + \concretepotential_t(l_i,v_i)$.
+	Let $l$ be a label in the label set $L(u)$ which the algorithm propagates along the edge $(u,v) \in E$ to create a label $l' \in L(v)$. The sum of travel time and potential of a label can only increase, i.e, $\concretett(l) + \concretepotential_t(l,u) \le \concretett(l') + \concretepotential_t(l',v)$.
 \end{lemma}
 
 \begin{proof}
@@ -394,7 +376,7 @@ Since the potential now uses information from a label $l$ with $l \in L(v)$, it 
 
 	\begin{enumerate}
 		\item $d \ge d' \implies \minBreakTime(d) \ge \minBreakTime(d')$
-		\item $\minBreakTime(d + \restr^d) = \restr^b + \minBreakTime(d)$
+		\item $\restr^b + \minBreakTime(d) \ge \minBreakTime(d + \restr^d)$
 		\item $\restr^d \ge \breakDist(l') \ge \breakDist(l) + \len(u,v) \ge \breakDist(l)$\\(Line $2$ in \textsc{RelaxEdge} in Figure~\ref{alg:relax_edge_a_star})
 		\item   $\len(u,v) - \chpotential_t(u)+ \chpotential_t(v) \ge 0$ (feasibility of the CH-Potentials)
 		\item  $\len(u,v) + \chpotential_t(v) \ge \chpotential_t(u)$
@@ -408,15 +390,15 @@ Since the potential now uses information from a label $l$ with $l \in L(v)$, it 
 		\begin{split}\label{eq:label_feasibility_proof_1}
 			&\concretett(l') - \concretett(l) - \concretepotential_t(l,u) + \concretepotential_t(l',v)\\
 			&= \concretett(l) + \len(u,v) - \concretett(l)\\
-			& \phantom{{}=1} - (\minBreakTime(\breakDist(l)+\chpotential(u)) + \chpotential(u))\\
-			& \phantom{{}=1} + \minBreakTime(\breakDist(l')+\chpotential(v)) + \chpotential(v)\\
-			&= \len(u,v) + \minBreakTime(\breakDist(l')+\chpotential(v))\\
-			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential(u)) - \chpotential(u) + \chpotential(v)\\
-			&= \len(u,v) + \minBreakTime(\breakDist(l) + \len(u,v) + \chpotential(v))\\
-			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential(u)) - \chpotential(u) + \chpotential(v) \\
-			&\stackrel{\text{(1. and 5.)}}{\ge} \len(u,v) + \minBreakTime(\breakDist(l) + \chpotential(u))\\
-			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential(u)) - \chpotential(u) + \chpotential(v) \\
-			&= \len(u,v) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - (\minBreakTime(\breakDist(l)+\chpotential_t(u)) + \chpotential_t(u))\\
+			& \phantom{{}=1} + \minBreakTime(\breakDist(l')+\chpotential_t(v)) + \chpotential_t(v)\\
+			&= \len(u,v) + \minBreakTime(\breakDist(l')+\chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential_t(u)) - \chpotential_t(u) + \chpotential_t(v)\\
+			&= \len(u,v) + \minBreakTime(\breakDist(l) + \len(u,v) + \chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential_t(u)) - \chpotential_t(u) + \chpotential_t(v) \\
+			&\stackrel{\text{(1. and 5.)}}{\ge} \len(u,v) + \minBreakTime(\breakDist(l) + \chpotential_t(u))\\
+			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential_t(u)) - \chpotential_t(u) + \chpotential_t(v) \\
+			&= \len(u,v) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(4.)}}{\ge} 0
 		\end{split}
 	\end{align}
@@ -427,17 +409,17 @@ Since the potential now uses information from a label $l$ with $l \in L(v)$, it 
 		\begin{split}\label{eq:label_feasibility_proof_2}
 			&\concretett(l') - \concretett(l) - \concretepotential_t(l,u) + \concretepotential_t(l',v)\\
 			&= \concretett(l) + \len(u,v) + \restr^b - \concretett(l)\\
-			& \phantom{{}=1} - (\minBreakTime(\breakDist(l) + \chpotential(u)) + \chpotential(u))\\
-			& \phantom{{}=1} + \minBreakTime(\chpotential(v)) + \chpotential(v)\\
-			&=  \len(u,v) + \restr^b + \minBreakTime(\chpotential(v))\\
-			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential(u)) - \chpotential(u) + \chpotential(v)\\
-			&\stackrel{\text{(2.)}}{=}  \len(u,v) + \minBreakTime(\restr^d + \chpotential(v))\\
-			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential(u)) - \chpotential(u) + \chpotential(v)\\
-			&\stackrel{\text{(1. and 3.)}}{\ge} \len(u,v) + \minBreakTime(\breakDist(l) + \len(u,v) + \chpotential(v))\\
-			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential(u)) - \chpotential(u) + \chpotential(v)\\
-			&\stackrel{\text{(1. and 4.)}}{\ge} \len(u,v) + \minBreakTime(\breakDist(l) + \chpotential(u))\\
-			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential(u)) - \chpotential(u) + \chpotential(v)\\
-			&=  \len(u,v) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - (\minBreakTime(\breakDist(l) + \chpotential_t(u)) + \chpotential_t(u))\\
+			& \phantom{{}=1} + \minBreakTime(\chpotential_t(v)) + \chpotential_t(v)\\
+			&=  \len(u,v) + \restr^b + \minBreakTime(\chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential_t(u)) - \chpotential_t(u) + \chpotential_t(v)\\
+			&\stackrel{\text{(2.)}}{\ge}  \len(u,v) + \minBreakTime(\restr^d + \chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential_t(u)) - \chpotential_t(u) + \chpotential_t(v)\\
+			&\stackrel{\text{(1. and 3.)}}{\ge} \len(u,v) + \minBreakTime(\breakDist(l) + \len(u,v) + \chpotential_t(v))\\
+			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential_t(u)) - \chpotential_t(u) + \chpotential_t(v)\\
+			&\stackrel{\text{(1. and 4.)}}{\ge} \len(u,v) + \minBreakTime(\breakDist(l) + \chpotential_t(u))\\
+			& \phantom{{}=1} - \minBreakTime(\breakDist(l)+\chpotential_t(u)) - \chpotential_t(u) + \chpotential_t(v)\\
+			&=  \len(u,v) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(4.)}}{\ge} 0
 		\end{split}
 	\end{align}
@@ -463,7 +445,7 @@ Since the potential now uses information from a label $l$ with $l \in L(v)$, it 
 \end{theorem}
 
 \begin{proof}
-	When a label $l_t$ at $t$ is removed from the queue during an $s$-$t$ query, all remaining labels $l$ at nodes $v$ in the queue fulfill $\concretett(v) + \concretepotential_t(l,v) \ge \concretett(t) + \concretepotential_t(l_t,t)$. The same holds for all labels which will be inserted into the queue at a later point in time (Lemma~\ref{lemma:pot_labels_get_larger}). Assume that $\concretett(l_t)$ is not the shortest route from $s$ to $t$ with time $\traveltime(s,t)$. Then, a shorter route exists which uses at least one unsettled label $l \in L(v)$ at a node $v$. With Lemma~\ref{lemma:pot_lower_bound_csp} and $\concretepotential_t(l_t,t) = 0$ follows $\concretett(t) = \concretett(t) + \concretepotential_t(l_t,t) \le \concretett(v) + \concretepotential_t(l,v) \le \concretett(p)$ which contradicts the assumption that $p$ yields a shorter $s$-$t$ travel time. Therefore, it must be $\concretett(l_t) = \traveltime(s,t)$ when $l_t$ was removed from the queue and the search can be stopped.
+	When a label $l_t$ at $t$ is removed from the queue during an $s$-$t$ query, all remaining labels $l$ at nodes $v$ in the queue fulfill $\concretett(l) + \concretepotential_t(l,v) \ge \concretett(l_t) + \concretepotential_t(l_t,t)$. The same holds for all labels which will be inserted into the queue at a later point in time (Lemma~\ref{lemma:pot_labels_get_larger}). Assume that $\concretett(l_t)$ is not the shortest possible travel time $\traveltime(s,t)$ of a route from $s$ to $t$. Then, a shorter route exists which uses at least one unsettled label $l \in L(v)$ at a node $v$. With Lemma~\ref{lemma:pot_lower_bound_csp} and $\concretepotential_t(l_t,t) = 0$ follows $\concretett(l_t) = \concretett(l_t) + \concretepotential_t(l_t,t) \le \concretett(l) + \concretepotential_t(l,v) \le \concretett(p)$ which contradicts the assumption that $p$ yields a shorter $s$-$t$ travel time. Therefore, it must be $\concretett(l_t) = \traveltime(s,t)$ when $l_t$ was removed from the queue and the search can be stopped.
 \end{proof}
 
 \section{Multiple Driving Time Constraints\label{section:n_csp}}
@@ -536,8 +518,7 @@ Finally, the lower bound potential for a label $l \in L(v)$ and a target node $t
 
 \begin{align}\label{eq:multiple_breaks_pot}
 	\begin{split}
-		\concretepotential_t(l,v) & =\remBreak(l,v) + \chpotential(v,t)\\
-		&= \remBreak(l,v) + \distance(v,t)
+		\concretepotential_t(l,v) & =\remBreak(l,v) + \chpotential_t(v,t)
 	\end{split}
 \end{align}
 
@@ -555,7 +536,7 @@ If queue keys still cannot decrease when propagating labels, Lemma~\ref{lemma:po
 	\begin{enumerate}
 		\setcounter{enumi}{5}
 		\item $d \ge d' \implies \minBreaks_i(d) \ge \minBreaks_i(d')$ (adaption of 1.)
-		\item $\minBreaks_i(d + \restr_i^d) = 1 + \minBreaks_i(d)$ (adaption of 2.)
+		\item $1 + \minBreaks_i(d) \ge \minBreaks_i(d + \restr_i^d)$ (adaption of 2.)
 		\item $\restr_i^d \ge \breakDist_i(l') \ge \breakDist_i(l) + \len(u,v) \ge \breakDist_i(l)$ (adaption of 3.)
 		      % \item Propagating a label $l \in L(u)$ to obtain a label $l' \in L(v)$ $\implies$ $\remBreak(l',v) \ge \remBreak(l,u)$ (6. and non-negative edge weights)
 		      % \item $d \ge d' \implies \breakEstimate(d) \ge \breakEstimate(d')$
@@ -570,20 +551,20 @@ If queue keys still cannot decrease when propagating labels, Lemma~\ref{lemma:po
 		\begin{split}\label{eq:label_n_feasibility_proof_1}
 			&\concretett(l') - \concretett(l) - \concretepotential_t(l,u) + \concretepotential_t(l',v)\\
 			&= \concretett(l) + \len(u,v) - \concretett(l)\\
-			& \phantom{{}=1} - (\remBreak(l,u) + \chpotential(u)) + (\remBreak(l',v) + \chpotential(v))\\
-			&= \len(u,v) - \remBreak(l,u) + \remBreak(l',v) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - (\remBreak(l,u) + \chpotential_t(u)) + (\remBreak(l',v) + \chpotential_t(v))\\
+			&= \len(u,v) - \remBreak(l,u) + \remBreak(l',v) - \chpotential_t(u) + \chpotential_t(v)\\
 			&= \len(u,v) + \breakEstimate_2(l',v) \cdot \restr_2^b + \breakEstimate_1(l',v) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
 			&= \len(u,v) + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \len(u,v) + \chpotential_t(v))\\
 			& \phantom{{}=1} - \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v))) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(5. and 6.)}}{\ge} \len(u,v)  + \minBreaks_2(\breakDist_2(l) + \chpotential_t(u)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \chpotential_t(u))\\
 			& \phantom{{}=1} - \minBreaks_2(\breakDist_2(l) + \chpotential_t(u))) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
-			&= \len(u,v) +  \remBreak(l,u) - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
-			&= \len(u,v) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
+			&= \len(u,v) +  \remBreak(l,u) - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
+			&= \len(u,v) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(4.)}}{\ge} 0
 		\end{split}
 	\end{align}
@@ -594,29 +575,29 @@ If queue keys still cannot decrease when propagating labels, Lemma~\ref{lemma:po
 		\begin{split}\label{eq:label_n_feasibility_proof_2}
 			&\concretett(l') - \concretett(l) - \concretepotential_t(l,u) + \concretepotential_t(l',v)\\
 			&= \concretett(l) + \len(u,v) + \restr_1^b - \concretett(l)\\
-			& \phantom{{}=1} - (\remBreak(l,u) + \chpotential(u)) + (\remBreak(l',v) + \chpotential(v))\\
+			& \phantom{{}=1} - (\remBreak(l,u) + \chpotential_t(u)) + (\remBreak(l',v) + \chpotential_t(v))\\
 			&= \len(u,v) + \restr_1^b + \remBreak(l',v)\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u)  + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u)  + \chpotential_t(v)\\
 			&= \len(u,v) + \restr_1^b + \breakEstimate_2(l',v) \cdot \restr_2^b + \breakEstimate_1(l',v) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u)  + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u)  + \chpotential_t(v)\\
 			&= \len(u,v) + \restr_1^b + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(0 + \chpotential_t(v))\\
 			& \phantom{{}=1} - \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v))) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
-			&\stackrel{\text{(7.)}}{ =} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_2^b\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
+			&\stackrel{\text{(7.)}}{\ge} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(r_1^d + \chpotential_t(v))\\
 			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l) + \len(u,v) + \chpotential_t(v))) \cdot \restr_1^b \\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(6. and 8.)}}{\ge} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \len(u,v) + \chpotential_t(v))\\
 			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_{2}(l) + \len(u,v) + \chpotential_t(v))) \cdot \restr_1^b \\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(5. and 6.)}}{\ge} \len(u,v)  + \minBreaks_2(\breakDist_2(l) + \chpotential_t(u)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \chpotential_t(u))\\
 			& \phantom{{}=1} - \minBreaks_2(\breakDist_2(l) + \chpotential_t(u))) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
-			&= \len(u,v) +  \remBreak(l,u) - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
-			&= \len(u,v) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
+			&= \len(u,v) +  \remBreak(l,u) - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
+			&= \len(u,v) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(4.)}}{\ge} 0
 		\end{split}
 	\end{align}
@@ -628,27 +609,27 @@ If queue keys still cannot decrease when propagating labels, Lemma~\ref{lemma:po
 		\begin{split}\label{eq:label_n_feasibility_proof_3}
 			&\concretett(l') - \concretett(l) - \concretepotential_t(l,u) + \concretepotential_t(l',v)\\
 			&= \concretett(l) + \len(u,v) + \restr_2^b - \concretett(l)\\
-			& \phantom{{}=1} - (\remBreak(l,u) + \chpotential(u)) + (\remBreak(l',v) + \chpotential(v))\\
+			& \phantom{{}=1} - (\remBreak(l,u) + \chpotential_t(u)) + (\remBreak(l',v) + \chpotential_t(v))\\
 			&= \len(u,v) + \restr_2^b + \remBreak(l',v)\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u)  + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u)  + \chpotential_t(v)\\
 			&= \len(u,v) + \restr_2^b + \breakEstimate_2(l',v) \cdot \restr_2^b + \breakEstimate_1(l',v) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u)  + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u)  + \chpotential_t(v)\\
 			&= \len(u,v) + \restr_2^b + \minBreaks_2(0 + \chpotential_t(v)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(0 + \chpotential_t(v)) - \minBreaks_2(0 + \chpotential_t(v))) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
-			&\stackrel{\text{(7.)}}{=} \len(u,v) + \minBreaks_2(\restr_2^d  + \chpotential_t(v)) \cdot \restr_2^b\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
+			&\stackrel{\text{(7.)}}{\ge} \len(u,v) + \minBreaks_2(\restr_2^d  + \chpotential_t(v)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(\restr_1^d  + \chpotential_t(v)) - \minBreaks_2(\restr_2^d + \chpotential_t(v))) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(6. and 8.)}}{\ge} \len(u,v) + \minBreaks_2(\breakDist_2(l) + \len(u,v) + \chpotential_t(v)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \len(u,v) + \chpotential_t(v))\\
 			& \phantom{{}=1} - \minBreaks_{2}(\breakDist_2(l) + \len(u,v) +\chpotential_t(v))) \cdot \restr_1^b \\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(5. and 6.)}}{\ge} \len(u,v)  + \minBreaks_2(\breakDist_2(l) + \chpotential_t(u)) \cdot \restr_2^b\\
 			& \phantom{{}=1} + (\minBreaks_1(\breakDist_1(l) + \chpotential_t(u))\\
 			& \phantom{{}=1} - \minBreaks_2(\breakDist_2(l) + \chpotential_t(u))) \cdot \restr_1^b\\
-			& \phantom{{}=1} - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
-			&= \len(u,v) +  \remBreak(l,u) - \remBreak(l,u) - \chpotential(u) + \chpotential(v)\\
-			&= \len(u,v) - \chpotential(u) + \chpotential(v)\\
+			& \phantom{{}=1} - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
+			&= \len(u,v) +  \remBreak(l,u) - \remBreak(l,u) - \chpotential_t(u) + \chpotential_t(v)\\
+			&= \len(u,v) - \chpotential_t(u) + \chpotential_t(v)\\
 			&\stackrel{\text{(4.)}}{\ge} 0
 		\end{split}
 	\end{align}
