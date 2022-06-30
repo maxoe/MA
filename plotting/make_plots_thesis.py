@@ -125,12 +125,17 @@ def get_boxplot_outliers(df, by_column_name):
     return df.loc[filter]
 
 
-def run_avg_all_times(graph):
+def run_avg_all_times():
     name = "thesis_avg_all-csp"
     name_2 = "thesis_avg_all-csp_2"
+    name_mid = "thesis_avg_mid-csp"
+    name_mid_2 = "thesis_avg_mid-csp_2"
 
-    avg_all = read_measurement(name + "-" + graph)
-    avg_all_2 = read_measurement(name_2 + "-" + graph)
+    avg_all = read_measurement(name + "-" + "parking_ger_hgv")
+    avg_all_2 = read_measurement(name_2 + "-" + "parking_ger_hgv")
+
+    avg_mid_eur = read_measurement(name_mid + "-" + "parking_eur_hgv")
+    avg_mid_2_eur = read_measurement(name_mid_2 + "-" + "parking_eur_hgv")
 
     avg_all = avg_all.groupby(["algo"]).mean()
     avg_all_2 = avg_all.groupby(["algo"]).mean()
@@ -302,5 +307,5 @@ def plot_all_rank_times(problem, graph):
 
 
 if __name__ == "__main__":
-    run_avg_all_times("parking_ger_hgv")
+    run_avg_all_times()
     run_avg_fast_times("parking_europe_hgv")
