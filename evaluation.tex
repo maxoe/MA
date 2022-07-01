@@ -10,10 +10,10 @@ In this Section, we evaluate the running time and behavior of our algorithms of 
 
 \subparagraph{Methodology.} All experiments are run sequentially. We conduct experiments regarding the preprocessing time of the OSM data and the running time of queries on the extracted routing graph. We average preprocessing running times over \num{10} runs and running times of $s$-$t$ queries over \num{10000} queries with $s$ and $t$ independently chosen uniformly at random for each query. If not stated otherwise, we use $\restr_1$ with $\restr_1^d = \SI{4.5}{\hour}$ and $\restr_1^b = \SI{0.45}{\minute}$ and $\restr_2$ with $\restr_2^d = \SI{9}{\hour}$ and $\restr_2^b = \SI{9}{\hour}$ to approximate the regulations of the EU.
 
-\subsection{Comparison of Algorithms and Optimizations}
+\section{Study of Algorithms and Optimizations}
 We evaluate the different algorithms of chapter \ref{ch:Algorithm} and the optimizations of chapter \refeq{ch:impl}.
 
-First, we compare the running times of queries of the algorithms of chapter \ref{ch:Algorithm} on a German road network which was obtained in the exact same way from OSM as the European road network\footnote{\url{https://download.geofabrik.de/europe/germany-latest.osm.pbf} of March 22, 2022}. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable. To avoid distortions, we also scale down the driving time constraints. Otherwise, most random $s$-$t$ queries on the German road network would be to short to require a break and almost no query would require more than one break. We aim for a similar average number of breaks and average break time on a route. Therefore, we first adjust the maximum allowed driving time without a break and then the break time of a break.
+First, we compare the running times of queries of the algorithms of chapter \ref{ch:Algorithm} on a German and European road network. The German road network was obtained in the exact same way from OSM as the European road network\footnote{\url{https://download.geofabrik.de/europe/germany-latest.osm.pbf} of March 22, 2022}. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable. It also allows observing how well the algorithms scale on larger road networks. To avoid distortions, we also scale down the driving time constraints. Otherwise, most random $s$-$t$ queries on the German road network would be to short to require a break and almost no query would require more than one break. We aim for a similar average number of breaks and average break time on a route. Therefore, we first adjust the maximum allowed driving time without a break and then the break time of a break.
 
 
 The average travel time of all queries of Table \ref{tbl:extensions_runtime} is \SI{4}{\hour} \SI{43}{\second}, the average break time on a route is \SI{17.5}{\minute}. This leads to an average driving time of \SI{3}{\hour} \SI{43}{\minute} \SI{13}{\second}.
@@ -23,7 +23,7 @@ As Table \ref{tbl:extensions_runtime} shows, the goal-directed search already pe
 \begin{table}[hbtp]
 	\centering
 	\input{gen/eval_running_times_all.tex}
-	\caption{Running times of random queries on a German road network}
+	\caption{Average running times of random queries on a German and European road network with one or two driving time constraints.}
 	\label{tbl:extensions_runtime}
 \end{table}
 
@@ -46,7 +46,7 @@ Second, we evaluate the different optimizations as described in chapter \refeq{c
 	\label{tbl:opt_runtime}
 \end{table}
 
-\subsection{Study of Goal-Directed Core CH Queries}
+\section{Study of Goal-Directed Core CH Queries}
 Finally, we investigate queries of the goal-directed core CH algorithm with full optimizations more closely. What drives the running time of the algorithm? TODO
 
 \begin{figure}[hbtp]
