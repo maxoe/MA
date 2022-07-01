@@ -126,22 +126,28 @@ def get_boxplot_outliers(df, by_column_name):
 
 
 def run_avg_all_times():
-    name = "thesis_avg_all-csp"
-    name_2 = "thesis_avg_all-csp_2"
-    name_mid = "thesis_avg_mid-csp"
-    name_mid_2 = "thesis_avg_mid-csp_2"
+    name_ger = "thesis_avg_all-csp"
+    name_ger_2 = "thesis_avg_all-csp_2"
+    name_eur = "thesis_avg_mid-csp"
+    name_eur_2 = "thesis_avg_mid-csp_2"
 
-    avg_all = read_measurement(name + "-" + "parking_ger_hgv")
-    avg_all_2 = read_measurement(name_2 + "-" + "parking_ger_hgv")
+    avg_ger = read_measurement(name_ger + "-" + "parking_ger_hgv")
+    avg_ger_2 = read_measurement(name_ger_2 + "-" + "parking_ger_hgv")
 
-    avg_mid_eur = read_measurement(name_mid + "-" + "parking_eur_hgv")
-    avg_mid_2_eur = read_measurement(name_mid_2 + "-" + "parking_eur_hgv")
+    avg_eur = read_measurement(name_eur + "-" + "parking_europe_hgv")
+    avg_eur_2 = read_measurement(name_eur_2 + "-" + "parking_europe_hgv")
 
-    avg_all = avg_all.groupby(["algo"]).mean()
-    avg_all_2 = avg_all.groupby(["algo"]).mean()
+    avg_ger = avg_ger.groupby(["algo"]).mean()
+    avg_eur = avg_eur.groupby(["algo"]).mean()
+    avg_ger_2 = avg_ger_2.groupby(["algo"]).mean()
+    avg_eur_2 = avg_eur_2.groupby(["algo"]).mean()
+
+    avg_all = avg_ger.join(avg_eur, rsuffix="_eur")[["time_ms", "time_ms_eur"]]
+    avg_all_2 = avg_ger_2.join(avg_eur_2, rsuffix="_eur")[["time_ms", "time_ms_eur"]]
 
     avg_all["time_ms_2"] = avg_all_2["time_ms"]
-    avg_all["num_nodes_searched_2"] = avg_all_2["num_nodes_searched"]
+    avg_all["time_ms_eur_2"] = avg_all_2["time_ms_eur"]
+    # avg_ger["num_nodes_searched_2"] = avg_ger_2["num_nodes_searched"]
 
     order = [
         "dijkstra",
@@ -157,7 +163,7 @@ def run_avg_all_times():
     # HERE ORDER OF COLUMNS
     values = (
         # avg_all[["time_ms", "time_ms_2", "num_nodes_searched", "num_nodes_searched_2"]]
-        avg_all[["time_ms", "time_ms_2"]]
+        avg_all[["time_ms", "time_ms_2", "time_ms_eur", "time_ms_eur_2"]]
         .to_numpy()
         .flatten()
     )
@@ -172,16 +178,18 @@ def run_avg_all_times():
             + ") DOES NOT EQUAL NUMBER OF BLANKS ("
             + str(template.count("@"))
             + ") FOR TEMPLATE "
-            + name
+            + name_ger
         )
         return
 
     i = 0
 
+    value_to_string = lambda x: "-" if np.isnan(x) else "{:.2f}".format(round(x, 2))
+
     for m in reversed(list(re.finditer("@", template))):
         template = (
             template[: m.start(0)]
-            + "{:.2f}".format(round(values[len(values) - 1 - i], 2))
+            + value_to_string(values[len(values) - 1 - i])
             + template[m.end(0) :]
         )
         i += 1

@@ -11,26 +11,20 @@ Let $G=(V,E,\mathfunction{len})$ be a graph and $s$ and $t$ nodes with $s,t \in 
 A route $\route$ from $s$ to $t$ includes the path of visited nodes $p = \langle s=v_0,v_1,\dots,t=v_k \rangle$ and a break time function $\breakTime\colon p \rightarrow \{0,\restr_1^d,\dots,\restr_{|\restrset|}^d\}$ at each node $i$. For non-parking nodes $v_i \notin P$, the break time must be zero. We also define the \breakTime\ of an entire route $\route$ on $p$ as $\breakTime(\route) = \sum_{i=0}^{k-1}{\breakTime((v_i,v_{i+1}))}$.
 
 \begin{definition}[Valid Route]
-	A valid route $p = \langle s=v_0,v_1,...,t=v_k \rangle$ must comply with all driving time constraints in $\restrset$.A path complies with a specific driving time constraint $\restr \in \restrset$ if there is no subpath $p'$ between two nodes $u,w \in P' = \{s,t\} \cup \{v_i \in p \mid \breakTime(v_i) \ge \restr^b\}$ on the path which exceeds the driving time limit $\len(p') > \restr^d$ and has no third node $v_i \in P'$ in between $u$ and $w$.
+	A valid route with path $p = \langle s=v_0,v_1,...,t=v_k \rangle$ must comply with all driving time constraints in $\restrset$.A path complies with a specific driving time constraint $\restr \in \restrset$ if there is no subpath $p'$ between two nodes $u,w \in P' = \{s,t\} \cup \{v_i \in p \mid \breakTime(v_i) \ge \restr^b\}$ on the path which exceeds the driving time limit $\len(p') > \restr^d$ and has no third node $v_i \in P'$ in between $u$ and $w$.
 \end{definition}
 
-We differentiate between the driving time and the travel time of a route.
-
-\begin{definition}[Driving Time of a Route]
-	The driving time $\concretedt(\route)$ of a route $\route$ is the length $\len(p)$ of the path $p = \langle s=v_0,v_1,...,t=v_k \rangle$ of the route.
-\end{definition}
+We define the travel time of a route and the shortest route between two nodes as follows.
 
 \begin{definition}[Travel Time of a Route]
-	The travel time $\concretett(\route)$ of a route $\route$ is the sum of driving time $\concretedt(\route)$ and break time  $\breakTime(p)$ on its path.
+	The travel time $\concretett(\route)$ of a route $\route$ is the sum of the length of its path $\len(p)$ and the accumulated break time $\breakTime(p)$.
 \end{definition}
 
 \begin{definition}[Shortest Route]
 	A route between two nodes $s$ and $t$ is called a shortest route if it is valid and there exists no different valid route between $s$ and $t$ with a smaller travel time.
 \end{definition}
 
-The shortest travel time between two nodes $s$ and $t$, i.e., the travel time of the shortest route between them is denoted as $\traveltime(s,t)$. Accordingly, $\drivingtime(s,t)$ denotes the driving time of the shortest route between $s$ and $t$. In general, the driving time $\drivingtime(s,t)$ and the distance $\distance(s,t)$ between two nodes are not equal.
-
-The long-haul truck driver routing problem now can be defined as follows.
+The shortest travel time between two nodes $s$ and $t$, i.e., the travel time of the shortest route between them is denoted as $\traveltime(s,t)$. The long-haul truck driver routing problem now can be defined as follows.
 
 \begin{namedproblem}
 	\problemtitle{\textsc{Long-Haul Truck Driver Routing}}
