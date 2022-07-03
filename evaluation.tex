@@ -4,21 +4,20 @@
 
 %% ==============
 \chapter{Evaluation\label{ch:Evaluation}}
-In this Section, we evaluate the running time and behavior of our algorithms of chapter~\ref{ch:Algorithm} in various experiments and describe the underlying data. Our machine runs openSUSE Leap 15.3, has \SI{128}{\giga\byte} (8x\SI{16}{\giga\byte}) of \SI{2133}{\mega\hertz} DDR4 RAM, and a 4-core Intel Xeon E5-1630v3 CPU which runs at \SI{3.7}{\giga\hertz}. The code is written in Rust and compiled with cargo 1.64.0-nightly using the release profile with lto~=~true and codegen-units~=~1.
+In this section, we evaluate the running time and behavior of our algorithms of Chapter~\ref{ch:Algorithm}. Our machine runs openSUSE Leap 15.3, has \SI{128}{\giga\byte} (8x\SI{16}{\giga\byte}) of \SI{2133}{\mega\hertz} DDR4 RAM, and a 4-core Intel Xeon E5-1630v3 CPU which runs at \SI{3.7}{\giga\hertz}. The code is written in Rust and compiled with cargo 1.64.0-nightly using the release profile with \texttt{lto~=~true} and \texttt{codegen-units~=~1}.
 
-\subparagraph{Data.} Our data is a road network of Europe from Open Street Map\footnote{\url{https://download.geofabrik.de/europe-latest.osm.pbf} of March 22, 2022} (OSM). We extract the routing graph from the OSM data using RoutingKit\footnote{\url{https://github.com/RoutingKit/RoutingKit}}, respectively a custom extension\footnote{\url{https://github.com/maxoe/RoutingKit}} of RoutingKit which is capable of extracting parking nodes accordingly and building the core CH as described in Section \ref{sec:build_corech}. The obtained routing graph has $81.5$ million nodes and $190$ million edges. If not stated otherwise, our set $P$ of parking nodes consists of 6800 nodes which were selected due to their OSM attributes. We will later conduct experiments with different choices for $P$.
+\subparagraph{Data.} Our data is a road network of Europe\footnote{\url{https://download.geofabrik.de/europe-latest.osm.pbf} of March 22, 2022} and of Germany\footnote{\url{https://download.geofabrik.de/europe/germany-latest.osm.pbf} of March 22, 2022} from Open Street Map (OSM). We extract the routing graph and parking nodes from the OSM data using a custom extension\footnote{\url{https://github.com/maxoe/RoutingKit}} of RoutingKit\footnote{\url{https://github.com/RoutingKit/RoutingKit}}. The obtained routing graph of Europe has $81.5$ million nodes and $190$ million edges. If not stated otherwise, our set $P$ of parking nodes in the European routing graph consists of \num{6796} nodes which were selected due to their OSM attributes. Equivalently, the routing graph of Germany has $12.5$ million nodes, $29.5$ million edges, and we selected \num{3222} nodes as parking nodes.
 
-\subparagraph{Methodology.} All experiments are run sequentially. We conduct experiments regarding the preprocessing time of the OSM data and the running time of queries on the extracted routing graph. We average preprocessing running times over \num{10} runs and running times of $s$-$t$ queries over \num{10000} queries with $s$ and $t$ independently chosen uniformly at random for each query. If not stated otherwise, we use $\restr_1$ with $\restr_1^d = \SI{4.5}{\hour}$ and $\restr_1^b = \SI{0.45}{\minute}$ and $\restr_2$ with $\restr_2^d = \SI{9}{\hour}$ and $\restr_2^b = \SI{9}{\hour}$ to approximate the regulations of the EU.
+\subparagraph{Methodology.} All experiments are run sequentially. We conduct experiments regarding the preprocessing time of the core CH and the running time of queries on the extracted routing graph. We average preprocessing running times over \num{10} runs and running times of $s$-$t$ queries over \num{10000} queries with $s$ and $t$ independently chosen uniformly at random for each query. If not stated otherwise, we use $\restr_1$ with $\restr_1^d = \SI{4.5}{\hour}$ and $\restr_1^b = \SI{0.45}{\minute}$ and $\restr_2$ with $\restr_2^d = \SI{9}{\hour}$ and $\restr_2^b = \SI{9}{\hour}$ to approximate the regulations of the EU.
 
-\section{Study of Algorithms and Optimizations}
-We evaluate the different algorithms of chapter \ref{ch:Algorithm} and the optimizations of chapter \refeq{ch:impl}.
+\section{Algorithms and Optimizations}
+We evaluate the different algorithms of Chapter~\ref{ch:Algorithm} and the optimizations of Chapter~\ref{section:impl}.
 
-First, we compare the running times of queries of the algorithms of chapter \ref{ch:Algorithm} on a German and European road network. The German road network was obtained in the exact same way from OSM as the European road network\footnote{\url{https://download.geofabrik.de/europe/germany-latest.osm.pbf} of March 22, 2022}. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable. It also allows observing how well the algorithms scale on larger road networks. To avoid distortions, we also scale down the driving time constraints. Otherwise, most random $s$-$t$ queries on the German road network would be to short to require a break and almost no query would require more than one break. We aim for a similar average number of breaks and average break time on a route. Therefore, we first adjust the maximum allowed driving time without a break and then the break time of a break.
+First, we compare the running times of queries of the algorithms of Chapter~\ref{ch:Algorithm} on a German and European road network. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable. It also allows observing how well the algorithms scale on larger road networks, i.e., on longer routes.
 
+As Table \ref{tbl:extensions_runtime} shows, on the German road network, the goal-directed search performs an order of magnitude better than the baseline Dijkstra's algorithm with our amendments for driving time constraints. The bidirectional search without goal-direction performs worse than the baseline. The best result shows the goal-directed bidirectional algorithm and the two core CH variants with the not goal-directed core CH algorithm falling back significantly. The best result of the goal-directed core CH improves the baseline by a factor of \num{10000}.
 
-The average travel time of all queries of Table \ref{tbl:extensions_runtime} is \SI{4}{\hour} \SI{43}{\second}, the average break time on a route is \SI{17.5}{\minute}. This leads to an average driving time of \SI{3}{\hour} \SI{43}{\minute} \SI{13}{\second}.
-
-As Table \ref{tbl:extensions_runtime} shows, the goal-directed search already performs an order of magnitude better than the baseline Dijkstra's algorithm with our amendments for driving time constraints. TODO bidir. The largest improvement brings the bidirectional search which improves the baseline by a factor of about \num{10000} and the goal-directed variant by a factor of about \num{1000}.
+On the European road network, we omitted the baseline since it is too slow. Also, the  TODO
 
 \begin{table}[hbtp]
 	\centering
@@ -27,34 +26,30 @@ As Table \ref{tbl:extensions_runtime} shows, the goal-directed search already pe
 	\label{tbl:extensions_runtime}
 \end{table}
 
+The variants of the algorithm without the core CH suffer from outliers with a very long running time.
+
 Most of the performance gain of the goal-directed search originates from the very tight lower-bound given by the CH potentials. If the shortest travel time between two nodes $s$ and $t$ is way larger than $\distance(s,t)$ due to necessary breaks and even detours to parking nodes on the route, then the performance of the goal-directed search degrades. The bidirectional variant can mitigate this disadvantage since it connects two routes which each for itself have fewer breaks on the route. A disadvantage from the goal-directed search which cannot be mitigated by the bidirectional variant are its outliers. In cases where the algorithm is not able to find a route or the route needs a lot of breaks, the running time increases significantly. TODO
 
 TODO outlier problem with graphics leas to non ch excluded even if fast
-\begin{table}[hbtp]
-	\centering
-	\input{gen/eval_running_times_fast.tex}
-	\caption{Running times of random queries on a European road network}
-	\label{tbl:extensions_runtime_eur}
-\end{table}
 
-Second, we evaluate the different optimizations as described in chapter \refeq{ch:impl} in use with the goal-directed core CH algorithm on the European road network.
+Second, we evaluate the different optimizations as described in chapter \refeq{section:impl} in use with the goal-directed core CH algorithm on the European road network.
 
 \begin{table}[hbtp]
 	\centering
 	\input{gen/eval_running_times_opt.tex}
-	\caption{Comparison of running times of the goal-directed core CH algorithm with different optimizations from Section\ref{ch:impl}.}
+	\caption{Comparison of running times of the goal-directed core CH algorithm with different optimizations from Section\ref{section:impl}.}
 	\label{tbl:opt_runtime}
 \end{table}
 
-\section{Study of Goal-Directed Core CH Queries}
+\section{Goal-Directed Core CH Queries}
 Finally, we investigate queries of the goal-directed core CH algorithm with full optimizations more closely. What drives the running time of the algorithm? TODO
 
-\begin{figure}[hbtp]
-	\centering
-	\includegraphics[width=.95\textwidth]{plots/measure_all_csp_2_1000_queries_rank_times-core_ch_chpot-time_ms.png}
-	\caption{Running times of the goal-directed core CH algorithm for queries to nodes of increasing Dijkstra rank, logarithmic scales.}
-	\label{fig:rank_times}
-\end{figure}
+% \begin{figure}[hbtp]
+% 	\centering
+% 	\includegraphics[width=.95\textwidth]{plots/measure_all_csp_2_1000_queries_rank_times-core_ch_chpot-time_ms.png}
+% 	\caption{Running times of the goal-directed core CH algorithm for queries to nodes of increasing Dijkstra rank, logarithmic scales.}
+% 	\label{fig:rank_times}
+% \end{figure}
 
 \begin{itemize}
 	\item different $\len$

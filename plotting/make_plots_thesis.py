@@ -129,7 +129,7 @@ def run_avg_all_times():
     name_ger = "thesis_avg_all-csp"
     name_ger_2 = "thesis_avg_all-csp_2"
     name_eur = "thesis_avg_mid-csp"
-    name_eur_2 = "thesis_avg_mid-csp_2"
+    name_eur_2 = "thesis_avg_fast-csp_2"
 
     avg_ger = read_measurement(name_ger + "-" + "parking_ger_hgv")
     avg_ger_2 = read_measurement(name_ger_2 + "-" + "parking_ger_hgv")
@@ -198,38 +198,32 @@ def run_avg_all_times():
         f.write(template)
 
 
-def run_avg_fast_times(graph):
-    name = "thesis_avg_fast-csp"
-    name_2 = "thesis_avg_fast-csp_2"
+def run_avg_opt():
+    name = "thesis_avg_opt-csp"
+    name_2 = "thesis_avg_opt-csp_2"
 
-    avg_fast = read_measurement(name + "-" + graph)
-    avg_fast_2 = read_measurement(name_2 + "-" + graph)
+    avg = read_measurement(name + "-" + "parking_europe_hgv")
+    avg_2 = read_measurement(name_2 + "-" + "parking_europe_hgv")
 
-    avg_fast = avg_fast.groupby(["algo"]).mean()
-    avg_fast_2 = avg_fast.groupby(["algo"]).mean()
+    avg = avg.groupby(["algo"]).mean()
+    avg_2 = avg_2.groupby(["algo"]).mean()
 
-    avg_fast["time_ms_2"] = avg_fast_2["time_ms"]
-    # avg_fast["num_nodes_searched_2"] = avg_fast_2["num_nodes_searched"]
+    avg_all = avg.join(avg_2, rsuffix="_2")[["time_ms", "time_ms_2"]]
 
+    # HERE ORDER OF ROWS
     order = [
-        # "astar_bidir_chpot",
-        "core_ch",
+        "no_bw_no_prune",
+        "no_prune",
+        "no_bw",
         "core_ch_chpot",
     ]
 
-    avg_fast = avg_fast.reindex(order)
+    avg_all = avg_all.reindex(order)
 
     # HERE ORDER OF COLUMNS
-    values = (
-        # avg_fast[["time_ms", "time_ms_2", "num_nodes_searched", "num_nodes_searched_2"]]
-        avg_fast[["time_ms", "time_ms_2"]]
-        .to_numpy()
-        .flatten()
-    )
+    values = avg_all[["time_ms", "time_ms_2"]].to_numpy().flatten()
 
-    with open(
-        os.path.join(LATEX_GEN_PATH, "eval_running_times_fast-TEMPLATE.tex")
-    ) as f:
+    with open(os.path.join(LATEX_GEN_PATH, "eval_running_times_opt-TEMPLATE.tex")) as f:
         template = f.read()
 
     if len(values) != template.count("@"):
@@ -245,16 +239,77 @@ def run_avg_fast_times(graph):
 
     i = 0
 
+    value_to_string = lambda x: "-" if np.isnan(x) else "{:.2f}".format(round(x, 2))
+
     for m in reversed(list(re.finditer("@", template))):
         template = (
             template[: m.start(0)]
-            + "{:.2f}".format(round(values[len(values) - 1 - i], 2))
+            + value_to_string(values[len(values) - 1 - i])
             + template[m.end(0) :]
         )
         i += 1
 
-    with open(os.path.join(LATEX_GEN_PATH, "eval_running_times_fast.tex"), "w") as f:
+    with open(os.path.join(LATEX_GEN_PATH, "eval_running_times_opt.tex"), "w") as f:
         f.write(template)
+
+
+# def run_avg_fast_times(graph):
+#     name = "thesis_avg_fast-csp"
+#     name_2 = "thesis_avg_fast-csp_2"
+
+#     avg_fast = read_measurement(name + "-" + graph)
+#     avg_fast_2 = read_measurement(name_2 + "-" + graph)
+
+#     avg_fast = avg_fast.groupby(["algo"]).mean()
+#     avg_fast_2 = avg_fast.groupby(["algo"]).mean()
+
+#     avg_fast["time_ms_2"] = avg_fast_2["time_ms"]
+#     # avg_fast["num_nodes_searched_2"] = avg_fast_2["num_nodes_searched"]
+
+#     order = [
+#         # "astar_bidir_chpot",
+#         "core_ch",
+#         "core_ch_chpot",
+#     ]
+
+#     avg_fast = avg_fast.reindex(order)
+
+#     # HERE ORDER OF COLUMNS
+#     values = (
+#         # avg_fast[["time_ms", "time_ms_2", "num_nodes_searched", "num_nodes_searched_2"]]
+#         avg_fast[["time_ms", "time_ms_2"]]
+#         .to_numpy()
+#         .flatten()
+#     )
+
+#     with open(
+#         os.path.join(LATEX_GEN_PATH, "eval_running_times_fast-TEMPLATE.tex")
+#     ) as f:
+#         template = f.read()
+
+#     if len(values) != template.count("@"):
+#         print(
+#             "ERROR: NUMBER OF VALUES ("
+#             + str(len(values))
+#             + ") DOES NOT EQUAL NUMBER OF BLANKS ("
+#             + str(template.count("@"))
+#             + ") FOR TEMPLATE "
+#             + name
+#         )
+#         return
+
+#     i = 0
+
+#     for m in reversed(list(re.finditer("@", template))):
+#         template = (
+#             template[: m.start(0)]
+#             + "{:.2f}".format(round(values[len(values) - 1 - i], 2))
+#             + template[m.end(0) :]
+#         )
+#         i += 1
+
+#     with open(os.path.join(LATEX_GEN_PATH, "eval_running_times_fast.tex"), "w") as f:
+#         f.write(template)
 
 
 def plot_query_insights(graph):
@@ -267,7 +322,7 @@ def plot_query_insights(graph):
 
 
 def plot_all_rank_times(problem, graph):
-    name = "rank_times_chpot_corech-" + problem + "-" + graph
+    name = "thesis_avg_all-" + problem + "-" + graph
 
     queries_all = read_measurement(name)
 
@@ -316,4 +371,5 @@ def plot_all_rank_times(problem, graph):
 
 if __name__ == "__main__":
     run_avg_all_times()
-    run_avg_fast_times("parking_europe_hgv")
+    run_avg_opt()
+    plot_all_rank_times("csp", "parking_europe_hgv")

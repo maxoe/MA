@@ -81,6 +81,16 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\QZ5LN6H5\\thesis_tdsrp-2b.pdf}
 }
 
+@phdthesis{braeuer:2016,
+  type = {{Bachelor's thesis}},
+  title = {{Optimale zeitabh\"angige Pausenplanung f\"ur LKW-Fahrer mit integrierter Parkplatzwahl}},
+  author = {Br{\"a}uer, Christian},
+  year = {2016},
+  langid = {german},
+  school = {Karlsruhe Institute of Technology},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\FPVNV8XZ\\Bräuer - Zeitabhängige Pausenplanung für LKW-Fahrer mit int.pdf}
+}
+
 @inproceedings{delling:2011,
   title = {{{PHAST}}: {{Hardware-Accelerated Shortest Path Trees}}},
   shorttitle = {{{PHAST}}},
@@ -207,6 +217,21 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\6AWNM4I8\\Goel and Kok - 2012 - Truck Driver Scheduling in the United States.pdf}
 }
 
+@misc{goel:2012a,
+  type = {{{SSRN Scholarly Paper}}},
+  title = {The {{Minimum Duration Truck Driver Scheduling Problem}}},
+  author = {Goel, Asvin},
+  year = {2012},
+  month = may,
+  number = {1798569},
+  address = {{Rochester, NY}},
+  doi = {10.2139/ssrn.1798569},
+  abstract = {Truck driver scheduling problems are important subproblems of real-life vehicle routing and scheduling problems because rest periods required by government regulations have a significant impact on travel and arrival times. Vehicle routes generated without considering these regulations are often practically infeasible. This paper identifies common constraints imposed by hours of service regulations world wide and presents a mixed integer programming formulation for a variant of the truck driver scheduling problem in which truck drivers may only rest at customer locations and at suitable rest areas. The objective of the problem is to find a feasible  truck driver schedule with minimal duration. The model presented in this paper is very flexible and can be configured to consider different sets of rules imposed by government regulations and union contracts. A dynamic programming approach is presented and its effectiveness is demonstrated for working hour regulations in the United States and in the European Union.},
+  langid = {english},
+  keywords = {Asvin Goel,SSRN,The Minimum Duration Truck Driver Scheduling Problem},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\5P52D88K\\Goel - 2012 - The Minimum Duration Truck Driver Scheduling Probl.pdf;C\:\\Users\\Max\\Zotero\\storage\\NK8JD5JN\\papers.html}
+}
+
 @inproceedings{goldberg:2005,
   title = {Computing the Shortest Path: {{A}}* Search Meets Graph Theory},
   shorttitle = {Computing the Shortest Path},
@@ -281,6 +306,17 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\8RAVL243\\Kleff et al. - 2017 - Time-Dependent Route Planning for Truck Drivers.pdf}
 }
 
+@phdthesis{kleff:2019,
+  title = {{Scheduling and Routing of Truck Drivers Considering Regulations on Drivers' Working Hours}},
+  author = {Kleff, Alexander},
+  year = {2019},
+  doi = {10.5445/IR/1000097855},
+  abstract = {In many countries, truck drivers are obliged by law to take a break or a rest regularly. In the European Union, for example, this is governed by Regulation (EC) No. 561/2006. It states that, after 4.5 hours of driving a truck, it is prohibited to continue driving until a 45-minute break is taken. After accumulating a driving time of 9 hours, a rest of 11 hours is mandatory. These are only two rules of a considerably longer list of break rules set out in this regulation, and it is only one of many regulations there are worldwide. Such breaks and rests have to be planned into the work schedules of the drivers. In general, the task of a dispatcher is to find routes and schedules for the truck drivers such that every customer is served in time. With the regulations on drivers' working hours, both the routing and the scheduling parts of the task become more challenging. In this thesis, we study several optimization problems that arise in the context of drivers' working hours. One is known as the truck driver scheduling problem. Here, a sequence of customers is given, and the task is to find a schedule for a driver such that every customer is visited within one of the customer's time windows and the applicable break rules are complied with. Depending on the regarded break rules, we get different variants of the truck driver scheduling problem. Little is known about the complexity of the individual problem variants. One of the two focal points of this thesis is to present polynomial-time algorithms for different variants of the problem, for which polynomial-time algorithms are not yet known. With this, we can falsify the NP-hardness conjecture of Xu et al. (2003) for an important special case of their considered problem variant. But this thesis is not only about scheduling, it is also about routing. This constitutes the second focal point of this thesis. We present an integrated approach for the vehicle routing and truck driver scheduling problem. Here, a route refers to the order in which the customers are visited. However, the meaning of route is twofold. In another studied problem, the truck driver scheduling and routing problem, it means the sequence of road segments that the driver takes to drive from one customer to the other. In this problem, we take into account that, before taking a break, truck drivers need to head for a rest area or at least a spot where their vehicle can be parked. We even consider the time-dependent scenario in which driving times on road segments vary over the day due to rush hours. Both an exact approach and a heuristic for this problem are presented, and both are evaluated on a recent road network instance of Germany. It turns out that the heuristic is at least two orders of magnitude faster but still hardly worse than the exact approach. Our main motivation is the application in practice. It is our aim \textendash{} and this is especially true for the second focal point \textendash{} to provide helpful algorithms that may find their way into software products for dispatchers, like the described approach for the vehicle routing and truck driver scheduling problem is already integrated into the vehicle route planning tools of a commercial provider of logistics optimization software.},
+  langid = {german},
+  school = {Karlsruhe Institute of Technology},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\HLYBM7AT\\Kleff - 2019 - Scheduling and Routing of Truck Drivers Considerin.pdf;C\:\\Users\\Max\\Zotero\\storage\\8U3WB88Z\\1000097855.html}
+}
+
 @article{kleff:2020,
   title = {Efficient {{Route Planning}} with {{Temporary Driving Bans}}, {{Road Closures}}, and {{Rated Parking Areas}}},
   author = {Kleff, Alexander and Schulz, Frank and Wagenblatt, Jakob and Zeitz, Tim},
@@ -315,6 +351,20 @@
   journal = {Scheduling hours of service for truck drivers with interdependent routes},
   abstract = {When transporting goods, truck drivers may have to perform load transfers between two vehicles at cross-dock or transfer locations. These transfers create interdependencies between the routes of different truck drivers and require careful temporal synchronization. The situation becomes even more complex when driver schedules must comply with customer time windows, working periods and regulatory resting requirements. Although the scheduling of hours of service for truck drivers is a well-known problem, existing algorithms cannot cope with interdependent routes. Successfully accommodating this real-world characteristic demands the introduction of a new, more general truck scheduling problem: The Truck Driver Scheduling Problem with Interdependent Routes. This paper introduces a mathematical model and a label propagation algorithm to solve this new problem. Experiments indicate that the algorithm can quickly schedule a large number of interdependent routes and outperforms a mathematical programming approach. The algorithm produces valid schedules for multiple drivers and thus becomes a foundation for future vehicle routing algorithms that address interdependent routes and hours of service regulations.},
   keywords = {Hours of service,Interdependent routes,Label propagation,Scheduling,Truck driver scheduling}
+}
+
+@article{shah:2008,
+  title = {Time Dependent Truck Routing and Driver Scheduling Problem with Hours of Service Regulations},
+  author = {Shah, Vidit Divyang},
+  year = {2008},
+  abstract = {Driver fatigue is the cause of many truck crashes taking place today. In order to improve safety, the Federal Motor Carrier Safety Administration (FMCSA) has implemented revised Hours-of-Service (HOS) regulations effective on October 1\^st 2005. According to the revised rules, drivers should take a break of 10 consecutive hours after 11 hours of driving time or 14 hours of duty time that includes driving time and service time such as loading and unloading cargo. This has caused a severe increase in the cost for the trucking industry which in turn hurt shippers and ultimately customers. A systematic way for routing vehicles to avoid traffic congestion and waiting due to truck arrival outside the customer service windows, as well as coordinating the timing drivers are taking their mandatory breaks, can improve the efficiency and safety of supply chain distribution operations. In this Thesis, a single truck routing and driver scheduling model with time-dependent travel times, HOS regulations, multiple delivery locations and service time windows is formulated and solved. The objective is to minimize the total time required to serve a given number of customers. The components of the total time are travel time, driver's break time, and waiting time and service time at the customer locations. For each segment of the transportation network, traffic congestion is modeled by using speed distribution profiles over the course of a day, which in turn makes the time required to traverse a highway segment dependent on the time the truck started traversing it. For a given set of customer locations, the optimization model determines the order in which they should be visited and the route between the consecutive customer locations in order to minimize the time of the tour subject to service time windows, HOS restrictions and time-dependent highway traversal times. A Simulated Annealing metaheuristic is implemented to obtain near optimal solutions of the problem. Our experimental results show that the heuristic provides good quality solutions for large size problems (with an average deviation of less than 1\% from the optimal) in reasonable computation time. The accuracy comparison was obtained by solving smaller size problems consisting ofAnnouncement of 10 customers by explicit enumeration. The mathematical model and the solution approach can be easily adapted to more complex problems involving multiple capacitated vehicles with pickup and delivery.},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\JN6QEKND\\Shah - 2008 - Time dependent truck routing and driver scheduling.pdf;C\:\\Users\\Max\\Zotero\\storage\\6V5AWRXV\\neu1724.html}
+}
+
+@article{strasser:2018,
+  title = {Using {{Incremental Many-to-One Queries}} to {{Build}} a {{Fast}} and {{Tight Heuristic}} for {{A}}* in {{Road Networks}}},
+  author = {Strasser, Ben and Zeitz, Tim},
+  year = {2018}
 }
 
 @article{strasser:2021,
