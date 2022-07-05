@@ -369,23 +369,32 @@ def gen_avg_opt():
     avg = read_measurement(name + "-" + "parking_europe_hgv")
     avg_2 = read_measurement(name_2 + "-" + "parking_europe_hgv")
 
-    avg = avg.groupby(["algo"]).mean()
-    avg_2 = avg_2.groupby(["algo"]).mean()
+    avg_mean = avg.groupby(["algo"]).mean()
+    avg_mean_2 = avg_2.groupby(["algo"]).mean()
 
-    avg_all = avg.join(avg_2, rsuffix="_2")[["time_ms", "time_ms_2"]]
+    avg_med = avg.groupby(["algo"]).median()
+    avg_med_2 = avg_2.groupby(["algo"]).median()
+
+    avg_all = avg_mean.join(avg_mean_2, rsuffix="_2")[["time_ms", "time_ms_2"]]
+    avg_all["time_ms_med"] = avg_med["time_ms"]
+    avg_all["time_ms_med_2"] = avg_med_2["time_ms"]
 
     # HERE ORDER OF ROWS
     order = [
         "no_bw_no_prune",
         "no_prune",
-        "no_bw",
-        "core_ch_chpot",
+        # "no_bw",
+        # "core_ch_chpot",
     ]
 
     avg_all = avg_all.reindex(order)
 
     # HERE ORDER OF COLUMNS
-    values = avg_all[["time_ms", "time_ms_2"]].to_numpy().flatten()
+    values = (
+        avg_all[["time_ms", "time_ms_2", "time_ms_med", "time_ms_med_2"]]
+        .to_numpy()
+        .flatten()
+    )
 
     with open(os.path.join(LATEX_GEN_PATH, "eval_running_times_opt-TEMPLATE.tex")) as f:
         template = f.read()
