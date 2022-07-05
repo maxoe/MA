@@ -37,25 +37,26 @@
 
 We use Greek symbols for theoretical and abstract concepts such as the shortest distance between two nodes or an arbitrary valid node potential. Concrete functions and procedures, i.e., those with definitions, have verbose names. Algorithmic functions and procedures for which pseudocode is provided use \algofunction{SmallCaps}.
 
-\begin{tabular}{rp{0.8\textwidth}}
-	$\potential_t(v)$         & A node potential to $t$                                                                                                                   \\
-	$\distance(s,t)$          & Shortest distance between $s$ and $t$                                                                                                     \\
-	$\traveltime(s,t)$        & Shortest travel time between $s$ and $t$                                                                                                  \\
+\begin{tabular}{rp{0.79\textwidth}}
+	$\potential_t(v)$         & A node potential to $t$                                                                                                                    \\
+	$\distance(s,t)$          & Shortest distance between $s$ and $t$                                                                                                      \\
+	$\traveltime(s,t)$        & Shortest travel time between $s$ and $t$                                                                                                   \\
+	$\breakTime(v)$           & A function which assigns each node of a route the length of the break at the node or zero, if the route does not take a break at the node.
 	\\
-	$\route$                  & A route consisting of a path and a function $\breakTime(v)$                                                                               \\
-	$\restr$                  & A driving time constraint                                                                                                                 \\
-	$c^d$                     & Maximum allowed driving time of a driving time constraint $c$                                                                             \\
-	$c^b$                     & Minimum pause time of a driving time constraint $\restr$                                                                                  \\
-	$\restrset$               & A set of one or more driving time constraints                                                                                             \\
-	$L(v)$                    & The label set of a node $v$                                                                                                               \\
-	$\breakDist_i(l)$         & Distance since the last break of a label with a duration of at least $c_i^b$ or distance since the last break if the index $i$ is omitted \\
-	$\pred(l)$                & Predecessor label of a label $l$                                                                                                          \\
+	$\route$                  & A route consisting of a path and a function $\breakTime(v)$                                                                                \\
+	$\restr$                  & A driving time constraint                                                                                                                  \\
+	$c^d$                     & Maximum allowed driving time of a driving time constraint $c$                                                                              \\
+	$c^b$                     & Minimum pause time of a driving time constraint $\restr$                                                                                   \\
+	$\restrset$               & A set of one or more driving time constraints                                                                                              \\
+	$L(v)$                    & The label set of a node $v$                                                                                                                \\
+	$\breakDist_i(l)$         & Distance since the last break of a label with a duration of at least $c_i^b$ or distance since the last break if the index $i$ is omitted  \\
+	$\pred(l)$                & Predecessor label of a label $l$                                                                                                           \\
 
-	$\concretett(l)$          & Travel time of a label $l$                                                                                                                \\
-	$\concretepotential(l,v)$ & The potential of a label $l \in L(v)$ as defined in Section \ref{section:potential_n_csp}                                                 \\
-	$\len((u,v))$             & The weight, respectively length of an edge $(u,v)$, alternatively used for the length $\len(p)$ of a path $p$                             \\
-	$\ch$                     & A contraction hierarchy with nodes $\chv$ and edges $\che$                                                                                \\
-	$\corech$                 & A core contraction hierarchy with nodes $\corechv$ and edges $\coreche$                                                                   \\
+	$\concretett(l)$          & Travel time of a label $l$                                                                                                                 \\
+	$\concretepotential(l,v)$ & The potential of a label $l \in L(v)$ as defined in Section \ref{section:potential_n_csp}                                                  \\
+	$\len((u,v))$             & The weight, respectively length of an edge $(u,v)$, alternatively used for the length $\len(p)$ of a path $p$                              \\
+	$\ch$                     & A contraction hierarchy with nodes $\chv$ and edges $\che$                                                                                 \\
+	$\corech$                 & A core contraction hierarchy with nodes $\corechv$ and edges $\coreche$                                                                    \\
 \end{tabular}
 
 
