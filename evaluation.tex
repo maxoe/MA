@@ -10,8 +10,8 @@ In this section, we evaluate the running time and behavior of our algorithms of 
 
 \subparagraph{Methodology.} All experiments are run sequentially. We conduct experiments regarding the preprocessing time of the core CH and the running time of queries on the extracted routing graph. We average preprocessing running times over \num{10} runs and running times of $s$-$t$ queries over \num{10000} queries with $s$ and $t$ independently chosen uniformly at random for each query. If not stated otherwise, we use $\restr_1$ with $\restr_1^d = \SI{4.5}{\hour}$ and $\restr_1^b = \SI{0.45}{\minute}$ and $\restr_2$ with $\restr_2^d = \SI{9}{\hour}$ and $\restr_2^b = \SI{9}{\hour}$ to approximate the regulations of the EU.
 
-\section{Algorithms and Optimizations}
-We evaluate the different algorithms of Chapter~\ref{ch:Algorithm} and the optimizations of Section~\ref{section:impl}.
+\section{Algorithms and Pruning}
+We evaluate the different algorithms of Chapter~\ref{ch:Algorithm} and the backward pruning of Section~\ref{section:impl}.
 
 First, we compare the running times of queries of the algorithms of Chapter~\ref{ch:Algorithm} on a German and European road network. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable. It also allows observing how well the algorithms scale on larger road networks, i.e., on longer routes.
 
@@ -65,12 +65,12 @@ The running times of Figure~\ref{fig:rank_times} to increasingly distant target 
 	\label{tbl:times_no_path}
 \end{table}
 
-Finally, we evaluate the different optimizations as described in Section~\ref{section:impl} in use with the goal-directed core CH algorithm on the European road network. Table~\ref{tbl:opt_runtime} shows that especially the bidirectional backward pruning as defined in Algorithm~\ref{alg:bw_pruning} leads to a general improvement of running time. The additional stopping criteria fail to do so.
+Finally, we evaluate the backward pruning of as defined in Algorithm~\ref{alg:bw_pruning} in use with the goal-directed core CH algorithm on the European road network. Table~\ref{tbl:opt_runtime} shows that the pruning leads to a significant improvement of running time.
 
 \begin{table}[hbtp]
 	\centering
 	\input{gen/eval_running_times_opt.tex}
-	\caption{Comparison of running times of the goal-directed core CH algorithm with different optimizations from Section\ref{section:impl}.}
+	\caption{Comparison of running times of the goal-directed core CH algorithm with and without the backward pruning of Section\ref{section:impl}.}
 	\label{tbl:opt_runtime}
 \end{table}
 
