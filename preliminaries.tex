@@ -5,7 +5,7 @@
 %% ==============
 \chapter{Preliminaries\label{ch:preliminaries}}
 %% ==============
-In this chapter, we introduce our basic notationa and discuss important algorithmic concepts on which the work of this thesis is based.
+In this chapter, we introduce our basic notations and discuss important algorithmic concepts on which the work of this thesis is based.
 
 We define a weighted, directed graph $G$ as a tuple $G=(V,E,\mathfunction{len})$. $V$ is the set of nodes and $E$ the set of edges $(u,v) \subseteq V \times V$ between those nodes. The function $\mathfunction{len}$ is the weight function $\mathfunction{len}\colon E \rightarrow \mathbb{R}_{\ge 0}$ which assigns each edge a non-negative weight which we often also call length of an edge. A path $p$ in $G$ is defined as a sequence of nodes $p = \langle v_0,v_1,...,v_k \rangle$ with $(v_i,v_{i+1}) \in E$. For simplicity, we will reuse the same function $\mathfunction{len}$ which we use to denote the length of an edge, to denote the length of a path $p$ in $G$. The length of a path $\mathfunction{len}(p)$ is defined by the sum of the weights of the edges on the path $\mathfunction{len}(p) = \sum_{i=0}^{k-1}{\mathfunction{len}((v_i,v_{i+1}))}$. A path must not necessarily be simple, i.e. nodes can appear multiple times in the same path.
 
