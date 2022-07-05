@@ -44,7 +44,7 @@ In contrast to Dijkstra's algorithm, the search \emph{settles} a label $l \in L(
 			\RelaxEdge{$(u,v),l$}
 		}
 	}
-	\caption{\label{alg:settle_next_label}Settling a label $l \in L(u)$ removes the label from the queue and relaxes all the outgoing edges of $u$.}
+	\caption[\textsc{SettleNextLabel}]{\label{alg:settle_next_label}Settling a label $l \in L(u)$ removes the label from the queue and relaxes all the outgoing edges of $u$.}
 \end{algorithm}
 
 
@@ -90,7 +90,7 @@ A label $l$ will only be inserted into a label set $L(v)$ if it is pareto-optima
 			}
 		}
 	}
-	\caption{\label{alg:remove_dominated}The procedure $L$.\textsc{RemoveDominated}($l$) removes all labels from the label set $L$ which are dominated by the label $l$.}
+	\caption[\textsc{RemoveDominated}]{\label{alg:remove_dominated}The procedure $L$.\textsc{RemoveDominated}($l$) removes all labels from the label set $L$ which are dominated by the label $l$.}
 \end{algorithm}
 
 
@@ -144,7 +144,7 @@ When propagating a label $l \in L(u)$ along an edge $(u,v) \in E$ and $v \in P$,
 			}
 		}
 	}
-	\caption{\label{alg:relax_edge}Relaxing an edge $(u,v) \in E$ when settling a label $l \in L(u)$ with regard to parking nodes.}
+	\caption[\textsc{RelaxEdge}]{\label{alg:relax_edge}Relaxing an edge $(u,v) \in E$ when settling a label $l \in L(u)$ with regard to parking nodes.}
 \end{algorithm}
 
 \subsection{Initialization and Main Loop}
@@ -310,7 +310,7 @@ The only thing left is the adaption of \textsc{RelaxEdge} in Figure~\ref{alg:rel
 			}
 		}
 	}
-	\caption{\label{alg:relax_edge_a_star} Relaxing an edge with regard to the potential.}
+	\caption[\textsc{RelaxEdge} with potential]{\label{alg:relax_edge_a_star} Relaxing an edge with regard to the potential.}
 \end{algorithm}
 
 \subsection{Potential for One Driving Time Constraint}\label{section:potential_csp}
@@ -351,7 +351,7 @@ A feasible node potential allows us to stop the A* search when the node $t$, res
 \begin{figure}[hbtp]
 	\centering
 	\input{figures/graph_infeasible_potential.tex}
-	\caption{A graph for which the feasibility condition of~\ref{eq:node_potential_feasibility} does not always hold with the potential $\concretepotential'$.}
+	\caption{Example graph for which the feasibility condition of~\ref{eq:node_potential_feasibility} does not always hold with the potential $\concretepotential'$.}
 	\label{fig:graph_infeasible_potential}
 \end{figure}
 
@@ -493,7 +493,7 @@ Consider the example graph in Figure~\ref{fig:graph_short_long_break} with two d
 \begin{figure}[hbtp]
 	\centering
 	\input{figures/graph_short_long_break.tex}
-	\caption{An example graph where, depending on the driving time constraints, a long break at can render a short break obsolete.}
+	\caption{Example graph where a long break at can render a short break obsolete.}
 	\label{fig:graph_short_long_break}
 \end{figure}
 
@@ -763,7 +763,7 @@ We do not insert the label $l$ into the label set $\overrightarrow{v}$ if our lo
 			prune if $\concretett(l) + \bwQ.\minKey() - \concretepotential'_s(v) + \restr_{|C|}^b \ge \tenttraveltime(s,t)$\;
 		}
 	}
-	\caption{\label{alg:bw_pruning} Pruning the forward search before inserting a label $l$ into the forward label set of $v$.}
+	\caption[\textsc{PruneBackward}]{\label{alg:bw_pruning} Pruning the forward search before inserting a label $l$ into the forward label set of $v$.}
 \end{algorithm}
 
 
