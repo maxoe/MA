@@ -126,7 +126,7 @@ def get_boxplot_outliers(df, by_column_name):
     return df.loc[filter]
 
 
-def run_avg_all_times():
+def gen_avg_times():
     name_ger = "thesis_avg_all-csp"
     name_ger_2 = "thesis_avg_all-csp_2"
     name_eur = "thesis_avg_mid-csp"
@@ -199,7 +199,7 @@ def run_avg_all_times():
         f.write(template)
 
 
-def run_median_all_times():
+def gen_median_all_times():
     name_ger = "thesis_avg_all-csp"
     name_ger_2 = "thesis_avg_all-csp_2"
     name_eur = "thesis_avg_mid-csp"
@@ -276,7 +276,7 @@ def run_median_all_times():
         f.write(template)
 
 
-def run_all_times_no_path():
+def gen_all_times_no_path():
     name_eur = "thesis_avg_mid-csp"
     name_eur_2 = "thesis_avg_mid-csp_2"
 
@@ -362,7 +362,7 @@ def run_all_times_no_path():
         f.write(template)
 
 
-def run_avg_opt():
+def gen_avg_opt():
     name = "thesis_avg_opt-csp"
     name_2 = "thesis_avg_opt-csp_2"
 
@@ -456,7 +456,6 @@ def plot_breaks_running_times(graph):
 
                 plt.title("breaks_running_times" + "-" + algo + ": " + graph)
                 fig.tight_layout()
-                print("breaks_running_times" + "-" + algo + "-" + column_name + ".png")
                 write_plt(
                     "breaks_running_times" + "-" + algo + "-" + column_name + ".png",
                     graph,
@@ -512,11 +511,11 @@ def plot_all_rank_times(problem, graph):
 
 
 if __name__ == "__main__":
-    run_avg_all_times()
-    run_median_all_times()
-    run_avg_opt()
+    gen_avg_times()
+    gen_median_all_times()
+    gen_avg_opt()
 
-    run_all_times_no_path()
+    gen_all_times_no_path()
 
     plot_breaks_running_times("parking_europe_hgv")
     plot_all_rank_times("csp", "parking_europe_hgv")

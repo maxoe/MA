@@ -11,13 +11,13 @@ In this section, we evaluate the running time and behavior of our algorithms of 
 \subparagraph{Methodology.} All experiments are run sequentially. We conduct experiments regarding the preprocessing time of the core CH and the running time of queries on the extracted routing graph. We average preprocessing running times over \num{10} runs and running times of $s$-$t$ queries over \num{10000} queries with $s$ and $t$ independently chosen uniformly at random for each query. If not stated otherwise, we use $\restr_1$ with $\restr_1^d = \SI{4.5}{\hour}$ and $\restr_1^b = \SI{0.45}{\minute}$ and $\restr_2$ with $\restr_2^d = \SI{9}{\hour}$ and $\restr_2^b = \SI{9}{\hour}$ to approximate the regulations of the EU.
 
 \section{Algorithms and Optimizations}
-We evaluate the different algorithms of Chapter~\ref{ch:Algorithm} and the optimizations of Chapter~\ref{section:impl}.
+We evaluate the different algorithms of Chapter~\ref{ch:Algorithm} and the optimizations of Section~\ref{section:impl}.
 
 First, we compare the running times of queries of the algorithms of Chapter~\ref{ch:Algorithm} on a German and European road network. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable. It also allows observing how well the algorithms scale on larger road networks, i.e., on longer routes.
 
 As Table \ref{tbl:extensions_runtime} shows, on the German road network, the goal-directed search performs an order of magnitude better than the baseline Dijkstra's algorithm with our amendments for driving time constraints. The bidirectional search without goal-direction performs worse than the baseline. The best results show the goal-directed bidirectional algorithm and the two core CH variants. The simple core CH algorithm falls back significantly behind the goal-directed version which shows the best result of all algorithms, improving the baseline by a factor of \num{10000}.
 
-On the European road network, we omitted the baseline since it is too slow and would render the experiment impracticable. It also appears that the goal-directed variant of the algorithm does not scale very well with longer routes which need an increasing amount of necessary breaks. Most of the performance gain of the goal-directed search in comparison to the baseline originates from the very tight lower-bound given by the CH potentials. If the shortest travel time between two nodes $s$ and $t$ is way larger than $\distance(s,t)$ due to necessary breaks and even detours to parking nodes on the route, then the performance of the goal-directed search degrades. The bidirectional variant can mitigate this disadvantage on the German road network since it connects two routes which each for itself have fewer breaks on the route. On the European network, the bidirectional goal-directed algorithm fails to do so and only multiplies the problem of its unidirectional counterpart.
+On the European road network, we omitted the baseline and goal-directed variants without core CH with the 2-DTC problem since they are too slow and would render the experiment impracticable. It appears that the goal-directed variant of the algorithm does not scale very well with longer routes which need an increasing amount of necessary breaks. Most of the performance gain of the goal-directed search in comparison to the baseline originates from the very tight lower-bound given by the CH potentials. If the shortest travel time between two nodes $s$ and $t$ is way larger than $\distance(s,t)$ due to necessary breaks and even detours to parking nodes on the route, then the performance of the goal-directed search degrades. The bidirectional variant can mitigate this disadvantage on the German road network since it connects two routes which each for itself have fewer breaks on the route. On the European network, the bidirectional goal-directed algorithm fails to do so and only multiplies the problem of its unidirectional counterpart.
 
 Both core CH algorithms scale better. The simple core CH algorithm scales the best of all algorithms and the goal-directed core CH variant again shows the best result. It also shows robustness against adding a second driving time constraint on both road networks.
 
@@ -65,7 +65,7 @@ The running times of Figure~\ref{fig:rank_times} to increasingly distant target 
 	\label{tbl:times_no_path}
 \end{table}
 
-Finally, we evaluate the different optimizations as described in Section~\ref{section:impl} in use with the goal-directed core CH algorithm on the European road network. Table~\ref{tbl:opt_runtime} shows that especially the bidirectional backward pruning leads to a general improvement of running time. The additional stopping criteria fail to do so.
+Finally, we evaluate the different optimizations as described in Section~\ref{section:impl} in use with the goal-directed core CH algorithm on the European road network. Table~\ref{tbl:opt_runtime} shows that especially the bidirectional backward pruning as defined in Algorithm~\ref{alg:bw_pruning} leads to a general improvement of running time. The additional stopping criteria fail to do so.
 
 \begin{table}[hbtp]
 	\centering
@@ -74,8 +74,8 @@ Finally, we evaluate the different optimizations as described in Section~\ref{se
 	\label{tbl:opt_runtime}
 \end{table}
 
-\section{Goal-Directed Core CH Queries}
-Finally, we investigate how varying parameters influence the running time of our algorithm. TODO
+\section{Influence of Parameters and Road Network}
+Finally, we investigate how varying parameters and differences in the road network influence the running time of our algorithm. TODO
 
 % \begin{figure}[hbtp]
 % 	\centering
