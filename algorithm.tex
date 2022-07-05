@@ -533,7 +533,7 @@ Finally, the lower bound potential for a label $l \in L(v)$ and a target node $t
 
 If queue keys still cannot decrease when propagating labels, Lemma~\ref{lemma:pot_lower_bound_csp} and theorem~\ref{theorem:pot_stop_criterion} follow as a consequence. We follow the outLine of the proof of Lemma~\ref{lemma:pot_labels_get_larger} and therefore revisit the procedure \textsc{RelaxEdge} at an edge $(u,v) \in E$ with a label $l \in L(u)$ and a new label $l' \in L(v)$.
 
-\begin{lemma}
+\begin{lemma}\label{lemma:pot_labels_get_larger_n}
 	Lemma~\ref{lemma:pot_labels_get_larger} still holds for two driving time constraints.
 \end{lemma}
 
@@ -691,13 +691,81 @@ In this section, we describe modifications to the algorithm described in Section
 In Section \ref{sec:dijkstra_csp}, we introduced our basic approach as an algorithm which maintains one queue $Q$ of labels in contrast to Dijkstra's algorithm, which maintains one queue of nodes. In practice, we revert this change and $Q$ becomes a queue of nodes again. The key of a node $v$ in $Q$ is the best known travel time of a label in $L(v)$. The label set $L(v)$ now becomes a priority queue of labels itself. When settling a label, we remove a node $v$ from $Q$ and the best label $l$ at $v$ from $L(v)$. If $L(v)$ is not empty now, we insert the node $v$ into $Q$ again with the travel time of the new best label $l' \in L(v)$ as the key.
 
 \subparagraph{Bidirectional Backward Pruning}
-When running the bidirectional A* algorithm in combination with CH-Potentials, the progress and the potential of the backward search can be used to prune the forward search and vice versa. This was introduced by \cite{strasser:2018} for node potentials. We will adapt the concept for the use with labels and the potential as defined in Section~\refeq{section:potential_n_csp}.
+When running the bidirectional A* algorithm in combination with CH-Potentials, the progress and the potential of the backward search can be used to prune the forward search and vice versa. This was introduced by \cite{strasser:2018} for node potentials. We will adapt the concept for the use with labels and the potential as defined in Section~\ref{section:potential_n_csp}.
 
 A label $l$ at a node $v$ which was propagated along an edge $(u,v)$ can be discarded if we can proof that all routes using the label are longer or equal to the tentative travel time $\tenttraveltime(s,t)$, i.e., the shortest currently known travel time from $s$ to $t$. The travel time $\concretett(l)$ of the label $l$ at $v$ is already known and it remains to find a lower bound for the remaining distance to $t$. We will describe the pruning of the forward search, the backward search can be pruned accordingly.
 
-The backwards queue $\overleftarrow{Q}$ contains labels $l' \in \overleftarrow{L}(v)$ with $\concretett(l') + \concretepotential_s(l', v)$ as the queue key. Labels are removed from the queue with an increasing key. If a label $l'$ was not yet removed from the backwards queue, we know that $\concretett(l') + \concretepotential_s(l',v) \ge \minKey(\overleftarrow{Q})$ holds which gives us a lower bound for the travel time of the label $\concretett(l') \ge \minKey(\overleftarrow{Q}) - \concretepotential_s(l',v)$. Unfortunately, we can only compute $\concretepotential_s(l',v)$ if the label $l'$ was already inserted into the queue. We need to resort to a pure node potential which is not a function of labels for the case when $l'$ was not yet inserted into the queue. Such a node potential is the potential $\concretepotential'_t(v)$ of Section~\ref{section:potential_csp} where we assessed it to be infeasible for the use in the A* algorithm, but $\concretepotential'_t(v)$ is a lower bound for the potential $\concretepotential_t(l,v)$ with $l \in L(v)$. We do not use it in queue keys but only as a lower bound of $\concretett(l')$.
+The backwards queue $\overleftarrow{Q}$ contains labels $l' \in \overleftarrow{L}(v)$ with $\concretett(l') + \concretepotential_s(l', v)$ as the queue key. Labels are removed from the queue with an increasing key. If a label $l'$ was not yet removed from the backwards queue, we know that $\concretett(l') + \concretepotential_s(l',v) \ge \minKey(\overleftarrow{Q})$ holds which gives us a lower bound for the travel time of the label $\concretett(l') \ge \minKey(\overleftarrow{Q}) - \concretepotential_s(l',v)$. Unfortunately, we can only compute $\concretepotential_s(l',v)$ if the label $l'$ was already inserted into the queue. We need to resort to a pure node potential which is not a function of labels for the case when $l'$ was not yet inserted into the queue. Such a node potential is the potential $\concretepotential'$ of Section~\ref{section:potential_csp} where we assessed it to be infeasible for the use in the A* algorithm. The potential $\concretepotential'_s(v)$ is a lower bound for $\concretepotential_t(l,v)$ with $l \in \overrightarrow{L}(v)$, but we need an upper bound for the potential to obtain a lower bound for $\concretett(l')$. Revisit the observations (2.) and (3.) from the proof of Lemma~\ref{lemma:pot_labels_get_larger}:
 
-Now consider a forward label $l \in \overrightarrow{L}(v)$ at the node $v$. The label $l$ has a distance since the last break which is zero or greater while $l'$ started at $t$ with a distance of zero since the last break. Therefore, the remaining travel time of $l$ from $v$ to $t$ must be greater or equal to $\concretett(l')$ which gives us a lower bound for the remaining travel time of the label $l$ to $t$ of $\concretett(l) \ge \concretett(l') \ge \minKey(\overleftarrow{Q}) - \concretepotential_s(l',v)$. The lower bound for an $s$-$t$ path using $l$ becomes $\concretett(l) + \minKey(\overleftarrow{Q}) - \concretepotential_s(l',v)$. We do not insert the label $l$ into the label set of $v$ if $\tenttraveltime(s,t) \le \concretett(l) + \minKey(\overleftarrow{Q}) - \concretepotential_s(l',v)$ because the label $l$ cannot lead to an improvement of the shortest known $s$-$t$ travel time.
+\begin{enumerate}
+	\item[2.] $\restr^b + \minBreakTime(d) \ge \minBreakTime(d + \restr^d)$
+	\item[3.] $\restr^d \ge \breakDist(l') \ge \breakDist(l) + \len(u,v) \ge \breakDist(l)$.
+\end{enumerate}
+
+Since the distance since the last break of a label can never be greater than the maximum allowed driving time of the driving time constraint, we can give a tight upper bound of the potential $\concretepotential_t$ for the case of one driving time constraint:
+
+\begin{align}
+	\concretepotential_s(l,v) \overset{\text{(2. and 3.)}}{\le} \concretepotential'_s(v) + \restr^b
+\end{align}
+
+In the case where $|\restrset| > 1$, we need to add the largest break time of all driving time constraints. We borrow the adaptions of observations (2.) and (3.) for the case of multiple driving time constraints from the proof of Lemma~\ref{lemma:pot_labels_get_larger}.
+
+\begin{align}
+	\concretepotential_s(l,v) \overset{\text{(7. and 8.)}}{\le} \concretepotential'_s(v) + \restr_{|C|}^b
+\end{align}
+
+We now can to compute a lower bound for the travel time of a label $l' \in \overleftarrow{L(t)}$ from $t$ to any node $v$. This is a lower bound for the remaining distance of a label $l \in \overrightarrow{L}(v)$ to $t$. The label $l$ contains distances since the last break of zero or greater and the label $l'$ started at t with distances since the last break of zero and thus cannot exceed the remaining travel time of $l$ from $v$ to $t$. This gives us a lower bound for the remaining travel time of the label $l$ to $t$ of
+
+\begin{align}
+	\concretett(l) + \minKey(\overleftarrow{Q}) - \concretepotential'_s(v) + \restr_{|C|}^b
+\end{align}
+
+We do not insert the label $l$ into the label set $\overrightarrow{v}$ if our lower bound exceeds the shortest currently known travel time $\tenttraveltime(s,t)$ between $s$ and $t$ because the label $l$ cannot lead to an improvement. Our final backward pruning is defined below as Algorithm~\ref{alg:bw_pruning}.
+
+\begin{algorithm}[hbtp]
+	\SetFuncSty{textsc}
+	\DontPrintSemicolon
+	\SetKwData{Q}{Q}
+	\SetKwData{L}{L}
+
+	\SetKwFunction{PruneBackward}{PruneBackward}
+	\SetKwFunction{queueDeleteMin}{deleteMin}
+
+	\SetKwData{bwQ}{$\overleftarrow{Q}$}
+	\SetKwData{bwL}{$\overleftarrow{L}$}
+	\SetKwData{L}{L}
+	\SetKwData{D}{D}
+	\SetKwData{pred}{pred}
+	\SetKwArray{ds}{ds}
+	\SetKwFunction{queueDeleteMin}{deleteMin}
+	\SetKwFunction{queueInsert}{queueInsert}
+	\SetKwFunction{setInsert}{insert}
+	\SetKwFunction{queueMin}{min}
+	\SetKwFunction{queueMinKey}{minKey}
+	\SetKwFunction{queueContains}{contains}
+	\SetKwFunction{queueDecreaseKey}{decreaseKey}
+	\SetKwFunction{queueContains}{contains}
+	\SetKwFunction{listInsert}{insert}
+	\SetKwFunction{removeDom}{RemoveDominated}
+
+	\SetKwProg{Pn}{Procedure}{:}{\KwRet}
+	\Pn{\PruneBackward{v,l}}{
+		\If{$\bwL(v)$ has a settled label $l'$}
+		{
+			prune if $\concretett(l) + \concretett(l') \ge \tenttraveltime(s,t)$\;
+		}
+		\ElseIf{\bwQ contains a label $l'$ at $v$}
+		{
+			prune if $\concretett(l) + \bwQ.\minKey() - \concretepotential_s(l',v) \ge \tenttraveltime(s,t)$\;
+		}
+		\Else
+		{
+			prune if $\concretett(l) + \bwQ.\minKey() - \concretepotential'_s(v) + \restr_{|C|}^b \ge \tenttraveltime(s,t)$\;
+		}
+	}
+	\caption{\label{alg:bw_pruning} Pruning the forward search before inserting a label $l$ into the forward label set of $v$.}
+\end{algorithm}
+
 
 \subparagraph{Core Contraction Hierarchy Stopping Criteria}
 Only a subset of nodes of a core CH can be reachable from a core node. This includes all the core nodes and the last layer of contracted nodes of the CH, i.e. all nodes which are contracted themselves but are reachable through an outgoing edge of a core node. If the forward search stops without touching any of the nodes which are reachable from the core, the forward search can only connect with the backwards search within the fully constructed CH part of the core CH. If the backwards search has no contracted nodes left in its queue we can be sure, that forward and backward search will not connect anymore and that no path will be found. Therefore, we can terminate the search. Equivalently, we can terminate the search if the backward search terminates early without touching any nodes which are reachable from the core and the forward search has no uncontracted nodes left in its queue.
