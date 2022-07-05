@@ -1,9 +1,4 @@
-% !TeX root = thesis.tex
-%% problem.tex
-%%
-
-%% ==============
-\chapter{Problem and Definitions}\label{chapter:problem_definitions}
+\chapter{Problem Definition}\label{ch:problem_definitions}
 Truck drivers have to follow regulations regarding the maximum time they are allowed to drive without taking a break. Therefore, on longer routes planning becomes necessary. We propose an extension of the shortest path problem which accounts for driving time limits and mandatory breaks, denoted as the long-haul truck driver routing problem. It can be formalized as follows:
 
 Let $G=(V,E,\mathfunction{len})$ be a graph and $s$ and $t$ nodes with $s,t \in V$. We extend the graph with a set $P \subseteq V$ of parking nodes. Additionally, we introduce a set $\restrset$ of driving time constraints $\restr_i$. Each driving time constraint is defined by a maximum permitted driving time $\restr_i^d$ and a break time $\restr_i^b$. We assume an order among the constraints and that both the driving time and the break time correspond to this order, i.e. $i<j \implies c_i^d < c_j^d \wedge c_i^b < c_j^b$. Before exceeding a driving time of $\restr_i^d$, the driver must stop and take a break for a time of at least $\restr_i^b$. Afterwards, the driver is allowed to drive for a maximum time of $\restr_i^d$ again without stopping. Breaks can only be scheduled at nodes $v \in P$.
