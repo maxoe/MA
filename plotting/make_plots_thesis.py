@@ -1,35 +1,22 @@
 #!/usr/bin/python3
 
-from cProfile import label, run
-from math import log2
-from multiprocessing.pool import RUN
-from os.path import join
-import subprocess
 import os
-import glob
-from collections import OrderedDict
 import importlib
-import itertools
-import pickle
-import hashlib
-import argparse
-import time
-import argparse
-
+from turtle import update
 import matplotlib.pyplot as plt
 from matplotlib import style
 import matplotlib.ticker as ticker
-import matplotlib.patches as mpatches
 import pandas as pd
 import numpy as np
-import math
 import re
-
-from pandas.core.base import DataError
+import seaborn as sns
 
 ggPlotColors = importlib.import_module("ggplot_colors").__dict__["ggColorSlice"]
 style.use("ggplot")
+
 plt.rcParams["lines.linewidth"] = 1
+half_textwidth_font_size = 22
+textwidth_font_size = 16
 
 
 # all paths are relative to this directory
@@ -152,8 +139,8 @@ def gen_avg_times():
 
     order = [
         "dijkstra",
-        "astar_chpot",
         "dijkstra_bidir",
+        "astar_chpot",
         "astar_bidir_chpot",
         "core_ch",
         "core_ch_chpot",
@@ -225,8 +212,8 @@ def gen_median_all_times():
 
     order = [
         "dijkstra",
-        "astar_chpot",
         "dijkstra_bidir",
+        "astar_chpot",
         "astar_bidir_chpot",
         "core_ch",
         "core_ch_chpot",
@@ -293,9 +280,9 @@ def gen_all_times_no_path():
     longest_2 = pd.DataFrame()
 
     order = [
-        "dijkstra",
+        # "dijkstra",
+        # "dijkstra_bidir",
         "astar_chpot",
-        "dijkstra_bidir",
         "astar_bidir_chpot",
         "core_ch",
         "core_ch_chpot",
@@ -310,17 +297,22 @@ def gen_all_times_no_path():
         subset_2 = avg_eur_2.loc[avg_eur_2["algo"] == algo]
         longest_2 = longest_2.append(subset_2.loc[np.isnan(subset_2["path_distance"])])
 
-    longest["time_ms_2"] = longest_2["time_ms"]
     longest_mean = longest.groupby("algo").mean()
     longest_median = longest.groupby("algo").median()
     longest_mean = longest_mean.reindex(order)
     longest_median = longest_median.reindex(order)
 
+    longest_2_mean = longest_2.groupby("algo").mean()
+    longest_2_median = longest_2.groupby("algo").median()
+    longest_2_mean = longest_2_mean.reindex(order)
+    longest_2_median = longest_2_median.reindex(order)
+
     longest_all = pd.DataFrame()
     longest_all["mean"] = longest_mean["time_ms"]
     longest_all["median"] = longest_median["time_ms"]
-    longest_all["mean_2"] = longest_mean["time_ms_2"]
-    longest_all["median_2"] = longest_median["time_ms_2"]
+    longest_all["mean_2"] = longest_2_mean["time_ms"]
+    longest_all["median_2"] = longest_2_median["time_ms"]
+    longest_all = longest_all.reindex(order)
 
     # HERE ORDER OF COLUMNS
     values = (
@@ -382,9 +374,9 @@ def gen_avg_opt():
     # HERE ORDER OF ROWS
     order = [
         "no_bw_no_prune",
-        "no_prune",
-        # "no_bw",
-        # "core_ch_chpot",
+        "core_ch_chpot",
+        # "no_bw_add_prune",
+        # "add_bw_add_prune",
     ]
 
     avg_all = avg_all.reindex(order)
@@ -500,10 +492,10 @@ def plot_all_rank_times(problem, graph):
                 bp.get_figure().gca().set_title("")
                 fig.suptitle("")
 
-                ax.set_xlabel("Dijkstra Rank")
+                ax.set_xlabel("Dijkstra Rank", fontsize=textwidth_font_size)
                 ax.set_ylabel(column_name)
                 ax.set_yscale(plot_scale)
-                ax.set_ylabel("Running Time [ms]")
+                ax.set_ylabel("Running Time [ms]", fontsize=textwidth_font_size)
 
                 if plot_scale == "linear":
                     ax.set_ylim(bottom=-0.1)
@@ -516,7 +508,84 @@ def plot_all_rank_times(problem, graph):
                 # plt.title(name + "-" + algo + ": " + graph)
                 plt.title("")
                 fig.tight_layout()
-                write_plt(name + "-" + algo + "-" + column_name + ".png", graph)
+
+                write_plt(name + "-" + algo + "-" + column_name + ".png", graph)  #
+
+
+def plot_constraint_times(graph):
+    name_d = "thesis_driving_times-csp-" + graph
+    name_b = "thesis_break_times-csp-" + graph
+
+    queries_d = read_measurement(name_d)
+    queries_d["max_driving_time"] = queries_d["max_driving_time"] / 3600000
+    queries_b = read_measurement(name_b)
+    queries_b["max_break_time"] = queries_b["max_break_time"] / 3600000
+
+    colors = ggPlotColors(4)
+
+    algos = ["core_ch", "core_ch_chpot"]
+
+    # sns.lmplot(
+    #     x="max_break_time",
+    #     y="time_ms",
+    #     data=queries_b[queries_b["algo"] == "core_ch_chpot"],
+    #     order=2,
+    #     scatter=False,
+    #     height=5,
+    #     aspect=2,
+    # )
+    # plt.show()
+
+    smooth = lambda x: x.rolling(100).mean()
+    max_b = smooth(queries_b.groupby("max_break_time").median()["time_ms"]).max()
+    min_b = smooth(queries_b.groupby("max_break_time").median()["time_ms"]).min()
+
+    iv = max_b - min_b
+    padding = iv * 0.1
+
+    for algo in algos:
+        queries_d_current = (
+            queries_d[queries_d["algo"] == algo].groupby("max_driving_time").median()
+        )
+        queries_b_current = (
+            queries_b[queries_b["algo"] == algo].groupby("max_break_time").median()
+        )
+
+        queries_d_rolling = smooth(queries_d_current)
+        queries_b_rolling = smooth(queries_b_current)
+
+        min_b = queries_b_rolling["time_ms"].min() - padding
+        max_b = min_b + 2 * padding + iv
+
+        fig, ax = plt.subplots(figsize=(10, 5))
+        plot = queries_d_rolling.plot(ax=ax)
+        plot.get_figure().gca().set_title("")
+        fig.suptitle("")
+
+        ax.set_xlabel(
+            "Maximum Allowed Driving Time [h]", fontsize=half_textwidth_font_size
+        )
+        ax.set_ylabel("Running Time [ms]", fontsize=half_textwidth_font_size)
+        ax.set_ylim(bottom=-0.1)
+        ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+        ax.get_legend().remove()
+        plt.title("")
+        fig.tight_layout()
+        write_plt(name_d + "-" + algo + "-time_ms.png", graph)
+
+        fig, ax = plt.subplots(figsize=(10, 5))
+        plot = queries_b_rolling.plot(ax=ax)
+        plot.get_figure().gca().set_title("")
+        fig.suptitle("")
+
+        ax.set_xlabel("Break Time [h]", fontsize=half_textwidth_font_size)
+        ax.set_ylabel("Running Time [ms]", fontsize=half_textwidth_font_size)
+        ax.set_ylim(ymin=min_b, ymax=max_b)
+        ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+        ax.get_legend().remove()
+        plt.title("")
+        fig.tight_layout()
+        write_plt(name_b + "-" + algo + "-time_ms.png", graph)
 
 
 if __name__ == "__main__":
@@ -529,3 +598,5 @@ if __name__ == "__main__":
     plot_breaks_running_times("parking_europe_hgv")
     plot_all_rank_times("csp", "parking_europe_hgv")
     plot_all_rank_times("csp_2", "parking_europe_hgv")
+
+    plot_constraint_times("parking_europe_hgv")

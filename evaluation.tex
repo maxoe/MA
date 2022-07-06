@@ -8,16 +8,16 @@ In this section, we evaluate the running time and behavior of our algorithms of 
 
 \subparagraph{Data.} Our data is a road network of Europe\footnote{\url{https://download.geofabrik.de/europe-latest.osm.pbf} of March 22, 2022} and of Germany\footnote{\url{https://download.geofabrik.de/europe/germany-latest.osm.pbf} of March 22, 2022} from Open Street Map (OSM). We extract the routing graph and parking nodes from the OSM data using a custom extension\footnote{\url{https://github.com/maxoe/RoutingKit}} of RoutingKit\footnote{\url{https://github.com/RoutingKit/RoutingKit}}. The obtained routing graph of Europe has $81.5$ million nodes and $190$ million edges. If not stated otherwise, our set $P$ of parking nodes in the European routing graph consists of \num{6796} nodes which were selected due to their OSM attributes. Equivalently, the routing graph of Germany has $12.5$ million nodes, $29.5$ million edges, and we selected \num{3222} nodes as parking nodes.
 
-\subparagraph{Methodology.} All experiments are run sequentially. We conduct experiments regarding the preprocessing time of the core CH and the running time of queries on the extracted routing graph. We average preprocessing running times over \num{10} runs and running times of $s$-$t$ queries over \num{10000} queries with $s$ and $t$ independently chosen uniformly at random for each query. If not stated otherwise, we use $\restr_1$ with $\restr_1^d = \SI{4.5}{\hour}$ and $\restr_1^b = \SI{0.45}{\minute}$ and $\restr_2$ with $\restr_2^d = \SI{9}{\hour}$ and $\restr_2^b = \SI{9}{\hour}$ to approximate the regulations of the EU.
+\subparagraph{Methodology.} All experiments are run sequentially. We conduct experiments regarding the preprocessing time of the core CH and the running time of queries on the extracted routing graph. We average preprocessing running times over \num{10} runs and running times of $s$-$t$ queries over \num{1000} queries with $s$ and $t$ independently chosen uniformly at random for each query. If not stated otherwise, we use $\restr_1$ with $\restr_1^d = \SI{4.5}{\hour}$ and $\restr_1^b = \SI{0.45}{\minute}$ and $\restr_2$ with $\restr_2^d = \SI{9}{\hour}$ and $\restr_2^b = \SI{11}{\hour}$ to approximate the regulations of the EU.
 
 \section{Algorithms and Pruning}
 We evaluate the different algorithms of Chapter~\ref{ch:Algorithm} and the backward pruning of Section~\ref{section:impl}.
 
-First, we compare the running times of queries of the algorithms of Chapter~\ref{ch:Algorithm} on a German and European road network. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable. It also allows observing how well the algorithms scale on larger road networks, i.e., on longer routes.
+First, we compare the running times of queries of the algorithms of Chapter~\ref{ch:Algorithm} on a German and European road network. We scale the experiment down from the European road network because some variants of the algorithms in this experiment cannot keep up with the performance of the goal-directed core CH algorithm and would render the experiment slow and impracticable.
 
-As Table \ref{tbl:extensions_runtime} shows, on the German road network, the goal-directed search performs an order of magnitude better than the baseline Dijkstra's algorithm with our amendments for driving time constraints. The bidirectional search without goal-direction performs worse than the baseline. The best results show the goal-directed bidirectional algorithm and the two core CH variants. The simple core CH algorithm falls back significantly behind the goal-directed version which shows the best result of all algorithms, improving the baseline by a factor of \num{10000}.
+As Table \ref{tbl:extensions_runtime} shows, on the German road network, the goal-directed search performs five orders of magnitude better than the baseline Dijkstra's algorithm with our amendments for driving time constraints. The bidirectional search without goal-direction performs significantly better than the baseline. The core CH algorithms and the bidirectional goal-directed algorithm show the best results. The simple core CH algorithm falls back significantly behind the goal-directed version which exhibits the best running times of all algorithms, improving the baseline by a factor of about \num{10000}.
 
-On the European road network, we omitted the baseline and goal-directed variants without core CH with the 2-DTC problem since they are too slow and would render the experiment impracticable. It appears that the goal-directed variant of the algorithm does not scale very well with longer routes which need an increasing amount of necessary breaks. Most of the performance gain of the goal-directed search in comparison to the baseline originates from the very tight lower-bound given by the CH potentials. If the shortest travel time between two nodes $s$ and $t$ is way larger than $\distance(s,t)$ due to necessary breaks and even detours to parking nodes on the route, then the performance of the goal-directed search degrades. The bidirectional variant can mitigate this disadvantage on the German road network since it connects two routes which each for itself have fewer breaks on the route. On the European network, the bidirectional goal-directed algorithm fails to do so and only multiplies the problem of its unidirectional counterpart.
+On the European road network, we omitted the baseline and the bidirectional goal-directed variant since they are too slow or suffer from outliers and would render the experiment impracticable. It appears that the goal-directed variant of the algorithm does not scale very well with longer routes which need an increasing amount of necessary breaks. Most of the performance gain of the goal-directed search in comparison to the baseline originates from the very tight lower-bound given by the CH potentials. If the shortest travel time between two nodes $s$ and $t$ is much larger than $\distance(s,t)$ due to necessary breaks and even detours to parking nodes on the route, then the performance of the goal-directed search degrades. The bidirectional variant can mitigate this disadvantage on the German road network since it connects two routes which each have fewer breaks on the route. On the European network, the bidirectional goal-directed algorithm fails to do so and only multiplies the problem of its unidirectional counterpart.
 
 Both core CH algorithms scale better. The simple core CH algorithm scales the best of all algorithms and the goal-directed core CH variant again shows the best result. It also shows robustness against adding a second driving time constraint on both road networks.
 
@@ -28,7 +28,7 @@ Both core CH algorithms scale better. The simple core CH algorithm scales the be
 	\label{tbl:extensions_runtime}
 \end{table}
 
-We also provide the median running times in Table~\ref{tbl:extensions_runtime_median}. While the running times of not goal-directed variants improves a little, the median of the running times of goal-directed variants is much smaller than the average, except for cases in which the average already was very small. The goal-directed variants, especially those without a core CH suffer from outliers. The core CH shrinks the maximal possible search space from the entire graph to much fewer nodes which are reachable via upward edges or are core nodes. Therefore, the outliers perform not as bad as for the variants without a core CH.
+We also provide the median running times in Table~\ref{tbl:extensions_runtime_median}. While the running times of non-goal-directed variants improves a little, the median of the running times of goal-directed variants is much smaller than the average, except for cases in which the average already is very small. The goal-directed variants, especially those without a core CH suffer from outliers. The core CH shrinks the maximal possible search space from the entire graph to much fewer nodes which are reachable via upward edges or are core nodes. Therefore, the outliers are not as bad as for the variants without a core CH.
 
 \begin{table}[hbtp]
 	\centering
@@ -37,22 +37,34 @@ We also provide the median running times in Table~\ref{tbl:extensions_runtime_me
 	\label{tbl:extensions_runtime_median}
 \end{table}
 
-We investigate the impact of an increased route length and amount of necessary breaks on a route further. For this, we plot the running times of the algorithm to target nodes of increasing Dijkstra rank. The Dijkstra rank is obtained from the sequence in which a standard Dijkstra search without labels and driving time constraints settles its nodes. The Dijkstra rank of a node is the position of the node in that sequence. We plot running times to nodes of rank $2^{10}$, $2^{11}$,\dots,$2^{\log(|V|)}$ where $|V|$ is the number of nodes in the graph. The plot is shown in Figure~\ref{fig:rank_times} for the goal-directed and the goal-directed core CH algorithms. The goal-directed algorithm shows an increase of multiple orders of magnitude for large Dijkstra ranks. Starting at Dijkstra rank $2^{20}$, a significant amount of very slow queries occurs which stretches the interquartile range. The median remains low, almost at the first quartile, an indication that the stretching of the IQR is caused by a few very slow queries. The median of the running time jumps from about \SI{2}{\milli\second} at Dijkstra rank $2^{22}$ to about \SI{220}{\milli\second} at Dijkstra rank $2^{23}$. This coincides with the median travel time of the route crossing the mark of \SI{4.5}{\hour} which is the maximum allowed driving time without a break of the shorter driving time constraint of the EU rules being used. Therefore, most queries to target nodes with a Dijkstra rank of $2^{23}$ need at least one break while most queries to target nodes of Dijkstra rank  $2^{22}$ do not need to pause on the route yet.
+We investigate the impact of an increased route length and amount of necessary breaks on a route further. For this, we plot the running times of queries to target nodes of increasing Dijkstra rank on the European road network. The Dijkstra rank is obtained from the sequence in which a standard Dijkstra search without driving time constraints settles its nodes. The Dijkstra rank of a node is the position of the node in that sequence. We plot running times to nodes of rank $2^{10}$, $2^{11}$,\dots,$2^{\log(|V|)}$ where $|V|$ is the number of nodes in the graph. The plot is shown in Figure~\ref{fig:rank_times} for the goal-directed and the goal-directed core CH algorithms. The goal-directed algorithm shows an increase of multiple orders of magnitude for large Dijkstra ranks. Starting at Dijkstra rank $2^{20}$, a significant amount of very slow queries occurs which stretches the interquartile range. The median remains low, almost at the first quartile, an indication that the stretching of the IQR is caused by a few very slow queries. The median of the running time jumps from about \SI{2}{\milli\second} at Dijkstra rank $2^{22}$ to about \SI{220}{\milli\second} at Dijkstra rank $2^{23}$. This coincides with the median travel time of the route crossing the mark of \SI{4.5}{\hour} which is the maximum allowed driving time without a break of the shorter driving time constraint of the EU rules being used. Therefore, most queries to target nodes with a Dijkstra rank of $2^{23}$ need at least one break while most queries to target nodes of Dijkstra rank  $2^{22}$ do not need to pause on the route yet.
 
 The goal-directed core CH variant scales better with longer queries. It falls slightly behind the goal-directed algorithm for lower Dijkstra ranks due to a larger overhead. While the algorithm suffers from the same general problem of an increasing running time with an increasing route length and number of breaks, the median of its running time increases only by one order of magnitude for the longest queries. Up to a Dijkstra rank of $2^{23}$, the median of the running time does not rise higher than \SI{5}{\milli\second} and it never exceeds \SI{12}{\milli\second}.
 
 \begin{figure}[hbtp]
 	\centering
-	\subfigure[Goal-Directed Algorithm]{
+	\subfigure[Goal-Directed Algorithm (1-DTC)]{
 		\includegraphics[width=.95\textwidth]{plots/thesis_rank_times_all-csp-parking_europe_hgv-astar_chpot-time_ms.png}
 		\label{fig:rank_times_astar}
-	}\hfill
-	\subfigure[Goal-Directed Core CH Algorithm]{
+	}
+	\subfigure[Goal-Directed Core CH Algorithm (1-DTC)]{
 		\includegraphics[width=.95\textwidth]{plots/thesis_rank_times_all-csp-parking_europe_hgv-core_ch_chpot-time_ms.png}
 		\label{fig:rank_times_fast}
 	}
 	\caption[Running times of queries to target nodes of increasing Dijkstra rank, logarithmic scales.]{Running times of queries to target nodes of increasing Dijkstra rank, logarithmic scales. The box represents the interquartile range (IQR) from the first quartile Q1 to the third quartile Q3. The horizontal line within the IQR is the median. The whiskers represent the range from $\text{Q1} - \text{IQR} \cdot 1.5$ to $\text{Q3} + \text{IQR} \cdot 1.5$ which contains $99.3\%$ of the data points.}
 	\label{fig:rank_times}
+\end{figure}
+\begin{figure}[hbtp]
+	\subfigure[Goal-Directed Algorithm (2-DTC)]{
+		\includegraphics[width=.95\textwidth]{plots/thesis_rank_times_all-csp_2-parking_europe_hgv-astar_chpot-time_ms.png}
+		\label{fig:rank_times_astar_2}
+	}\hfill
+	\subfigure[Goal-Directed Core CH Algorithm (2-DTC)]{
+		\includegraphics[width=.95\textwidth]{plots/thesis_rank_times_all-csp_2-parking_europe_hgv-core_ch_chpot-time_ms.png}
+		\label{fig:rank_times_fast_2}
+	}
+	\caption[Running times of queries to target nodes of increasing Dijkstra rank, logarithmic scales.]{Running times of queries to target nodes of increasing Dijkstra rank, logarithmic scales. The box represents the interquartile range (IQR) from the first quartile Q1 to the third quartile Q3. The horizontal line within the IQR is the median. The whiskers represent the range from $\text{Q1} - \text{IQR} \cdot 1.5$ to $\text{Q3} + \text{IQR} \cdot 1.5$ which contains $99.3\%$ of the data points.}
+	\label{fig:rank_times_2}
 \end{figure}
 
 
@@ -77,18 +89,47 @@ Finally, we evaluate the backward pruning of as defined in Algorithm~\ref{alg:bw
 \section{Influence of Parameters and Road Network}
 Finally, we investigate how varying parameters and differences in the road network influence the running time of our algorithm.
 
+First, we investigate how different driving time constraints influence the running time of the goal-directed core CH and non-goal-directed core CH algorithms. We use only one driving time constraint $\restr$ (1-DTC) to be able to change one parameter at a time and observe the consequences. Figure~\ref{fig:eval_driving_time} shows the running times for an increasing maximum allowed driving time $\restr^d$. We plot the median of 1000 random queries for one value of $c^d$ and increase the driving time limit stepwise. Additionally, the plot is smoothed using a rolling window mean to increase readability.
+
+The goal-directed core CH variant behaves differently compared to the core CH variant, except for very small driving time limits when both variants fail to find a path and terminate early. When increasing the driving time limit, the search radius first increases equally for both. This is because the goal-directed variant presents no advantage over the non-goal-directed variant if a route from $s$ to $t$ is not found because of the driving time constraint. The goal-directed algorithm can exclude nodes $v$ from the search only if the target node $t$ is not reachable from the $v$ at all in the graph, since the CH-Potentials yield an infinite distance value in this case. It fails to do so if $t$ is reachable from $s$ in the graph, but the driving time constraint prohibits finding a valid route. In this case, both algorithms settled the same labels, just in a different order. This behavior changes when the driving time limit increased enough that a route can be found and the advantage of the goal-directed algorithm becomes apparent. In the optimal case, which is if a route from a node $v$ to $t$ without the need for a break exists, the CH-Potentials yield the exact distant values $\distance(v,t)$. Therefore, the goal-directed algorithm knows the shortest path to $t$ and does not search aside the shortest route.
+
+\begin{figure}[hbtp]
+	\centering
+	\subfigure[Core CH Algorithm]{
+		\includegraphics[width=.48\textwidth]{plots/thesis_driving_times-csp-parking_europe_hgv-core_ch-time_ms.png}
+		\label{fig:eval_driving_time_core_ch}
+	}\hfill
+	\subfigure[Goal-Directed Core CH Algorithm]{
+		\includegraphics[width=.48\textwidth]{plots/thesis_driving_times-csp-parking_europe_hgv-core_ch_chpot-time_ms.png}
+		\label{fig:eval_driving_time_gd_core_ch}
+	}
+	\caption{Running times of the two core CH algorithms with increasing maximum allowed driving time.}
+	\label{fig:eval_driving_time}
+\end{figure}
+
+Second, we vary the break time $\restr^b$ of the driving time constraint. Both plots of Figure~\ref{fig:eval_break_time} have the same scaling of the y-axis to enable an easy comparison pf the increase in running time. The running time increases when the break time starts to increase from zero. If the break time is exactly zero, there never are multiple labels at a parking node. When duplicating a label at a parking node to represent the two options of taking a break and not taking a break, the label $l$ which took the break will always dominate the other label $l'$ since it resets the distance since the last break to zero without adding any break time to its travel time. With a non-zero break time, the two cases non-goal-directed and goal-directed differ.
+
+In the non-goal-directed case, the labels in the label queue are sorted using their travel time. A label $l$ at a parking node $v$ which takes the break is inserted into the queue at a position further back than the label $l'$ that does not take a break. The search does not settle $l$ at all if the break time which has been added to its travel time increased its travel time over the travel time of the shortest route from $s$ to $t$. If the label $l$ is part of the shortest route, the algorithm spends unnecessary time with propagating labels which have taken fewer breaks and therefore yield a smaller travel time, but will not reach $t$ because they exceed the driving time limit before. The longer the break time, the more of such labels are settled before $l$ which increases the running time. The running time stops to increase significantly when there are no more labels whith fewer breaks which the algorithm can propagate before $l$. In this case, the algorithm first propagates all labels which take zero breaks, then all labels which take one break and so on until a valid route to $t$ can be found.
+
+In the goal-directed case, the labels are sorted in the queue using the sum of their travel time and the potential towards the target node. If a label is positioned further back in the queue, it takes a longer detour from the route which the CH-Potentials have determined to be the shortest route without regard for driving time constraints to $t$. Detours arise from the need to deviate from the direct route to reach a parking node because the direct route exceeded the driving time limit. As a consequence, the algorithm starts to propagate labels along the direct route until either $t$ is found or the driving time limit is exceeded. It then continues to do so with the label that took the smallest detour. If a label takes a break it only gets positioned further back in the label queue if the break is not of use, i.e., if the break does not spare a break on the remaining route. Such labels cannot be part of a shortest route. TODO dominating
+
+\begin{figure}[hbtp]
+	\centering
+	\subfigure[Core CH Algorithm]{
+		\includegraphics[width=.48\textwidth]{plots/thesis_break_times-csp-parking_europe_hgv-core_ch-time_ms.png}
+		\label{fig:eval_break_time_core_ch}
+	}\hfill
+	\subfigure[Goal-Directed Core CH Algorithm]{
+		\includegraphics[width=.48\textwidth]{plots/thesis_break_times-csp-parking_europe_hgv-core_ch_chpot-time_ms.png}
+		\label{fig:eval_break_time_gd_core_ch}
+	}
+	\caption{Running times of the core CH and the goal-directed core CH algorithms with an increasing break time.}
+	\label{fig:eval_break_time}
+\end{figure}
 
 TODO
 
-% \begin{figure}[hbtp]
-% 	\centering
-% 	\includegraphics[width=.95\textwidth]{plots/measure_all_csp_2_1000_queries_rank_times-core_ch_chpot-time_ms.png}
-% 	\caption{Running times of the goal-directed core CH algorithm for queries to nodes of increasing Dijkstra rank, logarithmic scales.}
-% 	\label{fig:rank_times}
-% \end{figure}
-
 \begin{itemize}
-	\item different $\len$
-	\item variable break time, driving time limit
+	\item different $\len$ for trucks
 	\item parking node set
 \end{itemize}
