@@ -6,10 +6,10 @@
 \chapter{Algorithm}
 \label{ch:Algorithm}
 %% ==============
-In this chapter, we introduce a labeling algorithm which solves the long-haul truck driver routing problem. At first, we will restrict the problem to one driving time constraint for simplicity and drop that constraint later. We then describe extensions of the base algorithm to achieve better running times on realistic problem instances.
+In this chapter, we introduce a labeling algorithm for the Truck Driver Routing Problem. At first, we will restrict the problem to one driving time constraint for simplicity and drop that constraint later. We then describe extensions of the base algorithm to achieve better running times on realistic problem instances.
 
 \section{Dijkstra's Algorithm with One Driving Time Constraint\label{sec:dijkstra_csp}}
-We will adapt Dijkstra's algorithm for solving the long-haul truck driver routing problem with one driving time constraint $\restrset = \{\restr\}$ and abbreviate this restriction of the problem \emph{1-DTC}. While Dijkstra's algorithm manages a queue of nodes and assigns each node one tentative distance, our algorithm manages a queue $Q$ of labels and a set $L(v)$ of labels for each node $v \in V$.
+We will adapt Dijkstra's algorithm to solve the TDRP with one driving time constraint (TDRP-1DTC). While Dijkstra's algorithm manages a queue of nodes and assigns each node one tentative distance, our algorithm manages a queue $Q$ of labels and a set $L(v)$ of labels for each node $v \in V$.
 
 Labels in a label set $L(v)$ represent a possible route, respectively a possible solution for a query from $s$ to $v$. A label $l \in L(v)$ may represent suboptimal routes to $v$, i.e., routes which are not a shortest route between $s$ and $v$. Nevertheless, we will ensure that a label set never contains labels which represent invalid routes according to $\restr$. A label $l$ contains
 
@@ -60,7 +60,7 @@ After propagating a label, we discard the label if it violates the driving time 
 \subparagraph{Label Dominance}
 In general, it is no longer clear when a label presents a better solution than another label since it now contains two distance values. A label $l$ at a node $v$ might represent a shorter route from $s$ to $v$ than another label $l'$ but might have shorter remaining driving time budget $\restr^d - \breakDist(l)$. The label $l$ yields a better solution for a query $s$-$v$, but this does not imply that it is part of a better solution for a query from $s$-$t$. It might not even yield a valid route to $t$ at all while $l'$ reaches the target due to the greater remaining driving time budget. In one case, we can prove that a label $l \in L(v)$ cannot yield a better solution than a label $l' \in L(v)$. We say $l'$ \emph{dominates} $l$.
 
-\begin{definition}[Label Dominance for 1-DTC]
+\begin{definition}[Label Dominance for 1DTC]
 	A label $l \in L(v)$ dominates another label $l' \in L(v)$ if $\concretett(l') > \concretett(l)$ and $\breakDist(l') \ge \breakDist(l)$ or $\concretett(l') \ge \concretett(l)$ and $\breakDist(l') > \breakDist(l)$.
 \end{definition}
 
@@ -148,10 +148,10 @@ When propagating a label $l \in L(u)$ along an edge $(u,v) \in E$ and $v \in P$,
 \end{algorithm}
 
 \subsection{Initialization and Main Loop}
-We initialize the label set $L(s)$ of $s$ and the queue $Q$ with a label which only contains distances of zero and a dummy element as a predecessor. We stop the search when $t$ was removed from $Q$. The definition of the final algorithm is given as Algorithm~\ref{alg:CSP} \textsc{Dijkstra+1-DTC}.
+We initialize the label set $L(s)$ of $s$ and the queue $Q$ with a label which only contains distances of zero and a dummy element as a predecessor. We stop the search when $t$ was removed from $Q$. The definition of the final algorithm is given as Algorithm~\ref{alg:CSP} \textsc{Dijkstra+1DTC}.
 
 \begin{algorithm}[htbt]
-	\caption{\textsc{Dijkstra+1-DTC}}\label{alg:CSP}
+	\caption{\textsc{Dijkstra for TDRP-1DTC}}\label{alg:CSP}
 
 	% Some settings
 	\DontPrintSemicolon %dontprintsemicolon
@@ -213,7 +213,7 @@ In this section, we extend the base algorithm described in Section~\ref{sec:dijk
 The difference between Dijkstra and A* is the order in which nodes are being removed from the queue. In our case, this corresponds to the order of labels being removed from the queue. Instead of using their travel time $\concretett(l)$ as a queue key, a label $l \in L(v)$ is added to the queue with the key $\concretett(l) + \concretepotential_t(l,v)$. Algorithm~\ref{alg:CSPPot} shows the adaption of the coarse algorithm.
 
 \begin{algorithm}[bt]
-	\caption{\textsc{A*+1-DTC}}\label{alg:CSPPot}
+	\caption{\textsc{A* for TDRP-1DTC}}\label{alg:CSPPot}
 
 	% Some settings
 	\DontPrintSemicolon %dontprintsemicolon
@@ -458,7 +458,7 @@ Since the potential now uses information from a label $l$ with $l \in L(v)$, it 
 \end{proof}
 
 \section{Multiple Driving Time Constraints\label{section:n_csp}}
-Dijkstra's algorithm with one driving time constraint (1-DTC) can be adapted to handle multiple driving time constraints $\restr_i$. With anumber of $|\restrset|$ driving time constraints, a label $l$ now contains the total travel time $\concretett(l)$ and $|C|$ distances $\breakDist_1(l), \ldots , \breakDist_{|C|}(l)$. Each value $\breakDist_i(l)$ represents the distance since the last break at a node $v$ with break time $\breakTime(v) \ge \restr_i^b$. Pausing at a node occurs with one of the available break times $\restr_i^b$ of a driving time constraint $\restr_i \in \restrset$. Pausing with an arbitrary break time is permitted but yields longer travel times and no advantage and is therefore ignored. When a route breaks at $v$ for a time $\restr_i^b$, the corresponding label $l \in L(v)$ has $\breakDist(l) = 0$ for all $0 < j \le i$ since the breaks with shorter break times are included in the longer break. In the following, we redefine the fundamental concepts of Section~\ref{sec:dijkstra_csp} for multiple driving time constraints.
+Dijkstra's algorithm for the Truck Driver Routing PRoblem with one driving time constraint (TDRP-1DTC) can be adapted to handle multiple driving time constraints $\restr_i$ (TDRP-mDTC). With a number of $|\restrset|$ driving time constraints, a label $l$ now contains the total travel time $\concretett(l)$ and $|C|$ distances $\breakDist_1(l), \ldots , \breakDist_{|C|}(l)$. Each value $\breakDist_i(l)$ represents the distance since the last break at a node $v$ with break time $\breakTime(v) \ge \restr_i^b$. Pausing at a node occurs with one of the available break times $\restr_i^b$ of a driving time constraint $\restr_i \in \restrset$. Pausing with an arbitrary break time is permitted but yields longer travel times and no advantage and is therefore ignored. When a route breaks at $v$ for a time $\restr_i^b$, the corresponding label $l \in L(v)$ has $\breakDist(l) = 0$ for all $0 < j \le i$ since the breaks with shorter break times are included in the longer break. In the following, we redefine the fundamental concepts of Section~\ref{sec:dijkstra_csp} for multiple driving time constraints.
 
 \subparagraph{Label Propagation}
 Label propagation simply extends the component-wise addition of the edge weight. Let $l \in L(u)$ be a label at $u$ and $(u,v) = e \in E$, then $l$ can be propagated to $v$ resulting in a label $l'$ with $\concretett(l') = \concretett(l) + \mathfunction{len}(e)$, $\breakDist_i(l') = \breakDist_i(l) + \mathfunction{len}(e)$ $\forall\ 1 \le i \le |\restrset|$, and $\pred(l') = l$.
