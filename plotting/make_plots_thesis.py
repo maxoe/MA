@@ -536,7 +536,8 @@ def plot_constraint_times(graph):
     # )
     # plt.show()
 
-    smooth = lambda x: x.rolling(100).mean()
+    # smooth = lambda x: x.rolling(1000).mean()
+    smooth = lambda x: x.rolling(10).mean()
     max_b = smooth(queries_b.groupby("max_break_time").median()["time_ms"]).max()
     min_b = smooth(queries_b.groupby("max_break_time").median()["time_ms"]).min()
 
@@ -588,15 +589,49 @@ def plot_constraint_times(graph):
         write_plt(name_b + "-" + algo + "-time_ms.png", graph)
 
 
+def plot_core_sizes_experiment(graph):
+    name = "thesis_core_sizes-csp-" + graph
+    name_2 = "thesis_core_sizes-csp_2-" + graph
+
+    # rel_core_size,abs_core_size,construction_time_ms,time_ms
+    queries = read_measurement(name)
+    queries_2 = read_measurement(name_2)
+
+    queries["rel_core_size"] = queries["rel_core_size"] * 100
+    queries_2["rel_core_size"] = queries_2["rel_core_size"] * 100
+
+    queries = queries.groupby("rel_core_size").mean()
+    queries_2 = queries_2.groupby("rel_core_size").mean()
+
+    colors = ggPlotColors(4)
+
+    # plot construction
+    constr = queries.append(queries_2)["construction_time_ms"]
+    constr["construction_time_ms"] = queries["construction_time_ms"] / 3600000
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    plot = constr["construction_time_ms"].plot(ax=ax)
+    plot.get_figure().gca().set_title("")
+    fig.suptitle("")
+    ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
+    ax.set_ylabel("Construction Time [h]", fontsize=textwidth_font_size)
+    ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    plt.title("")
+    fig.tight_layout()
+    write_plt(name + "-time_ms.png", graph)
+
+
 if __name__ == "__main__":
-    gen_avg_times()
-    gen_median_all_times()
-    gen_avg_opt()
+    # gen_avg_times()
+    # gen_median_all_times()
+    # gen_avg_opt()
 
-    gen_all_times_no_path()
+    # gen_all_times_no_path()
 
-    plot_breaks_running_times("parking_europe_hgv")
-    plot_all_rank_times("csp", "parking_europe_hgv")
-    plot_all_rank_times("csp_2", "parking_europe_hgv")
+    # plot_breaks_running_times("parking_europe_hgv")
+    # plot_all_rank_times("csp", "parking_europe_hgv")
+    # plot_all_rank_times("csp_2", "parking_europe_hgv")
 
     plot_constraint_times("parking_europe_hgv")
+
+    plot_core_sizes_experiment("parking_europe_hgv")
