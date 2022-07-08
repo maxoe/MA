@@ -606,15 +606,29 @@ def plot_core_sizes_experiment(graph):
     colors = ggPlotColors(4)
 
     # plot construction
-    constr = queries.append(queries_2)["construction_time_ms"]
-    constr["construction_time_ms"] = queries["construction_time_ms"] / 3600000
+    constr = queries["construction_time_ms"] / 60000
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    plot = constr["construction_time_ms"].plot(ax=ax)
+    plot = constr.plot(ax=ax)
     plot.get_figure().gca().set_title("")
     fig.suptitle("")
     ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
-    ax.set_ylabel("Construction Time [h]", fontsize=textwidth_font_size)
+    ax.set_ylabel("Construction Time [min]", fontsize=textwidth_font_size)
+    ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    plt.title("")
+    fig.tight_layout()
+    write_plt(name + "-constr_time.png", graph)
+
+    # plot queries
+    queries_all = queries.join(queries_2, rsuffix="_2")[["time_ms", "time_ms_2"]]
+    queries_all = queries_all.rename(columns={"time_ms": "1DTC", "time_ms_2": "2DTC"})
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    plot = queries_all.plot(ax=ax)
+    plot.get_figure().gca().set_title("")
+    fig.suptitle("")
+    ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
+    ax.set_ylabel("Running Time Time [ms]", fontsize=textwidth_font_size)
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     plt.title("")
     fig.tight_layout()
