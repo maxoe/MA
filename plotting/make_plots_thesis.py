@@ -11,11 +11,16 @@ import numpy as np
 import re
 import seaborn as sns
 
-ggPlotColors = importlib.import_module("ggplot_colors").__dict__["ggColorSlice"]
-style.use("ggplot")
+# ggPlotColors = importlib.import_module("ggplot_colors").__dict__["ggColorSlice"]
+# style.use("ggplot")
+style.use("seaborn-whitegrid")
+sns.set_palette("tab10")
+# style.use(sns.get_palette())
+
 
 plt.rcParams["lines.linewidth"] = 1
-half_textwidth_font_size = 22
+# sns.set(rc={"lines.linewidth": 1})
+half_textwidth_font_size = 24
 textwidth_font_size = 16
 
 
@@ -117,7 +122,8 @@ def gen_avg_times():
     name_ger = "thesis_avg_all-csp"
     name_ger_2 = "thesis_avg_all-csp_2"
     name_eur = "thesis_avg_mid-csp"
-    name_eur_2 = "thesis_avg_mid-csp_2"
+    # name_eur_2 = "thesis_avg_mid-csp_2"
+    name_eur_2 = "thesis_avg_fast-csp_2"
 
     avg_ger = read_measurement(name_ger + "-" + "parking_ger_hgv")
     avg_ger_2 = read_measurement(name_ger_2 + "-" + "parking_ger_hgv")
@@ -190,7 +196,8 @@ def gen_median_all_times():
     name_ger = "thesis_avg_all-csp"
     name_ger_2 = "thesis_avg_all-csp_2"
     name_eur = "thesis_avg_mid-csp"
-    name_eur_2 = "thesis_avg_mid-csp_2"
+    # name_eur_2 = "thesis_avg_mid-csp_2"
+    name_eur_2 = "thesis_avg_fast-csp_2"
 
     avg_ger = read_measurement(name_ger + "-" + "parking_ger_hgv")
     avg_ger_2 = read_measurement(name_ger_2 + "-" + "parking_ger_hgv")
@@ -265,7 +272,8 @@ def gen_median_all_times():
 
 def gen_all_times_no_path():
     name_eur = "thesis_avg_mid-csp"
-    name_eur_2 = "thesis_avg_mid-csp_2"
+    # name_eur_2 = "thesis_avg_mid-csp_2"
+    name_eur_2 = "thesis_avg_fast-csp_2"
 
     avg_eur = read_measurement(name_eur + "-" + "parking_europe_hgv")
     avg_eur_2 = read_measurement(name_eur_2 + "-" + "parking_europe_hgv")
@@ -418,98 +426,102 @@ def gen_avg_opt():
         f.write(template)
 
 
-def plot_breaks_running_times(graph):
-    problem = "csp"
-    name = "thesis_rank_times_all-" + problem + "-" + graph
-    name_2 = "thesis_avg_all-" + problem + "-" + graph
+# def plot_breaks_running_times(graph):
+#     problem = "csp"
+#     name = "thesis_rank_times_all-" + problem + "-" + graph
+#     name_2 = "thesis_avg_all-" + problem + "-" + graph
 
-    queries_all = read_measurement(name).append(read_measurement(name_2))
+#     queries_all = read_measurement(name).append(read_measurement(name_2))
 
-    # plot only 2^10 and larger
-    queries_all = queries_all.loc[queries_all["dijkstra_rank_exponent"] >= 10]
+#     # plot only 2^10 and larger
+#     queries_all = queries_all.loc[queries_all["dijkstra_rank_exponent"] >= 10]
 
-    colors = ggPlotColors(4)
-    to_plot = [
-        ("time_ms", "log"),
-    ]
+#     to_plot = [
+#         ("time_ms", "log"),
+#     ]
 
-    # algos = ["astar_chpot", "astar_bidir_chpot", "core_ch", "core_ch_chpot"]
-    algos = ["astar_chpot", "core_ch", "core_ch_chpot"]
+#     # algos = ["astar_chpot", "astar_bidir_chpot", "core_ch", "core_ch_chpot"]
+#     algos = ["astar_chpot", "core_ch", "core_ch_chpot"]
 
-    for algo in algos:
-        queries = queries_all.loc[queries_all["algo"] == algo]
-        # queries = queries.loc[queries["path_distance"] == -1]
-        for (column_name, plot_scale) in to_plot:
-            if column_name in queries.columns:
-                fig, ax = plt.subplots(figsize=(10, 5))
-                bp = queries.boxplot(ax=ax, by="path_number_pauses", column=column_name)
+#     for algo in algos:
+#         queries = queries_all.loc[queries_all["algo"] == algo]
+#         # queries = queries.loc[queries["path_distance"] == -1]
+#         for (column_name, plot_scale) in to_plot:
+#             if column_name in queries.columns:
+#                 fig, ax = plt.subplots(figsize=(10, 5))
+#                 bp = queries.boxplot(ax=ax, by="path_number_pauses", column=column_name)
 
-                bp.get_figure().gca().set_title("")
-                fig.suptitle("")
+#                 bp.get_figure().gca().set_title("")
+#                 fig.suptitle("")
 
-                ax.set_xlabel("number of breaks")
-                ax.set_ylabel(column_name)
-                ax.set_yscale(plot_scale)
+#                 ax.set_xlabel("number of breaks")
+#                 ax.set_ylabel(column_name)
+#                 ax.set_yscale(plot_scale)
 
-                if plot_scale == "linear":
-                    ax.set_ylim(bottom=-0.1)
-                    ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+#                 if plot_scale == "linear":
+#                     ax.set_ylim(bottom=-0.1)
+#                     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
 
-                plt.title("breaks_running_times" + "-" + algo + ": " + graph)
-                fig.tight_layout()
-                write_plt(
-                    "breaks_running_times" + "-" + algo + "-" + column_name + ".png",
-                    graph,
-                )
+#                 plt.title("breaks_running_times" + "-" + algo + ": " + graph)
+#                 fig.tight_layout()
+#                 write_plt(
+#                     "breaks_running_times" + "-" + algo + "-" + column_name + ".png",
+#                     graph,
+#                 )
 
 
 def plot_all_rank_times(problem, graph):
     name = "thesis_rank_times_all-" + problem + "-" + graph
-
     queries_all = read_measurement(name)
+
+    problem_to_label = lambda x: "TDRP-1DTC" if problem == "csp" else "TDRP-2DTC"
 
     # plot only 2^10 and larger
     queries_all = queries_all.loc[queries_all["dijkstra_rank_exponent"] >= 10]
 
-    colors = ggPlotColors(4)
-    to_plot = [
-        ("time_ms", "log"),
-    ]
-
     # algos = ["astar_chpot", "astar_bidir_chpot", "core_ch", "core_ch_chpot"]
-    algos = ["astar_chpot", "core_ch", "core_ch_chpot"]
+    algos = ["astar_chpot", "core_ch_chpot"]
+    queries = queries_all.loc[queries_all["algo"].isin(algos)]
+    queries = queries.replace(
+        "astar_chpot", "Goal-Directed (" + problem_to_label(problem) + ")"
+    )
+    queries = queries.replace(
+        "core_ch_chpot", "Goal-Directed Core CH (" + problem_to_label(problem) + ")"
+    )
 
-    for algo in algos:
-        queries = queries_all.loc[queries_all["algo"] == algo]
-        # queries = queries.loc[queries["path_distance"] == -1]
-        for (column_name, plot_scale) in to_plot:
-            if column_name in queries.columns:
-                fig, ax = plt.subplots(figsize=(10, 5))
-                bp = queries.boxplot(
-                    ax=ax, by="dijkstra_rank_exponent", column=column_name
-                )
+    fig, ax = plt.subplots(figsize=(10, 5))
 
-                bp.get_figure().gca().set_title("")
-                fig.suptitle("")
+    bp = sns.boxplot(
+        x=queries["dijkstra_rank_exponent"], y="time_ms", data=queries, hue="algo"
+    )
 
-                ax.set_xlabel("Dijkstra Rank", fontsize=textwidth_font_size)
-                ax.set_ylabel(column_name)
-                ax.set_yscale(plot_scale)
-                ax.set_ylabel("Running Time [ms]", fontsize=textwidth_font_size)
+    # # edges instead of faces
+    # for patch in ax.artists:
+    #     r, g, b, a = patch.get_facecolor()
+    #     patch.set_facecolor("None")
+    #     patch.set_edgecolor((r, g, b, 1.0))
 
-                if plot_scale == "linear":
-                    ax.set_ylim(bottom=-0.1)
-                    ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    for patch in ax.artists:
+        r, g, b, a = patch.get_facecolor()
+        patch.set_facecolor((r, g, b, 0.9))
 
-                make_dijkstra_rank_tick_labels_from_exponent(
-                    ax.xaxis, queries["dijkstra_rank_exponent"].unique()
-                )
+    bp.get_figure().gca().set_title("")
+    fig.suptitle("")
+    ax.set_xlabel("Dijkstra Rank", fontsize=textwidth_font_size)
+    ax.set_yscale("log")
+    ax.set_ylabel("Running Time [ms]", fontsize=textwidth_font_size)
+    ax.xaxis.grid(True)
 
-                # plt.title(name + "-" + algo + ": " + graph)
-                plt.title("")
-                fig.tight_layout()
+    make_dijkstra_rank_tick_labels_from_exponent(
+        ax.xaxis, queries["dijkstra_rank_exponent"].unique()
+    )
 
-                write_plt(name + "-" + algo + "-" + column_name + ".png", graph)  #
+    plt.title("")
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles=handles, labels=labels)
+
+    fig.tight_layout()
+    write_plt("thesis_rank_times-" + problem + "-" + graph + ".png", graph)
 
 
 def plot_constraint_times(graph):
@@ -520,8 +532,6 @@ def plot_constraint_times(graph):
     queries_d["max_driving_time"] = queries_d["max_driving_time"] / 3600000
     queries_b = read_measurement(name_b)
     queries_b["max_break_time"] = queries_b["max_break_time"] / 3600000
-
-    colors = ggPlotColors(4)
 
     algos = ["core_ch", "core_ch_chpot"]
 
@@ -603,8 +613,6 @@ def plot_core_sizes_experiment(graph):
     queries = queries.groupby("rel_core_size").mean()
     queries_2 = queries_2.groupby("rel_core_size").mean()
 
-    colors = ggPlotColors(4)
-
     # plot construction
     constr = queries["construction_time_ms"] / 60000
 
@@ -621,7 +629,9 @@ def plot_core_sizes_experiment(graph):
 
     # plot queries
     queries_all = queries.join(queries_2, rsuffix="_2")[["time_ms", "time_ms_2"]]
-    queries_all = queries_all.rename(columns={"time_ms": "1DTC", "time_ms_2": "2DTC"})
+    queries_all = queries_all.rename(
+        columns={"time_ms": "TDRP-1DTC", "time_ms_2": "TDRP-2DTC"}
+    )
 
     fig, ax = plt.subplots(figsize=(10, 5))
     plot = queries_all.plot(ax=ax)
@@ -643,39 +653,19 @@ def plot_speed_cap_experiment(graph):
     queries = read_measurement(name)
     queries_2 = read_measurement(name_2)
 
-    queries = queries.groupby("speed_cap").mean()
-    queries_2 = queries_2.groupby("speed_cap").mean()
+    queries = queries.groupby("speed_cap_kmh").mean()
+    queries_2 = queries_2.groupby("speed_cap_kmh").mean()
 
-    colors = ggPlotColors(4)
-
-    # # plot construction
-    # constr = queries["construction_time_ms"] / 60000
-
-    # fig, ax = plt.subplots(figsize=(10, 5))
-    # plot = constr.plot(ax=ax)
-    # plot.get_figure().gca().set_title("")
-    # fig.suptitle("")
-    # ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
-    # ax.set_ylabel("Construction Time [min]", fontsize=textwidth_font_size)
-    # ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
-    # plt.title("")
-    # fig.tight_layout()
-    # write_plt(name + "-constr_time.png", graph)
-
-    # plot queries
     queries_all = queries.join(queries_2, rsuffix="_2")[["time_ms", "time_ms_2"]]
-
-    print(queries_all)
-
     queries_all = queries_all.rename(
         columns={
-            "time_ms": "1DTC",
-            "time_ms_2": "2DTC",
+            "time_ms": "TDRP-1DTC",
+            "time_ms_2": "TDRP-2DTC",
         }
     )
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    plot = queries_all.plot(ax=ax)
+    plot = queries_all.plot(ax=ax, marker="^")
     plot.get_figure().gca().set_title("")
     fig.suptitle("")
     ax.set_xlabel("Speed Cap [km/h]", fontsize=textwidth_font_size)
@@ -687,15 +677,15 @@ def plot_speed_cap_experiment(graph):
 
 
 if __name__ == "__main__":
-    # gen_avg_times()
-    # gen_median_all_times()
-    # gen_avg_opt()
+    gen_avg_times()
+    gen_median_all_times()
+    gen_avg_opt()
 
     # gen_all_times_no_path()
 
     # plot_breaks_running_times("parking_europe_hgv")
-    # plot_all_rank_times("csp", "parking_europe_hgv")
-    # plot_all_rank_times("csp_2", "parking_europe_hgv")
+    plot_all_rank_times("csp", "parking_europe_hgv")
+    plot_all_rank_times("csp_2", "parking_europe_hgv")
 
     plot_constraint_times("parking_europe_hgv")
     plot_core_sizes_experiment("parking_europe_hgv")
