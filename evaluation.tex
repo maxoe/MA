@@ -40,7 +40,7 @@ We also provide the median running times in Table~\ref{tbl:extensions_runtime_me
 
 We investigate the impact of an increased route length and amount of necessary breaks on a route further. For this, we plot the running times of queries to target nodes of increasing Dijkstra rank on the European road network. The Dijkstra rank is obtained from the sequence in which a standard Dijkstra search without driving time constraints settles its nodes. The Dijkstra rank of a node is the position of the node in that sequence. We plot running times to nodes of rank $2^{10}$, $2^{11}$,\dots,$2^{\log(|V|)}$ where $|V|$ is the number of nodes in the graph. The plot is shown in Figure~\ref{fig:rank_times} for the goal-directed and the goal-directed core CH algorithms. The goal-directed algorithm shows an increase of multiple orders of magnitude for large Dijkstra ranks. Starting at Dijkstra rank $2^{20}$, a significant amount of very slow queries occurs which stretches the interquartile range. The median remains low, almost at the first quartile, an indication that the stretching of the IQR is caused by a few very slow queries. The median of the running time jumps from about \SI{2}{\milli\second} at Dijkstra rank $2^{22}$ to about \SI{220}{\milli\second} at Dijkstra rank $2^{23}$. This coincides with the median travel time of the route crossing the mark of \SI{4.5}{\hour} which is the maximum allowed driving time without a break of the shorter driving time constraint of the EU rules being used. Therefore, most queries to target nodes with a Dijkstra rank of $2^{23}$ need at least one break while most queries to target nodes of Dijkstra rank  $2^{22}$ do not need to pause on the route yet.
 
-The goal-directed core CH variant scales better with longer queries. It falls slightly behind the goal-directed algorithm for lower Dijkstra ranks due to a larger overhead. While the algorithm suffers from the same general problem of an increasing running time with an increasing route length and number of breaks, the median of its running time increases only by one order of magnitude for the longest queries. Up to a Dijkstra rank of $2^{23}$, the median of the running time does not rise higher than \SI{5}{\milli\second} and it never exceeds \SI{12}{\milli\second}.
+The goal-directed core CH variant scales better with longer queries. It falls slightly behind the goal-directed algorithm for lower Dijkstra ranks due to a larger overhead. While the algorithm suffers from the same general problem of an increasing running time with an increasing route length and number of breaks, the median of its running time increases only by one order of magnitude for the longest queries. Up to a Dijkstra rank of $2^{23}$, the median of the running time does not rise higher than \SI{5}{\milli\second} and it never exceeds \SI{12}{\milli\second}. TODO entscheide endlich welche plots und mach schön
 
 \begin{figure}[hbtp]
 	\centering
@@ -138,9 +138,9 @@ RoutingKit assumes speeds for different kinds of OSM ways reaching from \SI[per-
 
 \begin{figure}[hbtp]
 	\centering
-	\includegraphics[width=.95\textwidth]{plots/thesis_core_sizes_truck_speed-time_ms.png}
+	\includegraphics[width=.95\textwidth]{plots/thesis_speed_cap.png}
 	\label{fig:truck_speed_limit}
-	\caption{Construction times of the core CH decrease exponentially with an increasing core size relative to the number of nodes in the graph.}
+	\caption{The running time of goal-directed core CH queries increases with a decreasing assumed maximum speed of the vehicle.}
 \end{figure}
 
 \section{Core Contraction Hierarchy}

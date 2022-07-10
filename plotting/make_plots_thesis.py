@@ -635,51 +635,35 @@ def plot_core_sizes_experiment(graph):
     write_plt(name + "-time_ms.png", graph)
 
 
-def plot_truck_speed_experiment(graph):
-    name = "thesis_core_sizes-csp-" + graph
-    name_2 = "thesis_core_sizes-csp_2-" + graph
-    name_limit = "thesis_core_sizes-csp-" + graph + "_limited"
-    name_limit_2 = "thesis_core_sizes-csp_2-" + graph + "_limited"
+def plot_speed_cap_experiment(graph):
+    name = "thesis_speed_cap-csp-" + graph
+    name_2 = "thesis_speed_cap-csp_2-" + graph
 
     # rel_core_size,abs_core_size,construction_time_ms,time_ms
     queries = read_measurement(name)
     queries_2 = read_measurement(name_2)
-    queries_limit = read_measurement(name_limit)
-    queries_limit_2 = read_measurement(name_limit_2)
 
-    queries["rel_core_size"] = queries["rel_core_size"] * 100
-    queries_2["rel_core_size"] = queries_2["rel_core_size"] * 100
-    queries_limit["rel_core_size"] = queries_limit["rel_core_size"] * 100
-    queries_limit_2["rel_core_size"] = queries_limit_2["rel_core_size"] * 100
-
-    queries = queries.groupby("rel_core_size").mean()
-    queries_2 = queries_2.groupby("rel_core_size").mean()
-    queries_limit = queries_limit.groupby("rel_core_size").mean()
-    queries_limit_2 = queries_limit_2.groupby("rel_core_size").mean()
+    queries = queries.groupby("speed_cap").mean()
+    queries_2 = queries_2.groupby("speed_cap").mean()
 
     colors = ggPlotColors(4)
 
-    # plot construction
-    constr = queries["construction_time_ms"] / 60000
+    # # plot construction
+    # constr = queries["construction_time_ms"] / 60000
 
-    fig, ax = plt.subplots(figsize=(10, 5))
-    plot = constr.plot(ax=ax)
-    plot.get_figure().gca().set_title("")
-    fig.suptitle("")
-    ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
-    ax.set_ylabel("Construction Time [min]", fontsize=textwidth_font_size)
-    ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
-    plt.title("")
-    fig.tight_layout()
-    write_plt(name + "-constr_time.png", graph)
+    # fig, ax = plt.subplots(figsize=(10, 5))
+    # plot = constr.plot(ax=ax)
+    # plot.get_figure().gca().set_title("")
+    # fig.suptitle("")
+    # ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
+    # ax.set_ylabel("Construction Time [min]", fontsize=textwidth_font_size)
+    # ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    # plt.title("")
+    # fig.tight_layout()
+    # write_plt(name + "-constr_time.png", graph)
 
     # plot queries
     queries_all = queries.join(queries_2, rsuffix="_2")[["time_ms", "time_ms_2"]]
-    queries_all_limit = queries_limit.join(queries_limit_2, rsuffix="_2")[
-        ["time_ms", "time_ms_2"]
-    ]
-
-    queries_all = queries_all.join(queries_all_limit, rsuffix="_lim")
 
     print(queries_all)
 
@@ -687,8 +671,6 @@ def plot_truck_speed_experiment(graph):
         columns={
             "time_ms": "1DTC",
             "time_ms_2": "2DTC",
-            "time_ms_lim": "1DTC Truck Speed",
-            "time_ms_2_lim": "2DTC Truck Speed",
         }
     )
 
@@ -696,12 +678,12 @@ def plot_truck_speed_experiment(graph):
     plot = queries_all.plot(ax=ax)
     plot.get_figure().gca().set_title("")
     fig.suptitle("")
-    ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
-    ax.set_ylabel("Running Time Time [ms]", fontsize=textwidth_font_size)
+    ax.set_xlabel("Speed Cap [km/h]", fontsize=textwidth_font_size)
+    ax.set_ylabel("Running Time [ms]", fontsize=textwidth_font_size)
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     plt.title("")
     fig.tight_layout()
-    write_plt("thesis_core_sizes_truck_speed-time_ms.png", graph)
+    write_plt("thesis_speed_cap.png", graph)
 
 
 if __name__ == "__main__":
@@ -717,4 +699,4 @@ if __name__ == "__main__":
 
     plot_constraint_times("parking_europe_hgv")
     plot_core_sizes_experiment("parking_europe_hgv")
-    plot_truck_speed_experiment("parking_europe_hgv")
+    plot_speed_cap_experiment("parking_europe_hgv_sc")
