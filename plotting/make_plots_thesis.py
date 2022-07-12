@@ -21,7 +21,9 @@ sns.set_palette("tab10")
 plt.rcParams["lines.linewidth"] = 1
 # sns.set(rc={"lines.linewidth": 1})
 half_textwidth_font_size = 24
+half_textwidth_labe_font_size = 22
 textwidth_font_size = 16
+textwidth_label_font_size = 14
 
 
 # all paths are relative to this directory
@@ -506,6 +508,8 @@ def plot_all_rank_times(problem, graph):
         patch.set_facecolor((r, g, b, 0.9))
 
     bp.get_figure().gca().set_title("")
+    bp.set_xticklabels(bp.get_xticks(), size=textwidth_label_font_size)
+    bp.set_yticklabels(bp.get_yticks(), size=textwidth_label_font_size)
     fig.suptitle("")
     ax.set_xlabel("Dijkstra Rank", fontsize=textwidth_font_size)
     ax.set_yscale("log")
@@ -533,67 +537,59 @@ def plot_constraint_times(graph):
     queries_b = read_measurement(name_b)
     queries_b["max_break_time"] = queries_b["max_break_time"] / 3600000
 
+    all_descr = queries_b.groupby("max_break_time").describe()["time_ms"]
+    max_b = all_descr["75%"].max()
+    min_b = all_descr["25%"].min()
+
     algos = ["core_ch", "core_ch_chpot"]
-
-    # sns.lmplot(
-    #     x="max_break_time",
-    #     y="time_ms",
-    #     data=queries_b[queries_b["algo"] == "core_ch_chpot"],
-    #     order=2,
-    #     scatter=False,
-    #     height=5,
-    #     aspect=2,
-    # )
-    # plt.show()
-
-    # smooth = lambda x: x.rolling(1000).mean()
-    smooth = lambda x: x.rolling(10).mean()
-    max_b = smooth(queries_b.groupby("max_break_time").median()["time_ms"]).max()
-    min_b = smooth(queries_b.groupby("max_break_time").median()["time_ms"]).min()
 
     iv = max_b - min_b
     padding = iv * 0.1
 
     for algo in algos:
         queries_d_current = (
-            queries_d[queries_d["algo"] == algo].groupby("max_driving_time").median()
-        )
+            queries_d[queries_d["algo"] == algo].groupby("max_driving_time").describe()
+        )["time_ms"]
+
         queries_b_current = (
-            queries_b[queries_b["algo"] == algo].groupby("max_break_time").median()
-        )
+            queries_b[queries_b["algo"] == algo].groupby("max_break_time").describe()
+        )["time_ms"]
 
-        queries_d_rolling = smooth(queries_d_current)
-        queries_b_rolling = smooth(queries_b_current)
+        queries_d_median = queries_d_current["50%"]
+        queries_d_q1 = queries_d_current["25%"]
+        queries_d_q2 = queries_d_current["75%"]
 
-        min_b = queries_b_rolling["time_ms"].min() - padding
+        queries_b_median = queries_b_current["50%"]
+        queries_b_q1 = queries_b_current["25%"]
+        queries_b_q2 = queries_b_current["75%"]
+
+        min_b = queries_b_q1.min() - padding
         max_b = min_b + 2 * padding + iv
 
         fig, ax = plt.subplots(figsize=(10, 5))
-        plot = queries_d_rolling.plot(ax=ax)
+        plot = queries_d_median.plot(ax=ax, fontsize=half_textwidth_labe_font_size)
+        ax.fill_between(queries_d_median.index, queries_d_q1, queries_d_q2, alpha=0.1)
         plot.get_figure().gca().set_title("")
         fig.suptitle("")
-
         ax.set_xlabel(
             "Maximum Allowed Driving Time [h]", fontsize=half_textwidth_font_size
         )
         ax.set_ylabel("Running Time [ms]", fontsize=half_textwidth_font_size)
         ax.set_ylim(bottom=-0.1)
         ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
-        ax.get_legend().remove()
         plt.title("")
         fig.tight_layout()
         write_plt(name_d + "-" + algo + "-time_ms.png", graph)
 
         fig, ax = plt.subplots(figsize=(10, 5))
-        plot = queries_b_rolling.plot(ax=ax)
+        plot = queries_b_median.plot(ax=ax, fontsize=half_textwidth_labe_font_size)
+        ax.fill_between(queries_b_median.index, queries_b_q1, queries_b_q2, alpha=0.1)
         plot.get_figure().gca().set_title("")
         fig.suptitle("")
-
         ax.set_xlabel("Break Time [h]", fontsize=half_textwidth_font_size)
         ax.set_ylabel("Running Time [ms]", fontsize=half_textwidth_font_size)
-        ax.set_ylim(ymin=min_b, ymax=max_b)
+        # ax.set_ylim(ymin=min_b, ymax=max_b)
         ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
-        ax.get_legend().remove()
         plt.title("")
         fig.tight_layout()
         write_plt(name_b + "-" + algo + "-time_ms.png", graph)
@@ -617,11 +613,12 @@ def plot_core_sizes_experiment(graph):
     constr = queries["construction_time_ms"] / 60000
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    plot = constr.plot(ax=ax)
+    plot = constr.plot(ax=ax, fontsize=textwidth_label_font_size, marker="^")
     plot.get_figure().gca().set_title("")
     fig.suptitle("")
     ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
     ax.set_ylabel("Construction Time [min]", fontsize=textwidth_font_size)
+    ax.set_xscale("log")
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     plt.title("")
     fig.tight_layout()
@@ -634,11 +631,13 @@ def plot_core_sizes_experiment(graph):
     )
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    plot = queries_all.plot(ax=ax)
+    plot = queries_all.plot(ax=ax, fontsize=textwidth_label_font_size, marker="^")
     plot.get_figure().gca().set_title("")
     fig.suptitle("")
     ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
     ax.set_ylabel("Running Time Time [ms]", fontsize=textwidth_font_size)
+    plot.legend(prop={"size": textwidth_label_font_size})
+    ax.set_xscale("log")
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     plt.title("")
     fig.tight_layout()
@@ -653,40 +652,134 @@ def plot_speed_cap_experiment(graph):
     queries = read_measurement(name)
     queries_2 = read_measurement(name_2)
 
+    # queries_path_found = queries.loc[~np.isnan(queries["path_distance"])]
+    # queries_path_found_2 = queries_2.loc[~np.isnan(queries["path_distance"])]
+
+    # queries = queries.loc[np.isnan(queries["path_distance"])]
+    # queries_2 = queries_2.loc[np.isnan(queries_2["path_distance"])]
+
+    # queries_path_found = queries_path_found.groupby("speed_cap_kmh").mean()
+    # queries_path_found_2 = queries_path_found_2.groupby("speed_cap_kmh").mean()
     queries = queries.groupby("speed_cap_kmh").mean()
     queries_2 = queries_2.groupby("speed_cap_kmh").mean()
 
+    # queries_all_path_found = queries_path_found.join(
+    #     queries_path_found_2, rsuffix="_2"
+    # )[["time_ms", "time_ms_2"]]
     queries_all = queries.join(queries_2, rsuffix="_2")[["time_ms", "time_ms_2"]]
+    # queries_all = queries_all.join(queries_all_path_found, rsuffix="_path_found")[
+    #     [
+    #         "time_ms",
+    #         "time_ms_2",
+    #  "time_ms_path_found",
+    # "time_ms_2_path_found"
+    #     ]
+    # ]
+
     queries_all = queries_all.rename(
         columns={
             "time_ms": "TDRP-1DTC",
             "time_ms_2": "TDRP-2DTC",
+            # "time_ms": "TDRP-1DTC (only unsuccesfull queries)",
+            # "time_ms_2": "TDRP-2DTC (only unsuccesfull queries)",
+            # "time_ms_path_found": "TDRP-1DTC (only succesfull queries)",
+            # "time_ms_2_path_found": "TDRP-2DTC (only succesfull queries)",
         }
     )
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    plot = queries_all.plot(ax=ax, marker="^")
+    plot = queries_all.plot(ax=ax, marker="^", fontsize=textwidth_label_font_size)
+
     plot.get_figure().gca().set_title("")
     fig.suptitle("")
     ax.set_xlabel("Speed Cap [km/h]", fontsize=textwidth_font_size)
     ax.set_ylabel("Running Time [ms]", fontsize=textwidth_font_size)
+    plot.legend(prop={"size": textwidth_label_font_size})
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     plt.title("")
     fig.tight_layout()
     write_plt("thesis_speed_cap.png", graph)
 
 
+def plot_parking_set_experiment(graph):
+    name = "thesis_parking_set-csp-" + graph
+    name_2 = "thesis_parking_set-csp_2-" + graph
+
+    # rel_core_size,abs_core_size,construction_time_ms,time_ms
+    queries = read_measurement(name).groupby("parking_set_type")
+    queries_2 = read_measurement(name_2).groupby("parking_set_type")
+
+    queries_all = pd.DataFrame()
+    values = []
+
+    # row order
+    set_types = [
+        "hgv",
+        "ev",
+        "0.05",
+        "hgv_0.05"
+        # ,"ev_0.05"
+    ]
+
+    for set_type in set_types:
+        # here column order
+        values += [int(queries.mean().loc[set_type]["parking_set_size"])]
+
+        values += [queries.mean().loc[set_type]["time_ms"]]
+        values += [queries_2.mean().loc[set_type]["time_ms"]]
+        values += [queries.median().loc[set_type]["time_ms"]]
+        values += [queries_2.median().loc[set_type]["time_ms"]]
+
+    with open(
+        os.path.join(LATEX_GEN_PATH, "eval_running_times_parking_set-TEMPLATE.tex")
+    ) as f:
+        template = f.read()
+
+    if len(values) != template.count("@"):
+        print(
+            "ERROR: NUMBER OF VALUES ("
+            + str(len(values))
+            + ") DOES NOT EQUAL NUMBER OF BLANKS ("
+            + str(template.count("@"))
+            + ") FOR TEMPLATE "
+            + "eval_running_times_parking_set"
+        )
+        return
+
+    i = 0
+
+    value_to_string = (
+        lambda x: "-"
+        if np.isnan(x)
+        else str(x)
+        if isinstance(x, int)
+        else "{:.2f}".format(round(x, 2))
+    )
+
+    for m in reversed(list(re.finditer("@", template))):
+        template = (
+            template[: m.start(0)]
+            + value_to_string(values[len(values) - 1 - i])
+            + template[m.end(0) :]
+        )
+        i += 1
+
+    with open(
+        os.path.join(LATEX_GEN_PATH, "eval_running_times_parking_set.tex"), "w"
+    ) as f:
+        f.write(template)
+
+
 if __name__ == "__main__":
     gen_avg_times()
     gen_median_all_times()
     gen_avg_opt()
+    gen_all_times_no_path()
 
-    # gen_all_times_no_path()
-
-    # plot_breaks_running_times("parking_europe_hgv")
     plot_all_rank_times("csp", "parking_europe_hgv")
     plot_all_rank_times("csp_2", "parking_europe_hgv")
 
     plot_constraint_times("parking_europe_hgv")
     plot_core_sizes_experiment("parking_europe_hgv")
     plot_speed_cap_experiment("parking_europe_hgv_sc")
+    plot_parking_set_experiment("parking_europe_hgvev_exp")
