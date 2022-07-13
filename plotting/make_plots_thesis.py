@@ -541,13 +541,34 @@ def plot_constraint_times(graph):
     queries_b = queries_b.loc[queries_b["max_break_time"] <= 5]
 
     all_descr = queries_b.groupby("max_break_time").describe()["time_ms"]
-    max_b = all_descr["75%"].max()
-    min_b = all_descr["25%"].min()
+
+    max_b = 0
+    min_b = float("inf")
+    max_d = 0
+    min_d = float("inf")
 
     algos = ["core_ch", "core_ch_chpot"]
 
-    iv = max_b - min_b
-    padding = iv * 0.1
+    for algo in algos:
+        queries_d_current = (
+            queries_d[queries_d["algo"] == algo].groupby("max_driving_time").describe()
+        )["time_ms"]
+
+        queries_b_current = (
+            queries_b[queries_b["algo"] == algo].groupby("max_break_time").describe()
+        )["time_ms"]
+
+        min_d = min(min_d, queries_d_current["25%"].min())
+        max_d = max(max_d, queries_d_current["75%"].max())
+
+        min_b = min(min_b, queries_b_current["25%"].min())
+        max_b = max(max_b, queries_b_current["75%"].max())
+
+    iv_b = max_b - min_b
+    padding_b = iv_b * 0.1
+
+    iv_d = max_d - min_d
+    padding_d = iv_d * 0.1
 
     for algo in algos:
         queries_d_current = (
@@ -566,8 +587,11 @@ def plot_constraint_times(graph):
         queries_b_q1 = queries_b_current["25%"]
         queries_b_q2 = queries_b_current["75%"]
 
-        min_b = queries_b_q1.min() - padding
-        max_b = min_b + 2 * padding + iv
+        current_min_b = queries_b_q1.min() - padding_b
+        current_max_b = min_b + 2 * padding_b + iv_b
+
+        current_min_d = queries_d_q1.min() - padding_d
+        current_max_d = min_d + 2 * padding_d + iv_d
 
         fig, ax = plt.subplots(figsize=(10, 5))
         plot = queries_d_median.plot(ax=ax, fontsize=half_textwidth_labe_font_size)
@@ -578,7 +602,7 @@ def plot_constraint_times(graph):
             "Maximum Allowed Driving Time [h]", fontsize=half_textwidth_font_size
         )
         ax.set_ylabel("Running Time [ms]", fontsize=half_textwidth_font_size)
-        ax.set_ylim(bottom=-0.1)
+        ax.set_ylim(ymin=current_min_d, ymax=current_max_d)
         ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         plt.title("")
         fig.tight_layout()
@@ -591,7 +615,7 @@ def plot_constraint_times(graph):
         fig.suptitle("")
         ax.set_xlabel("Break Time [h]", fontsize=half_textwidth_font_size)
         ax.set_ylabel("Running Time [ms]", fontsize=half_textwidth_font_size)
-        # ax.set_ylim(ymin=min_b, ymax=max_b)
+        ax.set_ylim(ymin=current_min_b, ymax=current_max_b)
         ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         plt.title("")
         fig.tight_layout()
@@ -648,8 +672,9 @@ def plot_core_sizes_experiment(graph):
     ax.set_ylabel("Running Time Time [ms]", fontsize=textwidth_font_size)
     plot.legend(prop={"size": textwidth_label_font_size})
     ax.set_xscale("log")
+    ax.set_yscale("log")
     # ax.xaxis.set_major_formatter(ticker.FuncFormatter(formatfunc))
-    ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    # ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     plt.title("")
     fig.tight_layout()
     write_plt(name + "-time_ms.png", graph)
