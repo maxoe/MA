@@ -537,6 +537,9 @@ def plot_constraint_times(graph):
     queries_b = read_measurement(name_b)
     queries_b["max_break_time"] = queries_b["max_break_time"] / 3600000
 
+    # nothing interesting happens for larger break times
+    queries_b = queries_b.loc[queries_b["max_break_time"] <= 5]
+
     all_descr = queries_b.groupby("max_break_time").describe()["time_ms"]
     max_b = all_descr["75%"].max()
     min_b = all_descr["25%"].min()
