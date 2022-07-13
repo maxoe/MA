@@ -131,6 +131,8 @@
 
 \parindent 0cm                     % Do not indent beginning of paragraph
 \parskip1.5ex plus0.5ex minus0.5ex % Margin between paragraphs
+
+\renewcommand{\floatpagefraction}{.8} % only give floats an own page if they consume 80% of the page
 %% --- End of global Settings ---
 
 
