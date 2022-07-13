@@ -73,6 +73,7 @@
 \usepackage{pifont}
 
 \usepackage{aligned-overset}
+\usepackage{doi}
 %% --- End of Packages ---
 
 
@@ -263,7 +264,7 @@
    \renewcommand\thesection{\Alph{section}}% 
    \renewcommand\thefigure{\Alph{section}.\arabic{figure}} 
    \renewcommand\thetable{\Alph{section}.\arabic{table}}}
-%% --- End of appenix numbering style ---
+%% --- End of appendix numbering style ---
 
 
 %% ----------------------------------

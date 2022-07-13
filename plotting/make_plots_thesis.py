@@ -598,27 +598,34 @@ def plot_constraint_times(graph):
 def plot_core_sizes_experiment(graph):
     name = "thesis_core_sizes-csp-" + graph
     name_2 = "thesis_core_sizes-csp_2-" + graph
+    name_constr = "thesis_core_sizes-construction-" + graph
 
     # rel_core_size,abs_core_size,construction_time_ms,time_ms
     queries = read_measurement(name)
     queries_2 = read_measurement(name_2)
+    queries_constr = read_measurement(name_constr)
 
-    queries["rel_core_size"] = queries["rel_core_size"] * 100
-    queries_2["rel_core_size"] = queries_2["rel_core_size"] * 100
+    queries["rel_core_size"] = queries["rel_core_size"]  # * 100
+    queries_2["rel_core_size"] = queries_2["rel_core_size"]  # * 100
+    queries_constr["rel_core_size"] = queries_constr["rel_core_size"]  # * 100
 
     queries = queries.groupby("rel_core_size").mean()
     queries_2 = queries_2.groupby("rel_core_size").mean()
+    queries_constr = queries_constr.groupby("rel_core_size").mean()
+
+    # formatfunc = lambda x, pos: "{:.2f}".format(x).rstrip("0").rstrip(".") + "%"
 
     # plot construction
-    constr = queries["construction_time_ms"] / 60000
+    constr = queries_constr["time_ms"] / 60000
 
     fig, ax = plt.subplots(figsize=(10, 5))
     plot = constr.plot(ax=ax, fontsize=textwidth_label_font_size, marker="^")
     plot.get_figure().gca().set_title("")
     fig.suptitle("")
-    ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
+    ax.set_xlabel("Core Size", fontsize=textwidth_font_size)
     ax.set_ylabel("Construction Time [min]", fontsize=textwidth_font_size)
     ax.set_xscale("log")
+    # ax.xaxis.set_major_formatter(ticker.FuncFormatter(formatfunc))
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     plt.title("")
     fig.tight_layout()
@@ -634,10 +641,11 @@ def plot_core_sizes_experiment(graph):
     plot = queries_all.plot(ax=ax, fontsize=textwidth_label_font_size, marker="^")
     plot.get_figure().gca().set_title("")
     fig.suptitle("")
-    ax.set_xlabel("Core Size [%]", fontsize=textwidth_font_size)
+    ax.set_xlabel("Core Size", fontsize=textwidth_font_size)
     ax.set_ylabel("Running Time Time [ms]", fontsize=textwidth_font_size)
     plot.legend(prop={"size": textwidth_label_font_size})
     ax.set_xscale("log")
+    # ax.xaxis.set_major_formatter(ticker.FuncFormatter(formatfunc))
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     plt.title("")
     fig.tight_layout()

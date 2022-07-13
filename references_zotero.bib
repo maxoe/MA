@@ -6,6 +6,7 @@
   year = {2012},
   pages = {24--35},
   publisher = {{Springer}},
+  doi = {10.1007/978-3-642-33090-2_4},
   abstract = {We study hierarchical hub labelings for computing shortest paths. Our new theoretical insights into the structure of hierarchical labels lead to faster preprocessing algorithms, making the labeling ap-proach practical for a wider class of graphs. We also find smaller labels for road networks, improving the query speed.},
   file = {C\:\\Users\\Max\\Zotero\\storage\\8RMTNGPF\\summary\;jsessionid=A3E97DC3856704964E608A6E06985621.html}
 }
@@ -30,38 +31,32 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\4XUF5NG5\\0014013021000056980.html}
 }
 
-@misc{bast:2015,
+@inproceedings{bast:2016,
   title = {Route {{Planning}} in {{Transportation Networks}}},
-  author = {Bast, Hannah and Delling, Daniel and Goldberg, Andrew and {M{\"u}ller-Hannemann}, Matthias and Pajor, Thomas and Sanders, Peter and Wagner, Dorothea and Werneck, Renato F.},
-  year = {2015},
-  month = apr,
-  number = {arXiv:1504.05140},
-  eprint = {1504.05140},
-  eprinttype = {arxiv},
-  primaryclass = {cs},
-  publisher = {{arXiv}},
-  doi = {10.48550/arXiv.1504.05140},
-  abstract = {We survey recent advances in algorithms for route planning in transportation networks. For road networks, we show that one can compute driving directions in milliseconds or less even at continental scale. A variety of techniques provide different trade-offs between preprocessing effort, space requirements, and query time. Some algorithms can answer queries in a fraction of a microsecond, while others can deal efficiently with real-time traffic. Journey planning on public transportation systems, although conceptually similar, is a significantly harder problem due to its inherent time-dependent and multicriteria nature. Although exact algorithms are fast enough for interactive queries on metropolitan transit systems, dealing with continent-sized instances requires simplifications or heavy preprocessing. The multimodal route planning problem, which seeks journeys combining schedule-based transportation (buses, trains) with unrestricted modes (walking, driving), is even harder, relying on approximate solutions even for metropolitan inputs.},
-  archiveprefix = {arXiv},
-  keywords = {Computer Science - Data Structures and Algorithms,G.2.1,G.2.2,G.2.3,H.2.8,H.3.5,H.4.2},
-  file = {C\:\\Users\\Max\\Zotero\\storage\\PLVYUFT6\\Bast et al. - 2015 - Route Planning in Transportation Networks.pdf;C\:\\Users\\Max\\Zotero\\storage\\ZFTWR4NM\\1504.html}
+  booktitle = {Algorithm {{Engineering}}},
+  author = {Bast, H. and Delling, D. and Goldberg, A. and {M{\"u}ller-Hannemann}, M. and Pajor, Thomas and Sanders, P. and Wagner, D. and Werneck, Renato F.},
+  year = {2016},
+  doi = {10.1007/978-3-319-49487-6_2},
+  abstract = {It is shown that one can compute driving directions in milliseconds or less even at continental scale, and a variety of techniques provide different trade-offs between preprocessing effort, space requirements, and query time. We survey recent advances in algorithms for route planning in transportation networks. For road networks, we show that one can compute driving directions in milliseconds or less even at continental scale. A variety of techniques provide different trade-offs between preprocessing effort, space requirements, and query time. Some algorithms can answer queries in a fraction of a microsecond, while others can deal efficiently with real-time traffic. Journey planning on public transportation systems, although conceptually similar, is a significantly harder problem due to its inherent time-dependent and multicriteria nature. Although exact algorithms are fast enough for interactive queries on metropolitan transit systems, dealing with continent-sized instances requires simplifications or heavy preprocessing. The multimodal route planning problem, which seeks journeys combining schedule-based transportation (buses, trains) with unrestricted modes (walking, driving), is even harder, relying on approximate solutions even for metropolitan inputs.},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\GZBT2TUU\\Bast et al. - 2016 - Route Planning in Transportation Networks.pdf}
 }
 
-@incollection{batz:2009,
-  title = {Time-{{Dependent Contraction Hierarchies}}},
-  booktitle = {2009 {{Proceedings}} of the {{Eleventh Workshop}} on {{Algorithm Engineering}} and {{Experiments}} ({{ALENEX}})},
-  author = {Batz, G. Veit and Delling, Daniel and Sanders, Peter and Vetter, Christian},
-  editor = {Finocchi, Irene and Hershberger, John},
-  year = {2009},
-  month = jan,
-  pages = {97--105},
-  publisher = {{Society for Industrial and Applied Mathematics}},
-  address = {{Philadelphia, PA}},
-  doi = {10.1137/1.9781611972894.10},
-  abstract = {Contraction hierarchies are a simple hierarchical routing technique that has proved extremely efficient for static road networks. We explain how to generalize them to networks with time-dependent edge weights. This is the first hierarchical speedup technique for timedependent routing that allows bidirectional query algorithms. For large realistic networks with considerable time-dependence (Germany, weekdays) our method outperforms previous techniques with respect to query time using comparable or lower preprocessing time.},
-  isbn = {978-0-89871-930-7 978-1-61197-289-4},
+@inproceedings{batz:2010,
+  title = {Time-{{Dependent Contraction Hierarchies}} and {{Approximation}}},
+  booktitle = {Experimental {{Algorithms}}},
+  author = {Batz, Gernot Veit and Geisberger, Robert and Neubauer, Sabine and Sanders, Peter},
+  editor = {Festa, Paola},
+  year = {2010},
+  series = {Lecture {{Notes}} in {{Computer Science}}},
+  pages = {166--177},
+  publisher = {{Springer}},
+  address = {{Berlin, Heidelberg}},
+  doi = {10.1007/978-3-642-13193-6_15},
+  abstract = {Time-dependent Contraction Hierarchies provide fast and exact route planning for time-dependent large scale road networks but need lots of space. We solve this problem by the careful use of approximations of piecewise linear functions. This way we need about an order of magnitude less space while preserving exactness and accepting only a little slow down. Moreover, we use these approximations to compute an exact travel time profile for an entire day very efficiently. In a German road network, e.g., we compute exact time-dependent routes in less than 2 ms. Exact travel time profiles need about 33 ms and about 3 ms suffice for an inexact travel time profile that is just 1 \% away from the exact result. In particular, time-dependent routing and travel time profiles are now within easy reach of web servers with massive request traffic.},
+  isbn = {978-3-642-13193-6},
   langid = {english},
-  file = {C\:\\Users\\Max\\Zotero\\storage\\LPMKEBCN\\Batz et al. - 2009 - Time-Dependent Contraction Hierarchies.pdf}
+  keywords = {Candidate Node,Destination Node,Priority Queue,Query Time,Road Network},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\UXUGVQG9\\Batz et al. - 2010 - Time-Dependent Contraction Hierarchies and Approxi.pdf}
 }
 
 @article{batz:2013,
@@ -76,20 +71,6 @@
   langid = {english},
   annotation = {PUB27 		New York, NY, USA},
   file = {C\:\\Users\\Max\\Zotero\\storage\\TC2INPKG\\Veit et al. - 2013 - Minimum time-dependent travel times with contracti.pdf;C\:\\Users\\Max\\Zotero\\storage\\PAU2WMNN\\2444016.html}
-}
-
-@book{bektas:2017,
-  title = {Computational {{Logistics}}},
-  editor = {Bekta{\c s}, Tolga and Coniglio, Stefano and {Martinez-Sykora}, Antonio and Vo{\ss}, Stefan},
-  year = {2017},
-  series = {Lecture {{Notes}} in {{Computer Science}}},
-  volume = {10572},
-  publisher = {{Springer International Publishing}},
-  address = {{Cham}},
-  doi = {10.1007/978-3-319-68496-3},
-  isbn = {978-3-319-68495-6 978-3-319-68496-3},
-  langid = {english},
-  file = {C\:\\Users\\Max\\Zotero\\storage\\62QJ6464\\Bektaş et al. - 2017 - Computational Logistics.pdf}
 }
 
 @mastersthesis{bomsdorf:2020,
@@ -169,6 +150,7 @@
   year = {2014},
   pages = {321--333},
   publisher = {{Springer}},
+  doi = {10.1007/978-3-662-44777-2_27},
   langid = {english},
   file = {C\:\\Users\\Max\\Zotero\\storage\\ZQPMFJ94\\Delling et al. - Robust Exact Distance Queries on Massive Networks.pdf}
 }
@@ -289,32 +271,19 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\C6KIYZGI\\Geisberger et al. - 2012 - Exact Routing in Large Road Networks Using Contrac.pdf;C\:\\Users\\Max\\Zotero\\storage\\QM7KM27V\\1000028701.html}
 }
 
-@article{goel:2009,
+@article{goel:2009a,
   title = {Vehicle {{Scheduling}} and {{Routing}} with {{Drivers}}' {{Working Hours}}},
   author = {Goel, Asvin},
   year = {2009},
+  month = feb,
   journal = {Transportation Science},
   volume = {43},
   number = {1},
   pages = {17--26},
-  publisher = {{INFORMS}},
-  issn = {0041-1655},
+  issn = {1526-5447},
+  doi = {10.1287/trsc.1070.0226},
   abstract = {Regulations regarding drivers' working hours often have a big impact on total transit times, i.e., the time required for driving periods, breaks, and rest periods. Although of particular importance for many real-life applications, they have received only very little attention in the vehicle routing literature. This paper describes the new regulations for drivers' working hours in the European Union that entered into force in April 2007. According to the new regulations, motor carriers must organise the work of drivers in such a way that drivers are able to comply with the respective regulations and are made liable for infringements committed by the drivers. This paper shows how motor carriers can schedule driving periods, breaks, rest periods, and handling activities, and presents a large neighbourhood search algorithm capable of generating vehicle tours complying with the new regulations.},
-  file = {C\:\\Users\\Max\\Zotero\\storage\\T6QRKE7B\\Goel - 2009 - Vehicle Scheduling and Routing with Drivers' Worki.pdf}
-}
-
-@article{goel:2012,
-  title = {Truck {{Driver Scheduling}} in the {{United States}}},
-  author = {Goel, Asvin and Kok, Leendert},
-  year = {2012},
-  journal = {Transportation Science},
-  volume = {46},
-  number = {3},
-  pages = {317--326},
-  publisher = {{INFORMS}},
-  issn = {0041-1655},
-  abstract = {The U.S. truck driver scheduling problem (US-TDSP) is the problem of visiting a sequence of {$\lambda$} locations within given time windows in such a way that driving and working activities of truck drivers comply with U.S. hours-of-service regulations. In the case of single time windows it is known that the US-TDSP can be solved in O({$\lambda$} 3 ) time. In this paper, we present a scheduling method for the US-TDSP that solves the single time window problem in O({$\lambda$} 2 ) time. We show that in the case of multiple time windows the same complexity can be achieved if the gap between subsequent time windows is at least 10 hours. This situation occurs, for example, if, because of opening hours of docks, handling operations can only be performed between 8.00 A.M. and 10.00 P.M. Furthermore, we empirically show that for a wide range of other problem instances the computational effort is not much higher if multiple time windows are considered.},
-  file = {C\:\\Users\\Max\\Zotero\\storage\\6AWNM4I8\\Goel and Kok - 2012 - Truck Driver Scheduling in the United States.pdf}
+  keywords = {drivers' working hours,EC regulation 561/2006,large neighbourhood search,vehicle routing,vehicle scheduling}
 }
 
 @article{goel:2012b,
@@ -334,6 +303,21 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\4BY9F9AH\\Goel - 2012 - The minimum duration truck driver scheduling probl.pdf;C\:\\Users\\Max\\Zotero\\storage\\8PETCC4N\\S2192437620600012.html}
 }
 
+@article{goel:2012c,
+  title = {Truck {{Driver Scheduling}} in the {{United States}}},
+  author = {Goel, Asvin and Kok, Leendert},
+  year = {2012},
+  month = aug,
+  journal = {Transportation Science},
+  volume = {46},
+  number = {3},
+  pages = {317--326},
+  issn = {1526-5447},
+  doi = {10.1287/trsc.1110.0382},
+  abstract = {The U.S. truck driver scheduling problem (US-TDSP) is the problem of visiting a sequence of {$\lambda$} locations within given time windows in such a way that driving and working activities of truck drivers comply with U.S. hours-of-service regulations. In the case of single time windows it is known that the US-TDSP can be solved in O({$\lambda$}3) time. In this paper, we present a scheduling method for the US-TDSP that solves the single time window problem in O({$\lambda$}2) time. We show that in the case of multiple time windows the same complexity can be achieved if the gap between subsequent time windows is at least 10 hours. This situation occurs, for example, if, because of opening hours of docks, handling operations can only be performed between 8.00 a.m. and 10.00 p.m. Furthermore, we empirically show that for a wide range of other problem instances the computational effort is not much higher if multiple time windows are considered.},
+  keywords = {multiple time windows,U.S. hours-of-service regulations,vehicle scheduling}
+}
+
 @inproceedings{goldberg:2005a,
   title = {Computing the Shortest Path: {{A}} Search Meets Graph Theory},
   shorttitle = {Computing the Shortest Path},
@@ -345,6 +329,7 @@
   pages = {156--165},
   publisher = {{Society for Industrial and Applied Mathematics}},
   address = {{USA}},
+  doi = {10.5555/1070432.1070455},
   abstract = {We propose shortest path algorithms that use A* search in combination with a new graph-theoretic lower-bounding technique based on landmarks and the triangle inequality. Our algorithms compute optimal shortest paths and work on any directed graph. We give experimental results showing that the most efficient of our new algorithms outperforms previous algorithms, in particular A* search with Euclidean bounds, by a wide margin on road networks and on some synthetic problem families.},
   isbn = {978-0-89871-585-9}
 }
@@ -382,17 +367,20 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\XR6E3KMX\\4082128.html}
 }
 
-@incollection{irnich:2006,
+@incollection{irnich:2005,
   title = {Shortest {{Path Problems}} with {{Resource Constraints}}},
   booktitle = {Column {{Generation}}},
   author = {Irnich, Stefan and Desaulniers, Guy},
-  year = {2006},
-  month = mar,
+  editor = {Desaulniers, Guy and Desrosiers, Jacques and Solomon, Marius M.},
+  year = {2005},
   pages = {33--65},
+  publisher = {{Springer US}},
+  address = {{Boston, MA}},
   doi = {10.1007/0-387-25486-2_2},
-  abstract = {In most vehicle routing and crew scheduling applications solved by column generation, the subproblem corresponds to a shortest path problem with resource constraints (SPPRC) or one of its variants. This chapter proposes a classification and a generic formulation for the SPPRCs, briefly discusses complex modeling issues involving resources, and presents the most commonly used SPPRC solution methods. First and foremost, it provides a comprehensive survey on the subject.},
-  isbn = {978-0-387-25485-2},
-  file = {C\:\\Users\\Max\\Zotero\\storage\\7ZWY6RID\\Irnich and Desaulniers - 2006 - Shortest Path Problems with Resource Constraints.pdf}
+  abstract = {In most vehicle routing and crew scheduling applications solved by column generation, the subproblem corresponds to a shortest path problem with resource constraints (SPPRC) or one of its variants.},
+  isbn = {978-0-387-25486-9},
+  langid = {english},
+  keywords = {Constraint Programming,Feasible Path,Resource Constraint,Short Path Problem,Sink Node}
 }
 
 @inproceedings{kleff:2017,
@@ -475,14 +463,21 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\XHB44VL6\\S1369847817306290.html}
 }
 
-@techreport{sartori:2021,
-  title = {Scheduling Hours of Service for Truck Drivers with Interdependent Routes},
-  author = {Sartori, Carlo and Smet, Pieter and Vanden Berghe, Greet},
-  year = {2021},
-  institution = {{KU Leuven}},
-  abstract = {When transporting goods, truck drivers may have to perform load transfers between two vehicles at cross-dock or transfer locations. These transfers create interdependencies between the routes of different truck drivers and require careful temporal synchronization. The situation becomes even more complex when driver schedules must comply with customer time windows, working periods and regulatory resting requirements. Although the scheduling of hours of service for truck drivers is a well-known problem, existing algorithms cannot cope with interdependent routes. Successfully accommodating this real-world characteristic demands the introduction of a new, more general truck scheduling problem: The Truck Driver Scheduling Problem with Interdependent Routes. This paper introduces a mathematical model and a label propagation algorithm to solve this new problem. Experiments indicate that the algorithm can quickly schedule a large number of interdependent routes and outperforms a mathematical programming approach. The algorithm produces valid schedules for multiple drivers and thus becomes a foundation for future vehicle routing algorithms that address interdependent routes and hours of service regulations.},
+@article{sartori:2022,
+  title = {Scheduling Truck Drivers with Interdependent Routes under {{European Union}} Regulations},
+  author = {Sartori, Carlo S. and Smet, Pieter and Vanden Berghe, Greet},
+  year = {2022},
+  month = apr,
+  journal = {European Journal of Operational Research},
+  volume = {298},
+  number = {1},
+  pages = {76--88},
+  issn = {0377-2217},
+  doi = {10.1016/j.ejor.2021.06.019},
+  abstract = {When transporting goods, truck drivers may have to perform load transfers between two vehicles at cross-dock or transfer locations. These transfers create interdependencies between the routes of different truck drivers and require careful temporal synchronization. The situation becomes even more complicated when driver schedules must comply with customer time windows, working periods and regulatory resting requirements. Although the scheduling of hours of service for truck drivers is a well-known problem, existing algorithms cannot cope with interdependent routes. We introduce the Truck Driver Scheduling Problem with Interdependent Routes to successfully accommodate this real-world characteristic. This paper proposes a mathematical model and a label propagation algorithm to solve this new problem under the regulations of the European Union. Experiments indicate that the algorithm can quickly schedule a large number of interdependent routes and outperforms a mathematical programming approach. The algorithm produces valid schedules for multiple drivers and thus becomes a foundation for future vehicle routing algorithms that address interdependent routes and hours of service regulations.},
+  langid = {english},
   keywords = {Hours of service,Interdependent routes,Label propagation,Scheduling,Truck driver scheduling},
-  file = {C\:\\Users\\Max\\Zotero\\storage\\5GHZL3GE\\Sartori et al. - 2021 - Scheduling hours of service for truck drivers with.pdf}
+  file = {C\:\\Users\\Max\\Zotero\\storage\\ZSCG88FS\\Sartori et al. - 2022 - Scheduling truck drivers with interdependent route.pdf;C\:\\Users\\Max\\Zotero\\storage\\FGEDEHN8\\S0377221721005348.html}
 }
 
 @mastersthesis{shah:2008,
@@ -490,7 +485,7 @@
   author = {Shah, Vidit Divyang},
   year = {2008},
   abstract = {Driver fatigue is the cause of many truck crashes taking place today. In order to improve safety, the Federal Motor Carrier Safety Administration (FMCSA) has implemented revised Hours-of-Service (HOS) regulations effective on October 1\^st 2005. According to the revised rules, drivers should take a break of 10 consecutive hours after 11 hours of driving time or 14 hours of duty time that includes driving time and service time such as loading and unloading cargo. This has caused a severe increase in the cost for the trucking industry which in turn hurt shippers and ultimately customers. A systematic way for routing vehicles to avoid traffic congestion and waiting due to truck arrival outside the customer service windows, as well as coordinating the timing drivers are taking their mandatory breaks, can improve the efficiency and safety of supply chain distribution operations. In this Thesis, a single truck routing and driver scheduling model with time-dependent travel times, HOS regulations, multiple delivery locations and service time windows is formulated and solved. The objective is to minimize the total time required to serve a given number of customers. The components of the total time are travel time, driver's break time, and waiting time and service time at the customer locations. For each segment of the transportation network, traffic congestion is modeled by using speed distribution profiles over the course of a day, which in turn makes the time required to traverse a highway segment dependent on the time the truck started traversing it. For a given set of customer locations, the optimization model determines the order in which they should be visited and the route between the consecutive customer locations in order to minimize the time of the tour subject to service time windows, HOS restrictions and time-dependent highway traversal times. A Simulated Annealing metaheuristic is implemented to obtain near optimal solutions of the problem. Our experimental results show that the heuristic provides good quality solutions for large size problems (with an average deviation of less than 1\% from the optimal) in reasonable computation time. The accuracy comparison was obtained by solving smaller size problems consisting ofAnnouncement of 10 customers by explicit enumeration. The mathematical model and the solution approach can be easily adapted to more complex problems involving multiple capacitated vehicles with pickup and delivery.},
-  school = {Boston, Massachusetts : Northeastern Universit},
+  school = {Boston, Massachusetts : Northeastern University},
   file = {C\:\\Users\\Max\\Zotero\\storage\\JN6QEKND\\Shah - 2008 - Time dependent truck routing and driver scheduling.pdf;C\:\\Users\\Max\\Zotero\\storage\\6V5AWRXV\\neu1724.html}
 }
 
@@ -568,17 +563,22 @@
   file = {C\:\\Users\\Max\\Zotero\\storage\\9HSX5XSS\\Fatig_Trans_6.pdf}
 }
 
-@article{williamson:2011,
+@article{williamson:2011a,
   title = {The Link between Fatigue and Safety},
   author = {Williamson, Ann and Lombardi, David A. and Folkard, Simon and Stutts, Jane and Courtney, Theodore K. and Connor, Jennie L.},
   year = {2011},
-  journal = {Accident Analysis \&amp; Prevention},
+  month = mar,
+  journal = {Accident Analysis \& Prevention},
+  series = {Advancing {{Fatigue}} and {{Safety Research}}},
   volume = {43},
   number = {2},
-  pages = {498},
+  pages = {498--515},
   issn = {0001-4575},
-  abstract = {The link between fatigue and safety},
-  file = {C\:\\Users\\Max\\Zotero\\storage\\3EGAGECB\\The_link_between_fatigue_and_safety.html}
+  doi = {10.1016/j.aap.2009.11.011},
+  abstract = {The objective of this review was to examine the evidence for the link between fatigue and safety, especially in transport and occupational settings. For the purposes of this review fatigue was defined as `a biological drive for recuperative rest'. The review examined the relationship between three major causes of fatigue \textendash{} sleep homeostasis factors, circadian influences and nature of task effects \textendash{} and safety outcomes, first looking at accidents and injury and then at adverse effects on performance. The review demonstrated clear evidence for sleep homeostatic effects producing impaired performance and accidents. Nature of task effects, especially tasks requiring sustained attention and monotony, also produced significant performance decrements, but the effects on accidents and/or injury were unresolved because of a lack of studies. The evidence did not support a direct link between circadian-related fatigue influences and performance or safety outcomes and further research is needed to clarify the link. Undoubtedly, circadian variation plays some role in safety outcomes, but the evidence suggests that these effects reflect a combination of time of day and sleep-related factors. Similarly, although some measures of performance show a direct circadian component, others would appear to only do so in combination with sleep-related factors. The review highlighted gaps in the literature and opportunities for further research.},
+  langid = {english},
+  keywords = {Circadian,Fatigue,Performance,Safety,Sleep,Time of day},
+  file = {C\:\\Users\\Max\\Zotero\\storage\\8DSK2JMQ\\Williamson et al. - 2011 - The link between fatigue and safety.pdf;C\:\\Users\\Max\\Zotero\\storage\\XYQLW4VT\\S0001457509003121.html}
 }
 
 

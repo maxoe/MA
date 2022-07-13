@@ -132,17 +132,19 @@ Ich versichere wahrheitsgemäß, die Arbeit selbstständig verfasst, alle benutz
 \thispagestyle{plain}
 
 \begin{addmargin}{0.5cm}
-
 	\centerline{\textbf{Abstract}}
 
-	A short summary of what is going on here.
+	Truck drivers are often obligated by law to take breaks and rest times in regular intervals on their routes. The longer a route is, the more complicated the set of regulations which must be followed become. We call this problem the Long-Haul Truck Driver Routing Problem. In this thesis, we present a model based on a set of multiple parameterized driving time constraints which allow a sensible abstraction from real world regulations. A single driving time constraint models a cyclic characteristic of a regulation. It consists of a maximum allowed accumulated driving time without a break and a minimal break time until the driver is allowed to drive again. Such cyclic characteristics can be found for example in regulations of the EU and the US. The abstractions lead to the Truck Driver Routing Problem (TDRP) which is the problem of finding routes with a minimal travel time which comply with a set of driving time constraints, each with a distinct maximum driving time and minimum break time. The travel time is the sum of pure driving time and all accumulated break times. Often, two driving times constraints are sufficient to model the core characteristics of a regulation (TDRP-2DTC).
+
+	We present an algorithm based on a goal-directed search and a core contraction hierarchy which shows a sufficient performance for solving the TDRP-2DTC in practical applications. The running times of the algorithm on a European road network using two driving time constraints that model the EU's regulations average at about \SI{10}{\milli\second}. This allows not only the application of our work in practice, but also provides a promising foundation to extend our work in the future to solve problems involving complicated real-world scenarios, such as driving bans, road closures, and traffic predictions.
 
 	\vskip 2cm
 
 	\centerline{\textbf{Deutsche Zusammenfassung}}
 
-	Kurze Inhaltsangabe auf deutsch.
+	LKW-Fahrer sind oft an regulatorische Einschränkungen bezüglich ihrer maximal erlaubten Fahrzeit ohne Pause und notwendigen Pausendauern für Pausen auf ihrer Route gebunden. Je länger eine Route ist, desto komplizierter werden die relevanten Vorschriften, die zu beachten sind. Wir nennen dieses Problem das \glqq Long-Haul Truck Driver Routing Problem\grqq, zu Deutsch \glqq Langstrecken-Routingproblem der LKW-Fahrer\grqq. In dieser Arbeit werden wir zuerst ein Modell einführen, dass eine sinnvolle Abstraktion von Vorschriften aus realen Gesetzen und Verordnungen erlaubt. Das Modell basiert auf einer Menge von Fahrtzeitbeschränkungen, die jeweils aus einer maximalen Fahrtzeit, die man nicht überschreiten darf, ohne eine Pause zu machen und einer minimalen Pausenzeit bestehen, nach der der LKW-Fahrer wieder fahren darf. Solche zyklischen Charakteristiken finden sich zum Beispiel in Vorschriften der EU und der USA. Die Abstraktionen führen zum \glqq Truck Driver Routing Problem\grqq\ (TDRP), auf Deutsch das \glqq LKW-Fahrer Routing Problem\grqq, welches dem Problem entspricht, eine Route mit der geringsten Reisezeit zu finden, die alle definierten Fahrtzeitbeschränkungen erfüllt. Die Reisezeit beinhalted dabei sowohl Fahrtzeit als auch alle angesammelten Pausenzeiten. Oft sind zwei solcher Fahrtzeitbeschränkungen ausreichend, um den Kern einer Menge von Vorschriften oder eines Gesetzes zu modellieren (TDRP-2DTC).
 
+	Wir präsentieren einen Algorithmus, der auf einer zielgerichteten Suche und einer Core Contraction Hierarchy basiert und das TDRP-2DTC effizient genug löst, um den Algorithmus in praktischen Anwendungen einzusetzen. Die Laufzeiten des Algorithmus auf einem Europäischen Straßennetzwerk mit zwei Fahrtzeitbeschränkungen, die die Vorschriften der EU modellieren, erreichen im Durchschnitt Werte von ca. \SI{10}{\milli\second}. Dies erlaubt nicht nur den Einsatz unseres Algorithmus in praktischen Applikationen, sondern auch die Verwendung des Ansatzes als Basis für die Lösung weiterer komplexer Problem aus der Praxis, die z.B. Fahrverbote, Straßensperrungen und Verkehrvorhersagen miteinbeziehen.
 \end{addmargin}
 
 \blankpage
@@ -183,7 +185,8 @@ Ich versichere wahrheitsgemäß, die Arbeit selbstständig verfasst, alle benutz
 \addcontentsline{toc}{chapter}{\bibname}
 
 \iflanguage{english}
-{\bibliographystyle{alpha}}
+% {\bibliographystyle{alpha}}
+{\bibliographystyle{halpha}} % with doi
 {\bibliographystyle{babalpha-fl}} % german style
 
 % \bibliography{references,references_zotero,references_custom}

@@ -475,8 +475,6 @@ Label dominance can be generalized to multiple driving time constraints as follo
 \end{definition}
 
 \subsection{Potential for Multiple Driving Time Constraints\label{section:potential_n_csp}}
-TODO: Rewrite for only two dtc?
-
 In Section~\ref{section:potential_csp} we defined the potential $\concretepotential_t(l,v)$ to extend Dijkstra's algorithm with one driving time constraint to a goal-directed search using the A* algorithm. We will now generalize $\concretepotential_t$ for the use with an arbitrary number of driving time constraints.
 
 In Equation~\refeq{eq:min_breaks} we used the distance $\distance(v,t)$ without regard for pausing from $v$ to $t$ and the distance $\breakDist(l)$ since the last break on the route to calculate a lower bound for the amount of necessary breaks until we reach the target node. We now have to calculate the lower bound with respect to all driving time constraints. How many breaks of which duration do we need at least to comply with all driving time constraints $\restr_i$? For longer driving time constraints, we will always need a greater or equal amount of breaks than for shorter driving time constraints since they have a longer maximum allowed driving time $\restr_i^d$. At the same time, a break of length $\restr_i^b$ will also include breaks of lengths $\restr_j^b$ with $j < i$. We start with calculating the amount of necessary breaks $\minBreaks_i(d)$, given a driving time $d$, for all constraints $\restr_i$ independently.
@@ -531,7 +529,7 @@ Finally, the lower bound potential for a label $l \in L(v)$ and a target node $t
 	\end{split}
 \end{align}
 
-If queue keys still cannot decrease when propagating labels, Lemma~\ref{lemma:pot_lower_bound_csp} and theorem~\ref{theorem:pot_stop_criterion} follow as a consequence. We follow the outLine of the proof of Lemma~\ref{lemma:pot_labels_get_larger} and therefore revisit the procedure \textsc{RelaxEdge} at an edge $(u,v) \in E$ with a label $l \in L(u)$ and a new label $l' \in L(v)$.
+If queue keys still cannot decrease when propagating labels, Lemma~\ref{lemma:pot_lower_bound_csp} and theorem~\ref{theorem:pot_stop_criterion} follow as a consequence. We follow the outline of the proof of Lemma~\ref{lemma:pot_labels_get_larger} and therefore revisit the procedure \textsc{RelaxEdge} at an edge $(u,v) \in E$ with a label $l \in L(u)$ and a new label $l' \in L(v)$. We proof the correctness of the potential for the use with the TDRP-2DTC with two driving time constraints.
 
 \begin{lemma}\label{lemma:pot_labels_get_larger_n}
 	Lemma~\ref{lemma:pot_labels_get_larger} still holds for two driving time constraints.
