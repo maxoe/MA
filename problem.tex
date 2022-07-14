@@ -1,22 +1,30 @@
 \chapter{Problem Definition}\label{ch:problem_definitions}
 In our introduction in Chapter~\ref{ch:introduction}, we introduced the Long-Haul Truck Driver Routing Problem as a problem which arises from the practical challenge of finding optimal multi-day routes without violating regulations regarding truck driver's driving times, working hours, breaks, and rest periods. In this chapter, we provide a formal definition of this problem using abstractions from the regulations which we described in the Sections~\ref{sec:dwh_eu}~and~\ref{sec:hos_us}.
 
-Both, the drivers' working hours regulations of the EU and the hours of service regulations of the US are characterized by repeating cycles, consisting of a limited time period in which the driver is actively driving, and a period in which the driver must rest or may only conduct other work for a minimum amount of time. We model this characteristic using a set of \emph{driving time constraints}. A driving time constraint $\restr$ is a pair of two values, a maximum allowed driving time or driving time limit $\restr^d$ and a minimum break time $\restr^b$. A driver must take an uninterrupted break of length $\restr^b$ before exceeding an accumulated driving time since the last break of $\restr^d$. A set of multiple driving time constraints is denoted as the set $\restrset$ of driving time constraints $\restr_i \in \restrset$. We assume an order among the constraints $\restr_i$, a driving time constraint with a given index consists of a driving time limit and a break time which are each greater than or equal to a driving time constraint with a smaller index. We can now model the regulations of the EU and the US using a set $\restrset$ of driving time constraints.
+Both, the drivers' working hours regulations of the EU and the hours of service regulations of the US are characterized by repeating cycles, consisting of a limited time period in which the driver is actively driving, and a period in which the driver must rest or may only conduct other work for a minimum amount of time. We model this characteristic using a set of \emph{driving time constraints}. A driving time constraint $\restr$ is a pair of two values $(c^d,c^b)$, a maximum allowed driving time or driving time limit $\restr^d$ and a minimum break time $\restr^b$. A driver must take an uninterrupted break of length $\restr^b$ before exceeding an accumulated driving time since the last break of $\restr^d$. A set of multiple driving time constraints is denoted as the set $\restrset$ of driving time constraints $\restr_i \in \restrset$. We assume an order among the constraints $\restr_i$, a driving time constraint with a given index consists of a driving time limit and a break time which are each greater than or equal to a driving time constraint with a smaller index.
 
-The EU's regulations are designed around the two central concepts of a break of \SI{45}{\minute} after a maximum driving time of \SI{4.5}{\hour} and a rest time of \SI{11}{\hour} after a maximum driving time of \SI{9}{\hour}. We therefore model the EU's regulations as $\restrset_{EU} = \{\restr_1, \restr_2\}$ with $\restr_1^d = \SI{4.5}{\hour}$, $\restr_1^b = \SI{0.75}{\hour}$, $\restr_2^d = \SI{9}{\hour}$, and $ \restr_2^b = \SI{11}{\hour}$.
+We now formalize our routing problem as an extension of the shortest path problem which accounts for driving time limits and mandatory breaks, which we name the Truck Driver Routing Problem (TDRP). Let $G=(V,E,\mathfunction{len})$ be a graph and $s$ and $t$ nodes with $s,t \in V$. We extend the graph $G$ to obtain a graph $G'=(V,P,E,\len)$ with a set $P \subseteq V$ of parking nodes.
 
-The US regulations are centered around the concept of a break of \SI{30}{\minute} after at most \SI{8}{\hour} of driving and a mandatory off-duty time of \SI{10}{\hour} after \SI{11}{\hour} of driving. We ignore the \SI{14}{\hour} limit of on-duty time because the driver is not allowed to drive during the additional \SI{3}{\hour}, rendering the rule uninteresting for our routing problem. This leads to the set of driving time constraints $\restrset_{US} = \{\restr_1, \restr_2\}$ with $\restr_1^d = \SI{8}{\hour}$, $\restr_1^b = \SI{0.5}{\hour}$, $\restr_2^d = \SI{11}{\hour}$, and $\restr_2^b = \SI{10}{\hour}$.
-
-We now formalize our routing problem as an extension of the shortest path problem which accounts for driving time limits and mandatory breaks which we name the Truck Driver Routing Problem (TDRP). Let $G=(V,E,\mathfunction{len})$ be a graph and $s$ and $t$ nodes with $s,t \in V$. We extend the graph with a set $P \subseteq V$ of parking nodes and a set $\restrset$ of driving time constraints $\restr_i$. A route $\route$ from $s$ to $t$ includes the path of visited nodes $p = \langle s=v_0,v_1,\dots,t=v_k \rangle$ and a break time function $\breakTime\colon p \rightarrow \{0,\restr_1^b,\dots,\restr_{|\restrset|}^b\}$ at each node $i$. For non-parking nodes $v_i \notin P$, the break time must be zero since breaks can only be scheduled at nodes $v \in P$. We also define the \breakTime\ of an entire route $\route$ on $p$ as $\breakTime(\route) = \sum_{i=0}^{k}{\breakTime(v_i)}$.
-
-\begin{definition}[Feasible Route]
-	A feasible route with path $p = \langle s=v_0,v_1,...,t=v_k \rangle$ must comply with all driving time constraints in $\restrset$. A route complies with a specific driving time constraint $\restr \in \restrset$ if there is no subpath $p'$ between two nodes $u,w \in P' = \{s,t\} \cup \{v_i \in p \mid \breakTime(v_i) \ge \restr^b\}$ on the path which exceeds the driving time limit $\len(p') > \restr^d$ and has no third node $v_i \in P'$ in between $u$ and $w$.
+\begin{definition}[Break Time]
+	Given a path $p = \langle s=v_0,v_1,...,t=v_k \rangle$, the function $\breakTime\colon p \rightarrow \mathbb{R}_{\ge 0}$ assigns each node $v_i$ a non-negative break time $\breakTime(v_i)$.
 \end{definition}
+
+\begin{definition}[Route]
+	A route $\route$ from $s$ to $t$ is defined by the path of visited nodes $p = \langle s=v_0,v_1,\dots,t=v_k \rangle$ and a break time function $\breakTime\colon p \rightarrow \mathbb{R}_{\ge 0}$.
+\end{definition}
+
+We extend the definition of a break time function \breakTime\ to obtain the break time of an entire route $\route$ using a path $p$ as $\breakTime(\route) = \sum_{v \in p}{\breakTime(v)}$.
+
+\begin{samepage}
+	\begin{definition}[Feasible Route]
+		Let $G=(V,P,E,\len)$ be a graph with parking nodes and $\route$ a route in the graph using a path $p = \langle s=v_0,v_1,...,t=v_k \rangle$ and a break time function $\breakTime$. Let $\restrset$ be a set of driving time constraints $\restr_i \in \restrset$. The route $\route$ is feasible given $C$ if $\breakTime(v_i) = 0$ $\forall v_i \notin P$ and if there is no subpath between any consecutive nodes with a break time of at least $\restr_i^b$ which exceeds the maximum allowed driving time $c_i^d$.
+	\end{definition}
+\end{samepage}
 
 We define the travel time of a route and the shortest route between two nodes as follows.
 
 \begin{definition}[Travel Time of a Route]
-	The travel time $\concretett(\route)$ of a route $\route$ is the sum of the length of its path $\len(p)$ and the accumulated break time $\breakTime(p)$.
+	The travel time $\concretett(\route)$ of a route $\route$ is the sum of the length of its path $\len(p)$ and the accumulated break time $\breakTime(r)$.
 \end{definition}
 
 \begin{definition}[Shortest Route]
@@ -27,8 +35,14 @@ The shortest travel time between two nodes $s$ and $t$, i.e., the travel time of
 
 \begin{namedproblem}
 	\problemtitle{\textsc{Truck Driver Routing Problem}}
-	\probleminput{A graph $G=(V,E,\mathfunction{len})$, a set of parking nodes $P \subseteq V$, a set of driving time constraints $\restrset$, and start and target nodes $s,t \in V$}
+	\probleminput{A graph with parking nodes $G=(V, P, E,\len)$, a set of driving time constraints $\restrset$, start and target nodes $s,t \in V$}
 	\problemquestion{Find a shortest route $r$ from $s$ to $t$ in $G$.}
 \end{namedproblem}
 
-We differentiate the cases in which we allow an arbitrary number of driving time constraints (TDRP-nDTC) or restrict the number of constraints to a certain number. As demonstrated above, we can model the most important characteristic of real-world driving time regulations using two constraints, i.e., $|\restrset| = 2$ (TDRP-2DTC). We do not consider a restriction to $|\restrset| = 1$ (TDRP-1DTC) a Long-Haul Truck Driver Routing since it does not allow multi-day routes with a realistic parameter setting for driving time limit and break time.
+We differentiate the cases in which we allow an arbitrary number of driving time constraints (TDRP-mDTC) or restrict the number of constraints to a certain number. We model the regulations of the EU and the US using a set $\restrset$ of two driving time constraints.
+
+The EU's regulations are designed using the two central concepts of a break of \SI{45}{\minute} after a maximum driving time of \SI{4.5}{\hour} and a rest time of \SI{11}{\hour} after a maximum driving time of \SI{9}{\hour}. We therefore model the EU's regulations as $\restrset_{EU} = \{\restr_1, \restr_2\}$ with $\restr_1^d = \SI{4.5}{\hour}$, $\restr_1^b = \SI{0.75}{\hour}$, $\restr_2^d = \SI{9}{\hour}$, and $ \restr_2^b = \SI{11}{\hour}$.
+
+The US regulations are centered around the concept of a break of \SI{30}{\minute} after at most \SI{8}{\hour} of driving and a mandatory off-duty time of \SI{10}{\hour} after \SI{11}{\hour} of driving. We ignore the \SI{14}{\hour} limit of on-duty time because the driver is not allowed to drive during the additional \SI{3}{\hour}, rendering the rule uninteresting for our routing problem. This leads to the set of driving time constraints $\restrset_{US} = \{\restr_1, \restr_2\}$ with $\restr_1^d = \SI{8}{\hour}$, $\restr_1^b = \SI{0.5}{\hour}$, $\restr_2^d = \SI{11}{\hour}$, and $\restr_2^b = \SI{10}{\hour}$.
+
+As demonstrated above, we can model the most important characteristic of real-world driving time regulations using two constraints, i.e., $|\restrset| = 2$ (TDRP-2DTC). In the regulatory framework of the EU and the US, this allows travel times up to a week with a net driving time of about \SI{60}{\hour}. We do not consider the TDRP with a model which uses one driving constraint (TDRP-1DTC) or with any restriction of the number of breaks on a route a Long-Haul Truck Driver Routing Problem since it does not allow multi-day routes with a realistic parameter setting for driving time limits and break times.
