@@ -640,8 +640,26 @@ If queue keys still cannot decrease when propagating labels, Lemma~\ref{lemma:po
 			\overset{\text{(4.)}}&{\ge} 0
 		\end{split}
 	\end{align}
-
 \end{proof}
+
+Finally, we visualize an exemplary goal-directed query on a European road network. Two driving time constraints are used to model the EU's drivers' working hours regulations as discussed in Chapter~\ref{ch:problem_definitions}. For a detailed discussion of the underlying OSM data refer to our evaluation in Chapter~\ref{ch:Evaluation}.
+
+The route starts in Russia in the north-eastern corner of the image and finishes in Belgium. Its net driving time is half a minute short of \SI{23}{\hour}. Three short breaks of \SI{45}{\minute} are taken at the green markers and two long breaks of \SI{11}{\hour} are completed at the red markers. The long breaks thereby also suffice the conditions for a short break. With a maximum driving time of \SI{4.5}{\hour} until a short break and \SI{9}{\hour} until the long break, this is the theoretical minimum amount of breaks for the given driving time. Figure~\ref{fig:europe_query_labels_qgis} visualizes the search space which was explored by the query. It consists of colored dots for each node which has received at least one label. The color encodes the size of the label set of each node at the end of the query and reaches from one (light blue) to nine (bright pink). The visualization shows that the algorithm spent a lot of time exploring during the first part of the search. Closer to the target, the CH-Potentials yield tight lower bounds for the remaining travel time on the highway. Also, the lack of appropriate parking locations in the data in Eastern Europe increases the complexity of the search.
+
+\begin{figure}[hbtp]
+	\centering
+	\subfigure[Route with path and parking locations]{
+		\includegraphics[width=.48\textwidth]{figures/path.png}
+		\label{fig:europe_query_parking_qgis}
+	}\hfill
+	\subfigure[Search space of the query]{
+		\includegraphics[width=.48\textwidth]{figures/path_labels.png}
+		\label{fig:europe_query_labels_qgis}
+	}
+	\caption{An example of a goal-directed query from Russia to Belgium. Long breaks take place at the red markers and short breaks take place at the green markers. The colors in (b) encode the label sizes at nodes in the search space from one (light blue) to nine (pink).}
+	\label{fig:europe_query_qgis}
+\end{figure}
+
 
 \section{Bidirectional Goal-Directed Search with Multiple Driving Time Constraints\label{sec:bidir_astar}}
 We now extend the goal-directed approach of Section~\ref{section:potential_n_csp} to a bidirectional approach similar to the bidirectional search described in Section~\ref{ch:preliminaries}. Our algorithm will consist of a forward search from $s$ in $\overrightarrow{G}$ and a backward search from $t$ in $\overleftarrow{G}$. The distances of the forward and backward search are combined at nodes were which were settled by both searches. We therefore introduce a concept to merge the label sets of backward and forward search to find the best currently known feasible route using information of both searches. Since we aim to stop the search as early as possible, we have to decide on a stopping criterion which allows the search to stop way before the forward search settles the target node $t$ or the backward search settles $s$. The correctness of the stopping criterion is closely tied to the potential of Section~\ref{section:potential_n_csp}.
