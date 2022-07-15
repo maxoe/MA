@@ -457,7 +457,7 @@ Since the potential now uses information from a label $l$ with $l \in L(v)$, it 
 	which contradicts the assumption that $r'$ yields a shorter $s$-$t$ route than $r$. Therefore, it must be $\concretett(r) = \traveltime(s,t)$ when $l_t$ was removed from the queue. The search can be stopped when the first label at $t$ is removed from the queue.
 \end{proof}
 
-\section{Multiple Driving Time Constraints\label{section:n_csp}}
+\section{Goal-Directed Search with Multiple Driving Time Constraints\label{section:n_csp}}
 Dijkstra's algorithm for the Truck Driver Routing PRoblem with one driving time constraint (TDRP-1DTC) can be adapted to handle multiple driving time constraints $\restr_i$ (TDRP-mDTC). With a number of $|\restrset|$ driving time constraints, a label $l$ now contains the total travel time $\concretett(l)$ and $|C|$ distances $\breakDist_1(l), \ldots , \breakDist_{|C|}(l)$. Each value $\breakDist_i(l)$ represents the distance since the last break at a node $v$ with break time $\breakTime(v) \ge \restr_i^b$. Pausing at a node occurs with one of the available break times $\restr_i^b$ of a driving time constraint $\restr_i \in \restrset$. Pausing with an arbitrary break time is permitted but yields longer travel times and no advantage and is therefore ignored. When a route breaks at $v$ for a time $\restr_i^b$, the corresponding label $l \in L(v)$ has $\breakDist(l) = 0$ for all $0 < j \le i$ since the breaks with shorter break times are included in the longer break. In the following, we redefine the fundamental concepts of Section~\ref{sec:dijkstra_csp} for multiple driving time constraints.
 
 \subparagraph{Label Propagation}
